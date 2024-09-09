@@ -115,11 +115,11 @@
             }
         }
 
-        public static async Task<HttpResponseMessage?> GetAppAccessToken(HttpClient client, string clientId, string clientSecret) {
+        public static async Task<HttpResponseMessage?> GetAccessToken(HttpClient client, string clientId, string clientSecret, string authorizationCode, string redirectURI) {
             try {
-                return await client.PostAsync($"https://id.twitch.tv/oauth2/token?&client_id={clientId}&client_secret={clientSecret}&grant_type=client_credentials", null);
+                return await client.PostAsync($"https://id.twitch.tv/oauth2/token?&client_id={clientId}&client_secret={clientSecret}&code={authorizationCode}&grant_type=authorization_code&redirect_uri={redirectURI}", null);
             } catch (Exception e) {
-                GD.PushWarning($"Could not get app access token: {e}.");
+                GD.PushWarning($"Could not get access token: {e}.");
                 return null;
             }
         }

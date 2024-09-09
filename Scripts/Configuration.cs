@@ -10,6 +10,7 @@
             public int? AuthorizationServerPort { get; set; }
             public string? TwitchStoneBotClientId { get; set; }
             public string? TwitchStoneBotClientSecret { get; set; }
+            public string? TwitchBroadcasterLogin { get; set; }
         }
 
         private static ConfigValues Values;
@@ -18,6 +19,7 @@
         public static int? AuthorizationServerPort => Values.AuthorizationServerPort;
         public static string? TwitchStoneBotClientId => Values.TwitchStoneBotClientId;
         public static string? TwitchStoneBotClientSecret => Values.TwitchStoneBotClientSecret;
+        public static string? TwitchBroadcasterLogin => Values.TwitchBroadcasterLogin;
 
         public static bool Init() {
             string jsonText;

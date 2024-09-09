@@ -10,10 +10,10 @@ config_version=5
 
 [application]
 
-config/name="Stone Bot"
+config/name="Stone-Bot"
 run/main_scene="res://Scenes/Main.tscn"
 config/features=PackedStringArray("4.3", "C#", "Forward Plus")
 
 [dotnet]
 
-project/assembly_name="Stone Bot"
+project/assembly_name="Stone-Bot"
