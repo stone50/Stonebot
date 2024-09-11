@@ -1,44 +1,85 @@
 ﻿namespace StoneBot.Scripts.Middleware {
     using Godot;
     using System;
+    using System.Text.Json.Serialization;
     using System.Threading.Tasks;
     using HttpClient = System.Net.Http.HttpClient;
 
     internal static class ChannelChatMessage {
-        public struct EventSubData {
+        public struct ConditionData {
+            [JsonPropertyName("broadcaster_user_id")]
+            public string BroadcasterUserId { get; set; }
+            [JsonPropertyName("user_id")]
+            public string UserId { get; set; }
+        }
 
+        public struct TransportData {
+            [JsonPropertyName("method")]
+            public string Method { get; set; }
+            [JsonPropertyName("callback")]
+            public string Callback { get; set; }
+        }
+
+        public struct EventSubData {
+            [JsonPropertyName("id")]
+            public string Id { get; set; }
+            [JsonPropertyName("status")]
+            public string Status { get; set; }
+            [JsonPropertyName("type")]
+            public string Type { get; set; }
+            [JsonPropertyName("version")]
+            public string Version { get; set; }
+            [JsonPropertyName("condition")]
+            public ConditionData Condition { get; set; }
+            [JsonPropertyName("created_at")]
+            public string CreatedAt { get; set; }
+            [JsonPropertyName("transport")]
+            public TransportData Transport { get; set; }
+        }
+
+        public struct PaginationData {
+            [JsonPropertyName("cursor")]
+            public string? Cursor { get; set; }
         }
 
         public struct EventSubsData {
+            [JsonPropertyName("data")]
+            public EventSubData[] Data { get; set; }
+            [JsonPropertyName("total")]
             public int Total { get; set; }
-            public EventSubData[] Datas { get; set; }
+            [JsonPropertyName("total_cost")]
             public int TotalCost { get; set; }
+            [JsonPropertyName("Max_total_cost")]
             public int MaxTotalCost { get; set; }
-            public
+            [JsonPropertyName("pagination")]
+            public PaginationData Pagination { get; set; }
         }
 
-        public static async Task<bool> Get(string broadcasterId, string secret) {
-            var client = await GetClient();
-            if (client is null) {
-                GD.PushWarning("Cannot connect chat event sub because GetClient failed.");
-                return false;
+        public static async Task<EventSubsData?> Get(HttpClient? client = null) {
+            var requestClient = client ?? await GetClient();
+            if (requestClient is null) {
+                GD.PushWarning("Cannot connect chat event sub because client is null.");
+                return null;
             }
 
-            var response = await TwitchAPI.GetEventSubs(client, null, "channel.chat.message");
-            if (res) {
-
+            var eventSubsData = await Util.ProcessHttpResponseMessage<EventSubsData>(await TwitchAPI.GetEventSubs(requestClient, null, "channel.chat.message"));
+            if (eventSubsData is null) {
+                GD.PushWarning("Cannot get event subs data because ProcessHttpResponseMessage failed.");
+                return null;
             }
+
+            return eventSubsData;
         }
 
-        public static async Task<bool> Clear(string broadcasterId, string secret) {
-            var client = await GetClient();
-            if (client is null) {
-                GD.PushWarning("Cannot connect chat event sub because GetClient failed.");
-                return false;
-            }
+        //public static async Task<bool> Clear(string broadcasterId, string secret) {
+        //    var client = await GetClient();
+        //    if (client is null) {
+        //        GD.PushWarning("Cannot connect chat event sub because GetClient failed.");
+        //        return false;
+        //    }
 
-            var response = await TwitchAPI.GetEventSubs(client);
-        }
+        //    var response = await TwitchAPI.GetEventSubs(client);
+        //}
 
         public static async Task<bool> Connect(string broadcasterId, string secret) {
             var client = await GetClient();

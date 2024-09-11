@@ -1,7 +1,7 @@
 ﻿namespace StoneBot.Scripts {
     using Godot;
     using System;
-    using System.Net.Sockets;
+    using System.IO;
     using System.Text;
     using System.Threading.Tasks;
     using Environment = System.Environment;
@@ -11,7 +11,24 @@
         public string ReasonPhrase = "OK";
         public string? Message;
 
-        public async Task<bool> SendToStream(NetworkStream stream) {
+        public async Task<bool> SendToStream(Stream stream) {
+            var responseBytes = ToBytes();
+            if (responseBytes is null) {
+                GD.PushWarning($"Cannot send request to stream because ToBytes failed.");
+                return false;
+            }
+
+            try {
+                await stream.WriteAsync(responseBytes);
+            } catch (Exception e) {
+                GD.PushWarning($"Could not write response bytes to stream: {e}.");
+                return false;
+            }
+
+            return true;
+        }
+
+        public byte[]? ToBytes() {
             var responseString = $"HTTP/1.1 {StatusCode} {ReasonPhrase}{Environment.NewLine}";
 
             // TODO: include headers
@@ -27,17 +44,10 @@
                 responseBytes = Encoding.Default.GetBytes(responseString);
             } catch (Exception e) {
                 GD.PushWarning($"Could not get bytes from response string: {e}.");
-                return false;
+                return null;
             }
 
-            try {
-                await stream.WriteAsync(responseBytes);
-            } catch (Exception e) {
-                GD.PushWarning($"Could not write response bytes to stream: {e}.");
-                return false;
-            }
-
-            return true;
+            return responseBytes;
         }
     }
 }

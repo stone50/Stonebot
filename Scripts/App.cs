@@ -56,6 +56,18 @@
                 return false;
             }
 
+            //var chatEventSubs = (ChannelChatMessage.EventSubsData)potentialChatEventSubs;
+            //foreach (var sub in chatEventSubs.Data) {
+            //    GD.Print($"ID: {sub.Id}");
+            //    GD.Print($"Status: {sub.Status}");
+            //}
+
+            //var isChatEventSubConnected = await ChannelChatMessage.Connect(BroadcasterId, secret);
+            //if (!isChatEventSubConnected) {
+            //    GD.PushWarning("Cannot init app because chat event sub connection failed.");
+            //    return false;
+            //}
+
             return true;
         }
 
