@@ -1,9 +1,14 @@
 ﻿namespace StoneBot.Scripts {
     using Godot;
     using System;
+    using System.IO;
     using System.Net;
+    using System.Net.Security;
     using System.Net.Sockets;
+    using System.Security.Cryptography;
+    using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
+    using X509Certificate = System.Security.Cryptography.X509Certificates.X509Certificate;
 
     internal class TcpServer {
         public class HttpRequestHandlerArgs {
@@ -17,11 +22,35 @@
         public event HttpRequestHandler RequestHandler = delegate { };
 
         private readonly TcpListener Server;
+        private static X509Certificate? Certificate;
+
         public bool IsRunning { get; private set; } = false;
+        public bool IsRunningAsSecure { get; private set; } = false;
 
         public TcpServer(IPAddress ipAddress, int port) => Server = new TcpListener(ipAddress, port);
 
+        public async Task<bool> StartAsSecure() {
+            if (IsRunning) {
+                GD.PushWarning($"Cannot start server because server is already running.");
+                return false;
+            }
+
+            Certificate ??= await GetCertificate();
+            if (Certificate is null) {
+                GD.PushWarning("Cannot start secure server because GetCertificate failed.");
+                return false;
+            }
+
+            IsRunningAsSecure = true;
+            return Start();
+        }
+
         public bool Start() {
+            if (IsRunning) {
+                GD.PushWarning($"Cannot start server because server is already running.");
+                return false;
+            }
+
             try {
                 Server.Start();
             } catch (Exception e) {
@@ -50,7 +79,117 @@
             }
 
             IsRunning = false;
+            IsRunningAsSecure = false;
             return true;
+        }
+
+        private static async Task<X509Certificate?> GetCertificate() {
+            string currentDirectory;
+            try {
+                currentDirectory = Directory.GetCurrentDirectory();
+            } catch (Exception e) {
+                GD.PushWarning($"Could not get current directory: {e}.");
+                return null;
+            }
+
+            var certificateDirectory = Path.Join(currentDirectory, "localhost.cer");
+
+            if (!File.Exists(certificateDirectory)) {
+                var potentialCertificate = await CreateCertificate(certificateDirectory);
+                if (potentialCertificate is null) {
+                    GD.PushWarning("Cannot get certificate because CreateCertificate failed.");
+                    return null;
+                }
+
+                return potentialCertificate;
+            }
+
+            X509Certificate certificate;
+            try {
+                certificate = X509Certificate.CreateFromCertFile(Path.ChangeExtension(certificateDirectory, ".pfx"));
+            } catch (Exception e) {
+                GD.PushWarning($"Could not create certificate from file: {e}.");
+                return null;
+            }
+
+            return certificate;
+        }
+
+        private static async Task<X509Certificate?> CreateCertificate(string filePath) {
+            var ecdsa = ECDsa.Create();
+
+            CertificateRequest certificateRequest;
+            try {
+                certificateRequest = new CertificateRequest("cn=localhost", ecdsa, HashAlgorithmName.SHA256);
+            } catch (Exception e) {
+                GD.PushWarning($"Could not create certification request: {e}.");
+                return null;
+            }
+
+            DateTimeOffset dateTimeOffset;
+            try {
+                dateTimeOffset = DateTimeOffset.Now.AddYears(5);
+            } catch (Exception e) {
+                GD.PushWarning($"Could not get date time offset: {e}.");
+                return null;
+            }
+
+            X509Certificate2 certificate;
+            try {
+                certificate = certificateRequest.CreateSelfSigned(DateTimeOffset.Now, dateTimeOffset);
+            } catch (Exception e) {
+                GD.PushWarning($"Could not create self signed certificate: {e}.");
+                return null;
+            }
+
+            byte[] pfxExportedBytes;
+            try {
+                // TODO: change password
+                pfxExportedBytes = certificate.Export(X509ContentType.Pfx, "password");
+            } catch (Exception e) {
+                GD.PushWarning($"Could not export certificate: {e}.");
+                return null;
+            }
+
+            string pfxFilePath;
+            try {
+                pfxFilePath = Path.ChangeExtension(filePath, ".pfx");
+            } catch (Exception e) {
+                GD.PushWarning($"Could not change file extension: {e}.");
+                return null;
+            }
+
+            try {
+                await File.WriteAllBytesAsync(pfxFilePath, pfxExportedBytes);
+            } catch (Exception e) {
+                GD.PushWarning($"Could not write bytes to pfx file: {e}.");
+                return null;
+            }
+
+            byte[] exportedBytes;
+            try {
+                exportedBytes = certificate.Export(X509ContentType.Cert);
+            } catch (Exception e) {
+                GD.PushWarning($"Could not export certificate: {e}.");
+                return null;
+            }
+
+            string certificateFileContents;
+            try {
+                certificateFileContents = Convert.ToBase64String(exportedBytes, Base64FormattingOptions.InsertLineBreaks);
+            } catch (Exception e) {
+                GD.PushWarning($"Could not convert certificate exported bytes: {e}.");
+                return null;
+            }
+
+            try {
+                await File.WriteAllTextAsync(filePath, $"-----BEGIN CERTIFICATE-----\r\n{certificateFileContents}\r\n-----END CERTIFICATE-----");
+            } catch (Exception e) {
+                GD.PushWarning($"Could not convert certificate exported bytes: {e}.");
+                return null;
+            }
+
+            return certificate;
         }
 
         private bool StartServerRequestHandler() {
@@ -89,19 +228,41 @@
 
                 tries = 0;
 
+                var response = new HttpResponse();
                 try {
-                    using var stream = client.GetStream();
+                    using var clientStream = client.GetStream();
+
+                    Stream stream = clientStream;
+                    if (IsRunningAsSecure) {
+                        if (Certificate is null) {
+                            GD.PushWarning("Cannot authenticate client because Certificate is null.");
+                            continue;
+                        }
+
+                        var sslStream = new SslStream(stream, false);
+
+                        try {
+                            await sslStream.AuthenticateAsServerAsync(Certificate, false, true);
+                        } catch (Exception e) {
+                            GD.PushWarning($"Could not authenticate client: {e}.");
+                            continue;
+                        }
+
+                        stream = sslStream;
+                    }
 
                     var request = await HttpRequest.FromStream(stream);
                     if (request is null) {
-                        GD.PushWarning("Cannot handle request because GetServerRequest failed.");
-                        continue;
+                        GD.PushWarning("Cannot handle request because HttpRequest.FromStream failed.");
+                        response.StatusCode = 400;
+                        response.ReasonPhrase = "Bad Request";
+                    } else {
+                        var handlerArgs = new HttpRequestHandlerArgs(request);
+                        RequestHandler.Invoke(this, handlerArgs);
+                        response = handlerArgs.Response;
                     }
 
-                    var handlerArgs = new HttpRequestHandlerArgs(request);
-                    RequestHandler.Invoke(this, handlerArgs);
-
-                    var success = await handlerArgs.Response.SendToStream(stream);
+                    var success = await response.SendToStream(stream);
                     if (!success) {
                         GD.PushWarning("Cannot handle request because Response.SendToStream failed.");
                         continue;
