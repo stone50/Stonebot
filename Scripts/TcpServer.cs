@@ -92,7 +92,7 @@
                 return null;
             }
 
-            var certificateDirectory = Path.Join(currentDirectory, "localhost.cer");
+            var certificateDirectory = Path.Join(currentDirectory, "localhost.pfx");
 
             if (!File.Exists(certificateDirectory)) {
                 var potentialCertificate = await CreateCertificate(certificateDirectory);
@@ -106,7 +106,7 @@
 
             X509Certificate certificate;
             try {
-                certificate = X509Certificate.CreateFromCertFile(Path.ChangeExtension(certificateDirectory, ".pfx"));
+                certificate = new(certificateDirectory);
             } catch (Exception e) {
                 GD.PushWarning($"Could not create certificate from file: {e}.");
                 return null;
@@ -144,8 +144,7 @@
 
             byte[] pfxExportedBytes;
             try {
-                // TODO: change password
-                pfxExportedBytes = certificate.Export(X509ContentType.Pfx, "password");
+                pfxExportedBytes = certificate.Export(X509ContentType.Pfx);
             } catch (Exception e) {
                 GD.PushWarning($"Could not export certificate: {e}.");
                 return null;
@@ -166,26 +165,10 @@
                 return null;
             }
 
-            byte[] exportedBytes;
             try {
-                exportedBytes = certificate.Export(X509ContentType.Cert);
+                certificate = new(pfxExportedBytes);
             } catch (Exception e) {
-                GD.PushWarning($"Could not export certificate: {e}.");
-                return null;
-            }
-
-            string certificateFileContents;
-            try {
-                certificateFileContents = Convert.ToBase64String(exportedBytes, Base64FormattingOptions.InsertLineBreaks);
-            } catch (Exception e) {
-                GD.PushWarning($"Could not convert certificate exported bytes: {e}.");
-                return null;
-            }
-
-            try {
-                await File.WriteAllTextAsync(filePath, $"-----BEGIN CERTIFICATE-----\r\n{certificateFileContents}\r\n-----END CERTIFICATE-----");
-            } catch (Exception e) {
-                GD.PushWarning($"Could not convert certificate exported bytes: {e}.");
+                GD.PushWarning($"Could not create certificate from exported bytes: {e}.");
                 return null;
             }
 
