@@ -29,7 +29,7 @@
                 return false;
             }
 
-            TwitchEventSubServer = GetTwitchEventSubServer(secret);
+            TwitchEventSubServer = await GetTwitchEventSubServer(secret);
             if (TwitchEventSubServer is null) {
                 GD.PushWarning("Cannot init app because TwitchEventSubServer is null.");
                 return false;
@@ -50,10 +50,16 @@
             var broadcasterData = (Broadcaster.UserData)potentialBroadcasterData;
             BroadcasterId = broadcasterData.Id;
 
+<<<<<<< Updated upstream
             // TODO: auth needs to be an app access token for webhooks
             var chatWebhookResponse = await TwitchAPI.ChannelChatMessageWebhook(TwitchHttpClient, Configuration.TwitchStoneBotClientId, BroadcasterId, "https://localhost", secret);
             if (chatWebhookResponse is null) {
                 GD.PushWarning("Cannot init app because ChannelChatMessageWebhook failed.");
+=======
+            var potentialChatEventSubs = await ChannelChatMessage.Get();
+            if (potentialChatEventSubs is null) {
+                GD.PushWarning("Cannot init app because get chat event sub failed.");
+>>>>>>> Stashed changes
                 return false;
             }
 
@@ -126,7 +132,7 @@
             return client;
         }
 
-        private static TcpServer? GetTwitchEventSubServer(string secret) {
+        private static async Task<TcpServer?> GetTwitchEventSubServer(string secret) {
             IPAddress localhost;
             try {
                 localhost = IPAddress.Parse("127.0.0.1");
@@ -145,7 +151,7 @@
 
             bool didTwitchEventSubServerStart;
             try {
-                didTwitchEventSubServerStart = server.Start();
+                didTwitchEventSubServerStart = await server.StartAsSecure();
             } catch (Exception e) {
                 GD.PushWarning($"Could not start server: {e}.");
                 return null;
@@ -158,9 +164,9 @@
 
             server.RequestHandler += (sender, args) => {
                 // TODO: process request
-                GD.Print(DateTime.Now);
-                GD.Print(args.Request.Method);
-                GD.Print(args.Request.URI);
+                //GD.Print(DateTime.Now);
+                //GD.Print(args.Request.Method);
+                //GD.Print(args.Request.URI);
             };
 
             return server;
