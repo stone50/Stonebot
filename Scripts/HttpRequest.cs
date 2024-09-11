@@ -1,7 +1,7 @@
 ﻿namespace StoneBot.Scripts {
     using Godot;
     using System;
-    using System.Net.Sockets;
+    using System.IO;
     using System.Text;
     using System.Threading.Tasks;
 
@@ -20,7 +20,7 @@
         public RequestMethod Method;
         public string URI = null!;
 
-        public static async Task<HttpRequest?> FromStream(NetworkStream stream) {
+        public static async Task<HttpRequest?> FromStream(Stream stream) {
             var buffer = new byte[65536];
 
             int numBytesRead;
@@ -31,13 +31,25 @@
                 return null;
             }
 
+            var request = FromBuffer(buffer, numBytesRead);
+            if (request is null) {
+                GD.PushWarning("Cannot parse http request because FromBuffer failed.");
+                return null;
+            }
+
+            return request;
+        }
+
+        public static HttpRequest? FromBuffer(byte[] buffer, int numBytes) {
             string requestString;
             try {
-                requestString = Encoding.Default.GetString(buffer, 0, numBytesRead);
+                requestString = Encoding.Default.GetString(buffer, 0, numBytes);
             } catch (Exception e) {
                 GD.PushWarning($"Could not get string from client stream bytes: {e}.");
                 return null;
             }
+
+            GD.Print($"Request String: {requestString}");
 
             HttpRequest request;
             try {
