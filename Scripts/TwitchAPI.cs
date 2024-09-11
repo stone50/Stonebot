@@ -41,6 +41,24 @@
             return process;
         }
 
+        public static async Task<HttpResponseMessage?> GetUserAccessToken(HttpClient client, string clientId, string clientSecret, string authorizationCode, string redirectURI) {
+            try {
+                return await client.PostAsync($"https://id.twitch.tv/oauth2/token?&client_id={clientId}&client_secret={clientSecret}&code={authorizationCode}&grant_type=authorization_code&redirect_uri={redirectURI}", null);
+            } catch (Exception e) {
+                GD.PushWarning($"Could not get access token: {e}.");
+                return null;
+            }
+        }
+
+        public static async Task<HttpResponseMessage?> GetAppAccessToken(HttpClient client, string clientId, string clientSecret) {
+            try {
+                return await client.PostAsync($"https://id.twitch.tv/oauth2/token?&client_id={clientId}&client_secret={clientSecret}&grant_type=client_credentials", null);
+            } catch (Exception e) {
+                GD.PushWarning($"Could not get access token: {e}.");
+                return null;
+            }
+        }
+
         public static async Task<HttpResponseMessage?> GetUsers(HttpClient client, string[]? ids = null, string[]? logins = null) {
             if (ids is null && logins is null) {
                 GD.PushWarning("Cannot get users because ids and logins are both null.");
@@ -73,21 +91,21 @@
             }
         }
 
-        public static async Task<HttpResponseMessage?> SendChatMessage(HttpClient client, string broadcasterId, string senderId, string message, string? replyParentMessageId = null) {
-            dynamic content = new {
-                broadcaster_id = broadcasterId,
-                sender_id = senderId,
-                message,
-            };
-
-            if (replyParentMessageId is not null) {
-                content.reply_parent_message_id = replyParentMessageId;
+        // Only up to 1 of status, type, and userId should be specified
+        public static async Task<HttpResponseMessage?> GetEventSubs(HttpClient client, string? status = null, string? type = null, string? userId = null, string? after = null) {
+            var queryParam = "";
+            if (status is not null) {
+                queryParam = $"&status={status}";
+            } else if (type is not null) {
+                queryParam = $"&type={type}";
+            } else if (userId is not null) {
+                queryParam = $"&user_id={userId}";
             }
 
             try {
-                return await client.PostAsJsonAsync("https://api.twitch.tv/helix/chat/messages", (object)content);
+                return await client.GetAsync($"https://api.twitch.tv/helix/eventsub/subscriptions?{queryParam}");
             } catch (Exception e) {
-                GD.PushWarning($"Could not send chat message: {e}.");
+                GD.PushWarning($"Could not get event subs: {e}.");
                 return null;
             }
         }
@@ -115,11 +133,21 @@
             }
         }
 
-        public static async Task<HttpResponseMessage?> GetAccessToken(HttpClient client, string clientId, string clientSecret, string authorizationCode, string redirectURI) {
+        public static async Task<HttpResponseMessage?> SendChatMessage(HttpClient client, string broadcasterId, string senderId, string message, string? replyParentMessageId = null) {
+            dynamic content = new {
+                broadcaster_id = broadcasterId,
+                sender_id = senderId,
+                message,
+            };
+
+            if (replyParentMessageId is not null) {
+                content.reply_parent_message_id = replyParentMessageId;
+            }
+
             try {
-                return await client.PostAsync($"https://id.twitch.tv/oauth2/token?&client_id={clientId}&client_secret={clientSecret}&code={authorizationCode}&grant_type=authorization_code&redirect_uri={redirectURI}", null);
+                return await client.PostAsJsonAsync("https://api.twitch.tv/helix/chat/messages", (object)content);
             } catch (Exception e) {
-                GD.PushWarning($"Could not get access token: {e}.");
+                GD.PushWarning($"Could not send chat message: {e}.");
                 return null;
             }
         }

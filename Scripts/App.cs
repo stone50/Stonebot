@@ -50,31 +50,22 @@
             var broadcasterData = (Broadcaster.UserData)potentialBroadcasterData;
             BroadcasterId = broadcasterData.Id;
 
-<<<<<<< Updated upstream
-            // TODO: auth needs to be an app access token for webhooks
-            var chatWebhookResponse = await TwitchAPI.ChannelChatMessageWebhook(TwitchHttpClient, Configuration.TwitchStoneBotClientId, BroadcasterId, "https://localhost", secret);
-            if (chatWebhookResponse is null) {
-                GD.PushWarning("Cannot init app because ChannelChatMessageWebhook failed.");
-=======
             var potentialChatEventSubs = await ChannelChatMessage.Get();
             if (potentialChatEventSubs is null) {
-                GD.PushWarning("Cannot init app because get chat event sub failed.");
->>>>>>> Stashed changes
                 return false;
             }
 
-            string chatWebhookResponseString;
-            try {
-                chatWebhookResponseString = await chatWebhookResponse.Content.ReadAsStringAsync();
-            } catch (Exception e) {
-                GD.PushWarning($"Could not read response string: {e}.");
-                return false;
-            }
+            //var chatEventSubs = (ChannelChatMessage.EventSubsData)potentialChatEventSubs;
+            //foreach (var sub in chatEventSubs.Data) {
+            //    GD.Print($"ID: {sub.Id}");
+            //    GD.Print($"Status: {sub.Status}");
+            //}
 
-            if (!chatWebhookResponse.IsSuccessStatusCode) {
-                GD.PushWarning($"Cannot init app because ChannelChatMessageWebhook failed: {chatWebhookResponseString}.");
-                return false;
-            }
+            //var isChatEventSubConnected = await ChannelChatMessage.Connect(BroadcasterId, secret);
+            //if (!isChatEventSubConnected) {
+            //    GD.PushWarning("Cannot init app because chat event sub connection failed.");
+            //    return false;
+            //}
 
             return true;
         }
@@ -105,13 +96,13 @@
                 return null;
             }
 
-            var potentialAccessTokenData = await AccessToken.GetAccessTokenData();
+            var potentialAccessTokenData = await AccessToken.GetUserAccessTokenData();
             if (potentialAccessTokenData is null) {
                 GD.PushWarning("Cannot get Twitch event sub client because GetAccessTokenData failed.");
                 return null;
             }
 
-            var accessTokenData = (AccessToken.AccessTokenData)potentialAccessTokenData;
+            var accessTokenData = (AccessToken.UserAccessTokenData)potentialAccessTokenData;
 
             var client = new HttpClient();
 
@@ -158,7 +149,7 @@
             }
 
             if (!didTwitchEventSubServerStart) {
-                GD.PushWarning($"Cannot init twitch event sub server because TwitchEventSubServer.Start failed.");
+                GD.PushWarning($"Cannot get twitch event sub server because server start failed.");
                 return null;
             }
 
