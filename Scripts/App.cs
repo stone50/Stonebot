@@ -55,17 +55,22 @@
                 return false;
             }
 
-            //var chatEventSubs = (ChannelChatMessage.EventSubsData)potentialChatEventSubs;
-            //foreach (var sub in chatEventSubs.Data) {
-            //    GD.Print($"ID: {sub.Id}");
-            //    GD.Print($"Status: {sub.Status}");
-            //}
+            var chatEventSubs = (ChannelChatMessage.EventSubsData)potentialChatEventSubs;
+            foreach (var chatEventSub in chatEventSubs.Data) {
+                GD.Print($"Chat Event Sub: {chatEventSub.Id}, {chatEventSub.Status}");
+            }
 
-            //var isChatEventSubConnected = await ChannelChatMessage.Connect(BroadcasterId, secret);
-            //if (!isChatEventSubConnected) {
-            //    GD.PushWarning("Cannot init app because chat event sub connection failed.");
-            //    return false;
-            //}
+            var numEventSubsRemaining = await ChannelChatMessage.Clear();
+            if (numEventSubsRemaining > 0) {
+                GD.PushWarning("Cannot init app because not all channel chat message event subs could be deleted.");
+                return false;
+            }
+
+            var isChatEventSubConnected = await ChannelChatMessage.Connect(BroadcasterId, secret);
+            if (!isChatEventSubConnected) {
+                GD.PushWarning("Cannot init app because chat event sub connection failed.");
+                return false;
+            }
 
             return true;
         }

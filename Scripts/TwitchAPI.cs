@@ -110,6 +110,15 @@
             }
         }
 
+        public static async Task<HttpResponseMessage?> DeleteEventSub(HttpClient client, string id) {
+            try {
+                return await client.DeleteAsync($"https://api.twitch.tv/helix/eventsub/subscriptions?id={id}");
+            } catch (Exception e) {
+                GD.PushWarning(e.Message);
+                return null;
+            }
+        }
+
         public static async Task<HttpResponseMessage?> ChannelChatMessageWebhook(HttpClient client, string broadcasterUserId, string userId, string callback, string secret) {
             var content = new {
                 type = "channel.chat.message",
