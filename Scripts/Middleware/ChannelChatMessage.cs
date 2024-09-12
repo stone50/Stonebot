@@ -71,15 +71,35 @@
             return eventSubsData;
         }
 
-        //public static async Task<bool> Clear(string broadcasterId, string secret) {
-        //    var client = await GetClient();
-        //    if (client is null) {
-        //        GD.PushWarning("Cannot connect chat event sub because GetClient failed.");
-        //        return false;
-        //    }
+        // returns the number of event subs that were not deleted
+        public static async Task<int> Clear() {
+            var client = await GetClient();
+            if (client is null) {
+                GD.PushWarning("Cannot connect chat event sub because GetClient failed.");
+                return 0;
+            }
 
-        //    var response = await TwitchAPI.GetEventSubs(client);
-        //}
+            var potentialEventSubsData = await Get(client);
+            if (potentialEventSubsData is null) {
+                GD.PushWarning("Cannot clear even subs because Get failed.");
+                return 0;
+            }
+
+            var eventSubsData = (EventSubsData)potentialEventSubsData;
+
+            var numEventSubsDeleted = 0;
+            foreach (var eventSubData in eventSubsData.Data) {
+                var responseString = await Util.VerifyHttpResponseMessage(await TwitchAPI.DeleteEventSub(client, eventSubData.Id));
+                if (responseString is null) {
+                    GD.PushWarning($"Cannot delete event sub because VerifyHttpResponseMessage failed: {responseString}.");
+                    continue;
+                }
+
+                numEventSubsDeleted++;
+            }
+
+            return eventSubsData.Data.Length - numEventSubsDeleted;
+        }
 
         public static async Task<bool> Connect(string broadcasterId, string secret) {
             var client = await GetClient();
@@ -88,7 +108,7 @@
                 return false;
             }
 
-            var responseString = Util.VerifyHttpResponseMessage(await TwitchAPI.ChannelChatMessageWebhook(client, broadcasterId, broadcasterId, "https://localhost:443", secret));
+            var responseString = await Util.VerifyHttpResponseMessage(await TwitchAPI.ChannelChatMessageWebhook(client, broadcasterId, broadcasterId, "https://localhost:443", secret));
             if (responseString is null) {
                 GD.PushWarning("Cannot connect chat event sub because VerifyHttpResponseMessage failed.");
                 return false;
