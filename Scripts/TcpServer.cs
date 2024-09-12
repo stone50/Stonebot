@@ -2,10 +2,10 @@
     using Godot;
     using System;
     using System.IO;
+    using System.Linq;
     using System.Net;
     using System.Net.Security;
     using System.Net.Sockets;
-    using System.Security.Cryptography;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
     using X509Certificate = System.Security.Cryptography.X509Certificates.X509Certificate;
@@ -29,13 +29,13 @@
 
         public TcpServer(IPAddress ipAddress, int port) => Server = new TcpListener(ipAddress, port);
 
-        public async Task<bool> StartAsSecure() {
+        public bool StartAsSecure() {
             if (IsRunning) {
                 GD.PushWarning($"Cannot start server because server is already running.");
                 return false;
             }
 
-            Certificate ??= await GetCertificate();
+            Certificate ??= GetCertificate();
             if (Certificate is null) {
                 GD.PushWarning("Cannot start secure server because GetCertificate failed.");
                 return false;
@@ -83,92 +83,27 @@
             return true;
         }
 
-        private static async Task<X509Certificate?> GetCertificate() {
-            string currentDirectory;
+        private static X509Certificate? GetCertificate() {
+            X509Store store;
             try {
-                currentDirectory = Directory.GetCurrentDirectory();
+                store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
             } catch (Exception e) {
-                GD.PushWarning($"Could not get current directory: {e}.");
+                GD.PushWarning($"Could not get certificate store: {e}.");
                 return null;
             }
 
-            var certificateDirectory = Path.Join(currentDirectory, "localhost.pfx");
-
-            if (!File.Exists(certificateDirectory)) {
-                var potentialCertificate = await CreateCertificate(certificateDirectory);
-                if (potentialCertificate is null) {
-                    GD.PushWarning("Cannot get certificate because CreateCertificate failed.");
-                    return null;
-                }
-
-                return potentialCertificate;
-            }
-
-            X509Certificate certificate;
             try {
-                certificate = new(certificateDirectory);
+                store.Open(OpenFlags.ReadOnly);
             } catch (Exception e) {
-                GD.PushWarning($"Could not create certificate from file: {e}.");
-                return null;
-            }
-
-            return certificate;
-        }
-
-        private static async Task<X509Certificate?> CreateCertificate(string filePath) {
-            var ecdsa = ECDsa.Create();
-
-            CertificateRequest certificateRequest;
-            try {
-                certificateRequest = new CertificateRequest("cn=localhost", ecdsa, HashAlgorithmName.SHA256);
-            } catch (Exception e) {
-                GD.PushWarning($"Could not create certification request: {e}.");
-                return null;
-            }
-
-            DateTimeOffset dateTimeOffset;
-            try {
-                dateTimeOffset = DateTimeOffset.Now.AddYears(5);
-            } catch (Exception e) {
-                GD.PushWarning($"Could not get date time offset: {e}.");
+                GD.PushWarning($"Could not open certificate store: {e}.");
                 return null;
             }
 
             X509Certificate2 certificate;
             try {
-                certificate = certificateRequest.CreateSelfSigned(DateTimeOffset.Now, dateTimeOffset);
+                certificate = store.Certificates.First(cert => cert.IssuerName.Name == "CN=localhost");
             } catch (Exception e) {
-                GD.PushWarning($"Could not create self signed certificate: {e}.");
-                return null;
-            }
-
-            byte[] pfxExportedBytes;
-            try {
-                pfxExportedBytes = certificate.Export(X509ContentType.Pfx);
-            } catch (Exception e) {
-                GD.PushWarning($"Could not export certificate: {e}.");
-                return null;
-            }
-
-            string pfxFilePath;
-            try {
-                pfxFilePath = Path.ChangeExtension(filePath, ".pfx");
-            } catch (Exception e) {
-                GD.PushWarning($"Could not change file extension: {e}.");
-                return null;
-            }
-
-            try {
-                await File.WriteAllBytesAsync(pfxFilePath, pfxExportedBytes);
-            } catch (Exception e) {
-                GD.PushWarning($"Could not write bytes to pfx file: {e}.");
-                return null;
-            }
-
-            try {
-                certificate = new(pfxExportedBytes);
-            } catch (Exception e) {
-                GD.PushWarning($"Could not create certificate from exported bytes: {e}.");
+                GD.PushWarning($"Could not find localhost certificate: {e}.");
                 return null;
             }
 

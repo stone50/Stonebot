@@ -29,7 +29,7 @@
                 return false;
             }
 
-            TwitchEventSubServer = await GetTwitchEventSubServer(secret);
+            TwitchEventSubServer = GetTwitchEventSubServer(secret);
             if (TwitchEventSubServer is null) {
                 GD.PushWarning("Cannot init app because TwitchEventSubServer is null.");
                 return false;
@@ -128,7 +128,7 @@
             return client;
         }
 
-        private static async Task<TcpServer?> GetTwitchEventSubServer(string secret) {
+        private static TcpServer? GetTwitchEventSubServer(string secret) {
             IPAddress localhost;
             try {
                 localhost = IPAddress.Parse("127.0.0.1");
@@ -147,7 +147,7 @@
 
             bool didTwitchEventSubServerStart;
             try {
-                didTwitchEventSubServerStart = await server.StartAsSecure();
+                didTwitchEventSubServerStart = server.StartAsSecure();
             } catch (Exception e) {
                 GD.PushWarning($"Could not start server: {e}.");
                 return null;
