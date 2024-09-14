@@ -41,6 +41,7 @@
             return process;
         }
 
+        // no access token
         public static async Task<HttpResponseMessage?> GetUserAccessToken(HttpClient client, string clientId, string clientSecret, string authorizationCode, string redirectURI) {
             try {
                 return await client.PostAsync($"https://id.twitch.tv/oauth2/token?&client_id={clientId}&client_secret={clientSecret}&code={authorizationCode}&grant_type=authorization_code&redirect_uri={redirectURI}", null);
@@ -50,6 +51,7 @@
             }
         }
 
+        // no access token
         public static async Task<HttpResponseMessage?> GetAppAccessToken(HttpClient client, string clientId, string clientSecret) {
             try {
                 return await client.PostAsync($"https://id.twitch.tv/oauth2/token?&client_id={clientId}&client_secret={clientSecret}&grant_type=client_credentials", null);
@@ -59,6 +61,7 @@
             }
         }
 
+        // app access token or user access token
         public static async Task<HttpResponseMessage?> GetUsers(HttpClient client, string[]? ids = null, string[]? logins = null) {
             if (ids is null && logins is null) {
                 GD.PushWarning("Cannot get users because ids and logins are both null.");
@@ -91,25 +94,35 @@
             }
         }
 
-        // Only up to 1 of status, type, and userId should be specified
+        // app access token for webhooks, user access token for websockets
+        // only up to 1 of status, type, and userId should be specified
         public static async Task<HttpResponseMessage?> GetEventSubs(HttpClient client, string? status = null, string? type = null, string? userId = null, string? after = null) {
-            var queryParam = "";
+            var queryParams = "";
             if (status is not null) {
-                queryParam = $"&status={status}";
+                queryParams = $"&status={status}";
             } else if (type is not null) {
-                queryParam = $"&type={type}";
+                queryParams = $"&type={type}";
             } else if (userId is not null) {
-                queryParam = $"&user_id={userId}";
+                queryParams = $"&user_id={userId}";
+            }
+
+            if (after is not null) {
+                if (queryParams != "") {
+                    queryParams += "&";
+                }
+
+                queryParams += $"after={after}";
             }
 
             try {
-                return await client.GetAsync($"https://api.twitch.tv/helix/eventsub/subscriptions?{queryParam}");
+                return await client.GetAsync($"https://api.twitch.tv/helix/eventsub/subscriptions?{queryParams}");
             } catch (Exception e) {
                 GD.PushWarning($"Could not get event subs: {e}.");
                 return null;
             }
         }
 
+        // app access token for webhooks, user access token for websockets
         public static async Task<HttpResponseMessage?> DeleteEventSub(HttpClient client, string id) {
             try {
                 return await client.DeleteAsync($"https://api.twitch.tv/helix/eventsub/subscriptions?id={id}");
@@ -119,29 +132,12 @@
             }
         }
 
-        public static async Task<HttpResponseMessage?> ChannelChatMessageWebhook(HttpClient client, string broadcasterUserId, string userId, string callback, string secret) {
-            var content = new {
-                type = "channel.chat.message",
-                version = "1",
-                condition = new {
-                    broadcaster_user_id = broadcasterUserId,
-                    user_id = userId,
-                },
-                transport = new {
-                    method = "webhook",
-                    callback,
-                    secret,
-                },
-            };
+        // app access token for webhooks, user access token for websockets
+        public static async Task<HttpResponseMessage?> ChannelChatMessageEventSub() =>
+            // TODO
+            null;
 
-            try {
-                return await client.PostAsJsonAsync("https://api.twitch.tv/helix/eventsub/subscriptions", (object)content);
-            } catch (Exception e) {
-                GD.PushWarning($"Could not connect channel chat message webhook: {e}.");
-                return null;
-            }
-        }
-
+        // app access token or user access token
         public static async Task<HttpResponseMessage?> SendChatMessage(HttpClient client, string broadcasterId, string senderId, string message, string? replyParentMessageId = null) {
             dynamic content = new {
                 broadcaster_id = broadcasterId,

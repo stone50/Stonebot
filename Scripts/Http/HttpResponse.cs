@@ -1,4 +1,4 @@
-﻿namespace StoneBot.Scripts {
+﻿namespace StoneBot.Scripts.Http {
     using Godot;
     using System;
     using System.IO;
