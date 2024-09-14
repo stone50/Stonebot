@@ -1,73 +1,37 @@
 ﻿namespace StoneBot.Scripts.Middleware {
+    using App_Cache;
     using Godot;
-    using System;
-    using System.Text.Json;
-    using System.Text.Json.Serialization;
+    using Models;
     using System.Threading.Tasks;
-    using HttpClient = System.Net.Http.HttpClient;
 
     internal static class Broadcaster {
-        public struct UserData {
-            [JsonPropertyName("id")]
-            public string Id { get; set; }
-            [JsonPropertyName("login")]
-            public string Login { get; set; }
-            [JsonPropertyName("display_name")]
-            public string DisplayName { get; set; }
-            [JsonPropertyName("type")]
-            public string Type { get; set; }
-            [JsonPropertyName("broadcaster_type")]
-            public string BroadcasterType { get; set; }
-            [JsonPropertyName("description")]
-            public string Description { get; set; }
-            [JsonPropertyName("profile_image_url")]
-            public string ProfileImageURL { get; set; }
-            [JsonPropertyName("offline_image_url")]
-            public string OfflineImageURL { get; set; }
-            [JsonPropertyName("view_count")]
-            public int ViewCount { get; set; }
-            [JsonPropertyName("created_at")]
-            public string CreatedAt { get; set; }
-        }
-
-        public struct UsersData {
-            [JsonPropertyName("data")]
-            public UserData[] Data { get; set; }
-        }
-
-        public static async Task<UserData?> GetBroadcasterData(HttpClient client) {
-            if (Configuration.TwitchBroadcasterLogin is null) {
-                GD.PushWarning("Cannot get broadcaster data because TwitchBroadcasterLogin is null.");
+        public static async Task<UserData?> GetBroadcasterData() {
+            var potentialConfigValues = await AppCache.ConfigValues.Get();
+            if (potentialConfigValues is null) {
+                GD.PushWarning("Cannot get broadcaster data because configValues is null.");
                 return null;
             }
 
-            var response = await TwitchAPI.GetUsers(client, null, new[] { Configuration.TwitchBroadcasterLogin });
-            if (response is null) {
-                GD.PushWarning("Cannot get broadcaster data because GetUsers failed.");
+            var configValues = (ConfigValues)potentialConfigValues;
+            var httpUserAccessTokenClient = await AppCache.HttpUserAccessTokenClient.Get();
+            if (httpUserAccessTokenClient is null) {
+                GD.PushWarning("Cannot get broadcaster data because httpUserAccessTokenClient is null.");
                 return null;
             }
 
-            string responseString;
-            try {
-                responseString = await response.Content.ReadAsStringAsync();
-            } catch (Exception e) {
-                GD.PushWarning($"Could not read response string: {e}.");
+            var client = await httpUserAccessTokenClient.GetClient();
+            if (client is null) {
+                GD.PushWarning("Cannot get broadcaster data because httpUserAccessTokenClient.GetClient failed.");
                 return null;
             }
 
-            if (!response.IsSuccessStatusCode) {
-                GD.PushWarning($"Cannot get broadcaster data because GetUsers failed: {responseString}.");
+            var potentialUsersData = await Util.ProcessHttpResponseMessage<UsersData>(await TwitchAPI.GetUsers(client, null, new[] { configValues.BroadcasterLogin }));
+            if (potentialUsersData is null) {
+                GD.PushWarning("Cannot get broadcaster data because ProcessHttpResponseMessage failed.");
                 return null;
             }
 
-            UsersData usersData;
-            try {
-                usersData = JsonSerializer.Deserialize<UsersData>(responseString);
-            } catch (Exception e) {
-                GD.PushWarning($"Could not parse response json: {e}.");
-                return null;
-            }
-
+            var usersData = (UsersData)potentialUsersData;
             if (usersData.Data.Length == 0) {
                 GD.PushWarning($"Cannot get broadcaster data because GetUsers found no users.");
                 return null;

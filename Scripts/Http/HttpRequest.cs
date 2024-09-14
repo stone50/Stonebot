@@ -1,4 +1,4 @@
-﻿namespace StoneBot.Scripts {
+﻿namespace StoneBot.Scripts.Http {
     using Godot;
     using System;
     using System.IO;
@@ -49,8 +49,6 @@
                 return null;
             }
 
-            GD.Print($"Request String: {requestString}");
-
             HttpRequest request;
             try {
                 request = Parse(requestString);
@@ -62,27 +60,32 @@
             return request;
         }
 
-        public static HttpRequest Parse(string request) {
+        public static HttpRequest? Parse(string request) {
             var result = new HttpRequest();
 
             var requestLines = request.Split(System.Environment.NewLine);
             if (requestLines.Length == 0) {
-                throw new ArgumentException("Could not parse request lines.");
+                GD.PushWarning("Could not parse request lines.");
+                return null;
             }
 
             var requestLineParts = requestLines[0].Split(' ');
             if (requestLineParts.Length != 3) {
-                throw new ArgumentException("Request line must have 3 parts, separated by spaces.");
+                GD.PushWarning("Cannot parse request string because the top line must have 3 parts, separated by spaces.");
+                return null;
             }
 
             result.Method = GetMethod(requestLineParts[0]);
             result.URI = requestLineParts[1];
 
-            return requestLineParts[2] != "HTTP/1.1"
-                ? throw new ArgumentException($"Protocol version '{requestLineParts[2]}' not supported.")
-                : result;
+            if (requestLineParts[2] != "HTTP/1.1") {
+                GD.PushWarning($"Cannot parse request string because protocol version '{requestLineParts[2]}' is not supported.");
+                return null;
+            }
 
             // TODO: include headers and message body
+
+            return result;
         }
 
         private static RequestMethod GetMethod(string methodString) {
