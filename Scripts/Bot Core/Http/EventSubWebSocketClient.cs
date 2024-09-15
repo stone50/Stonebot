@@ -17,7 +17,9 @@
 
         private EventSubWebSocketClient() { }
 
-        public static async Task<EventSubWebSocketClient?> Create(string url = "wss://eventsub.wss.twitch.tv/ws") {
+        public static async Task<EventSubWebSocketClient?> Create() => await Create("wss://eventsub.wss.twitch.tv/ws");
+
+        private static async Task<EventSubWebSocketClient?> Create(string url) {
             var eventSubWebSocketClient = new EventSubWebSocketClient();
             var getIdPromise = new TaskCompletionSource<bool>();
             var setIdFromRequest = GetSetIdFromRequest(eventSubWebSocketClient, getIdPromise);
