@@ -1,6 +1,6 @@
 ﻿namespace StoneBot.Scripts {
-    using Bot_Core.Middleware.EventSub;
     using Bot_Core.Models;
+    using Core_Interface.EventSub;
     using Godot;
     using System.Threading.Tasks;
 

@@ -1,4 +1,4 @@
-﻿namespace StoneBot.Scripts {
+﻿namespace StoneBot.Scripts.Bot_Core {
     using Godot;
     using System;
     using System.Diagnostics;

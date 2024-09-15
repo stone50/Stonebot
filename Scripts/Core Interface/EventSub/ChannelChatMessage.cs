@@ -1,7 +1,8 @@
-﻿namespace StoneBot.Scripts.Bot_Core.Middleware.EventSub {
-    using App_Cache;
+﻿namespace StoneBot.Scripts.Core_Interface.EventSub {
+    using Bot_Core;
+    using Bot_Core.App_Cache;
+    using Bot_Core.Models;
     using Godot;
-    using Models;
     using System;
     using System.Text.Json;
     using System.Threading.Tasks;
