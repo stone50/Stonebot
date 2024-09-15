@@ -2,8 +2,6 @@
     using System.Text.Json.Serialization;
 
     public struct ConfigValues {
-        [JsonPropertyName("serverMaxRetries")]
-        public int ServerMaxRetries { get; set; }
         [JsonPropertyName("authorizationPort")]
         public int AuthorizationPort { get; set; }
         [JsonPropertyName("botClientId")]

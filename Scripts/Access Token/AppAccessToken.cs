@@ -14,7 +14,7 @@
                 return false;
             }
 
-            CreationDate = appAccessToken.CreationDate;
+            LastRefreshDate = appAccessToken.LastRefreshDate;
             AccessTokenString = appAccessToken.AccessTokenString;
             ExpiresIn = appAccessToken.ExpiresIn;
             return true;

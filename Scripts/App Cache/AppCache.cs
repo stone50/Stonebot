@@ -1,5 +1,6 @@
 ﻿namespace StoneBot.Scripts.App_Cache {
     using Access_Token;
+    using Http;
     using Http.Access_Token_Client;
     using Models;
     using System;
@@ -71,7 +72,9 @@
         public static CacheRValue<UserAccessToken> UserAccessToken = new(ValueGetters.GetUserAccessToken, null);
         public static CacheRValue<HttpAppAccessTokenClient> HttpAppAccessTokenClient = new(ValueGetters.GetHttpAppAccessTokenClient, null);
         public static CacheRValue<HttpUserAccessTokenClient> HttpUserAccessTokenClient = new(ValueGetters.GetHttpUserAccessTokenClient, null);
-        
+        public static CacheRValue<string> BroadcasterId = new(ValueGetters.GetBroadcasterId, null);
+        public static CacheRValue<EventSubWebSocketClient> EventSubWebSocketClient = new(ValueGetters.GetEventSubWebSocketClient, null);
+
         // TODO: store some cached values to disk on close, and load them on startup
     }
 }
