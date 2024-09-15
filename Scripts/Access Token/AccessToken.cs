@@ -7,10 +7,10 @@
         protected string AccessTokenString;
         protected int ExpiresIn;
 
-        protected DateTime CreationDate = DateTime.Now;
+        protected DateTime LastRefreshDate = DateTime.Now;
         protected int ExpirationBufferMillis = 1000;
 
-        public bool IsAboutToExpire => (DateTime.Now - CreationDate).TotalMilliseconds + ExpirationBufferMillis > ExpiresIn;
+        public bool IsAboutToExpire => (DateTime.Now - LastRefreshDate).TotalMilliseconds + ExpirationBufferMillis > ExpiresIn;
 
         public AccessToken(string accessToken, int expiresIn) {
             AccessTokenString = accessToken;

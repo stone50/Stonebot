@@ -1,7 +1,6 @@
 ﻿namespace StoneBot.Scripts.Models {
+    using System.Text.Json;
     using System.Text.Json.Serialization;
-
-    public interface IConditionData { }
 
     public struct TransportData {
         [JsonPropertyName("method")]
@@ -14,7 +13,7 @@
         public string DisconnectedAt { get; set; }
     }
 
-    public struct EventSubData<TConditionData> where TConditionData : IConditionData {
+    public struct EventSubData {
         [JsonPropertyName("id")]
         public string Id { get; set; }
         [JsonPropertyName("status")]
@@ -24,7 +23,7 @@
         [JsonPropertyName("version")]
         public string Version { get; set; }
         [JsonPropertyName("condition")]
-        public TConditionData Condition { get; set; }
+        public JsonElement Condition { get; set; }
         [JsonPropertyName("created_at")]
         public string CreatedAt { get; set; }
         [JsonPropertyName("transport")]
@@ -38,9 +37,9 @@
         public string? Cursor { get; set; }
     }
 
-    public struct EventSubsData<TConditionData> where TConditionData : IConditionData {
+    public struct EventSubsData {
         [JsonPropertyName("data")]
-        public EventSubData<TConditionData>[] Data { get; set; }
+        public EventSubData[] Data { get; set; }
         [JsonPropertyName("total")]
         public int Total { get; set; }
         [JsonPropertyName("total_cost")]

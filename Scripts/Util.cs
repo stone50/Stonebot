@@ -24,6 +24,24 @@
             return responseStruct;
         }
 
+        public static async Task<JsonDocument?> ProcessHttpResponseMessage(HttpResponseMessage? response) {
+            var responseString = await VerifyHttpResponseMessage(response);
+            if (responseString is null) {
+                GD.PushWarning("Could not process http response message because VerifyHttpResponseMessage failed.");
+                return null;
+            }
+
+            JsonDocument jsonDocument;
+            try {
+                jsonDocument = JsonDocument.Parse(responseString);
+            } catch (Exception e) {
+                GD.PushWarning($"Could not parse response json: {e}.");
+                return null;
+            }
+
+            return jsonDocument;
+        }
+
         public static async Task<string?> VerifyHttpResponseMessage(HttpResponseMessage? response) {
             if (response is null) {
                 GD.PushWarning("Cannot process http response message because request failed.");

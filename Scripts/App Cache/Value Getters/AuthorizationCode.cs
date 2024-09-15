@@ -84,14 +84,14 @@
 
         private static bool HandleAuthorizationServerRequest(TcpServer.HttpRequestHandlerArgs args, TaskCompletionSource<string?> promise, string state) {
             string? parsedCode = null;
-            if (ValidateAuthorizationState(args.Request.URI, state)) {
-                parsedCode = GetAuthorizationCodeFromURI(args.Request.URI);
+            if (ValidateAuthorizationState(args.Request.Uri, state)) {
+                parsedCode = GetAuthorizationCodeFromUri(args.Request.Uri);
                 if (parsedCode is null) {
-                    GD.PushWarning("Cannot get authorization code because authorization code could not be parsed from request URI.");
+                    GD.PushWarning("Cannot get authorization code because authorization code could not be parsed from request uri.");
                     args.Response = new() {
                         StatusCode = 400,
                         ReasonPhrase = "Bad Request",
-                        Message = "<html><head><title>Authorization Failed</title></head><body><h1>:(</h1><p>Cannot get authorization code because authorization code could not be parsed from request URI.</p></body></html>"
+                        Message = "<html><head><title>Authorization Failed</title></head><body><h1>:(</h1><p>Cannot get authorization code because authorization code could not be parsed from request uri.</p></body></html>"
                     };
                 } else {
                     args.Response.Message = "<html><head><title>Authorization Succeeded</title></head><body><h1>Authorization Success! :)</h1><p>You can close this tab.</p></body></html>";
@@ -129,7 +129,7 @@
             return match.Groups[1].Value == state;
         }
 
-        private static string? GetAuthorizationCodeFromURI(string uri) {
+        private static string? GetAuthorizationCodeFromUri(string uri) {
             var codeRegex = new Regex("code=([a-zA-Z0-9]*)");
             var match = codeRegex.Match(uri);
             if (!match.Success) {

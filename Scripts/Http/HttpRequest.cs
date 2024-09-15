@@ -18,10 +18,10 @@
         }
 
         public RequestMethod Method;
-        public string URI = null!;
+        public string Uri = null!;
 
         public static async Task<HttpRequest?> FromStream(Stream stream) {
-            var buffer = new byte[65536];
+            var buffer = new byte[1024];
 
             int numBytesRead;
             try {
@@ -49,11 +49,9 @@
                 return null;
             }
 
-            HttpRequest request;
-            try {
-                request = Parse(requestString);
-            } catch (Exception e) {
-                GD.PushWarning($"Could not get string from client stream bytes: {e}.");
+            var request = Parse(requestString);
+            if (request is null) {
+                GD.PushWarning($"Cannot parse http request because Parse failed.");
                 return null;
             }
 
@@ -76,7 +74,7 @@
             }
 
             result.Method = GetMethod(requestLineParts[0]);
-            result.URI = requestLineParts[1];
+            result.Uri = requestLineParts[1];
 
             if (requestLineParts[2] != "HTTP/1.1") {
                 GD.PushWarning($"Cannot parse request string because protocol version '{requestLineParts[2]}' is not supported.");

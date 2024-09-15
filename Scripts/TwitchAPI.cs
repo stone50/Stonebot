@@ -9,7 +9,7 @@
     using HttpClient = System.Net.Http.HttpClient;
 
     internal static class TwitchAPI {
-        public static Process? Authorize(string clientId, string redirectURI, string[] scope, bool forceVerify = false, string? state = null) {
+        public static Process? Authorize(string clientId, string redirectUri, string[] scope, bool forceVerify = false, string? state = null) {
             string scopeParam;
             try {
                 scopeParam = string.Join(" ", scope);
@@ -20,7 +20,7 @@
 
             var process = new Process();
             process.StartInfo.UseShellExecute = true;
-            process.StartInfo.FileName = $"https://id.twitch.tv/oauth2/authorize?client_id={clientId}&force_verify={forceVerify}&redirect_uri={redirectURI}&response_type=code&scope={scopeParam}";
+            process.StartInfo.FileName = $"https://id.twitch.tv/oauth2/authorize?client_id={clientId}&force_verify={forceVerify}&redirect_uri={redirectUri}&response_type=code&scope={scopeParam}";
             if (state is not null) {
                 process.StartInfo.FileName += $"&state={state}";
             }
@@ -42,9 +42,9 @@
         }
 
         // no access token
-        public static async Task<HttpResponseMessage?> GetUserAccessToken(HttpClient client, string clientId, string clientSecret, string authorizationCode, string redirectURI) {
+        public static async Task<HttpResponseMessage?> GetUserAccessToken(HttpClient client, string clientId, string clientSecret, string authorizationCode, string redirectUri) {
             try {
-                return await client.PostAsync($"https://id.twitch.tv/oauth2/token?&client_id={clientId}&client_secret={clientSecret}&code={authorizationCode}&grant_type=authorization_code&redirect_uri={redirectURI}", null);
+                return await client.PostAsync($"https://id.twitch.tv/oauth2/token?&client_id={clientId}&client_secret={clientSecret}&code={authorizationCode}&grant_type=authorization_code&redirect_uri={redirectUri}", null);
             } catch (Exception e) {
                 GD.PushWarning($"Could not get access token: {e}.");
                 return null;
@@ -57,6 +57,15 @@
                 return await client.PostAsync($"https://id.twitch.tv/oauth2/token?&client_id={clientId}&client_secret={clientSecret}&grant_type=client_credentials", null);
             } catch (Exception e) {
                 GD.PushWarning($"Could not get access token: {e}.");
+                return null;
+            }
+        }
+
+        public static async Task<HttpResponseMessage?> RefreshAccessToken(HttpClient client, string clientId, string clientSecret, string refreshToken) {
+            try {
+                return await client.PostAsync($"https://id.twitch.tv/oauth2/token?client_id={clientId}&client_secret={clientSecret}&grant_type=refresh_token&refresh_token={refreshToken}", null);
+            } catch (Exception e) {
+                GD.PushWarning($"Could not refresh access token: {e}.");
                 return null;
             }
         }
@@ -133,9 +142,27 @@
         }
 
         // app access token for webhooks, user access token for websockets
-        public static async Task<HttpResponseMessage?> ChannelChatMessageEventSub() =>
-            // TODO
-            null;
+        public static async Task<HttpResponseMessage?> ChannelChatMessageEventSub(HttpClient client, string broadcasterUserId, string userId, string sessionId) {
+            var content = new {
+                type = "channel.chat.message",
+                version = "1",
+                condition = new {
+                    broadcaster_user_id = broadcasterUserId,
+                    user_id = userId
+                },
+                transport = new {
+                    method = "websocket",
+                    session_id = sessionId
+                }
+            };
+
+            try {
+                return await client.PostAsJsonAsync("https://api.twitch.tv/helix/eventsub/subscriptions", content);
+            } catch (Exception e) {
+                GD.PushWarning(e.Message);
+                return null;
+            }
+        }
 
         // app access token or user access token
         public static async Task<HttpResponseMessage?> SendChatMessage(HttpClient client, string broadcasterId, string senderId, string message, string? replyParentMessageId = null) {

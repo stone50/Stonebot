@@ -2,19 +2,20 @@
     using App_Cache;
     using Godot;
     using Models;
+    using System;
     using System.Linq;
     using System.Threading.Tasks;
 
     internal static class EventSub {
         // only up to 1 of status, type, and userId should be specified
-        public static async Task<EventSubsData<TConnectionData>?> Get<TConnectionData>(string? status = null, string? type = null, string? userId = null) where TConnectionData : IConditionData {
+        public static async Task<EventSubsData?> Get(string? status = null, string? type = null, string? userId = null) {
             var httpUserAccessTokenClient = await AppCache.HttpUserAccessTokenClient.Get();
             if (httpUserAccessTokenClient is null) {
                 GD.PushWarning("Cannot get event sub because httpUserAccessTokenClient is null.");
                 return null;
             }
 
-            EventSubsData<TConnectionData>? combinedEventSubsData = null;
+            EventSubsData? combinedEventSubsData = null;
             string? cursor = null;
             while (true) {
                 var client = await httpUserAccessTokenClient.GetClient();
@@ -23,17 +24,21 @@
                     return null;
                 }
 
-                var potentialEventSubsData = await Util.ProcessHttpResponseMessage<EventSubsData<TConnectionData>>(await TwitchAPI.GetEventSubs(client, status, type, userId, cursor));
+                var potentialEventSubsData = await Util.ProcessHttpResponseMessage<EventSubsData>(await TwitchAPI.GetEventSubs(client, status, type, userId, cursor));
                 if (potentialEventSubsData is null) {
                     GD.PushWarning("Cannot get event subs data because ProcessHttpResponseMessage failed.");
                     return null;
                 }
 
-                var eventSubsData = (EventSubsData<TConnectionData>)potentialEventSubsData;
-                combinedEventSubsData ??= eventSubsData;
-                var newCombinedEventSubsData = (EventSubsData<TConnectionData>)combinedEventSubsData;
-                newCombinedEventSubsData.Data = newCombinedEventSubsData.Data.Concat(eventSubsData.Data).ToArray();
-                combinedEventSubsData = newCombinedEventSubsData;
+                var eventSubsData = (EventSubsData)potentialEventSubsData;
+                if (combinedEventSubsData is null) {
+                    combinedEventSubsData = eventSubsData;
+                } else {
+                    var newCombinedEventSubsData = (EventSubsData)combinedEventSubsData;
+                    newCombinedEventSubsData.Data = newCombinedEventSubsData.Data.Concat(eventSubsData.Data).ToArray();
+                    combinedEventSubsData = newCombinedEventSubsData;
+                }
+
                 if (eventSubsData.Pagination.Cursor is null) {
                     break;
                 }
@@ -45,14 +50,14 @@
         }
 
         // only up to 1 of status, type, and userId should be specified
-        public static async Task<bool> RemoveBy<TConnectionData>(string? status = null, string? type = null, string? userId = null) where TConnectionData : IConditionData {
-            var potentialEventSubsData = await Get<TConnectionData>(status, type, userId);
+        public static async Task<bool> RemoveBy(string? status = null, string? type = null, string? userId = null) {
+            var potentialEventSubsData = await Get(status, type, userId);
             if (potentialEventSubsData is null) {
                 GD.PushWarning("Cannot remove event subs because Get failed.");
                 return false;
             }
 
-            var eventSubsData = (EventSubsData<TConnectionData>)potentialEventSubsData;
+            var eventSubsData = (EventSubsData)potentialEventSubsData;
             if (!await Remove(eventSubsData.Data)) {
                 GD.PushWarning("Cannot remove event subs because inner Remove failed.");
                 return false;
@@ -61,7 +66,7 @@
             return true;
         }
 
-        public static async Task<bool> Remove<TConnectionData>(EventSubData<TConnectionData>[] eventSubs) where TConnectionData : IConditionData {
+        public static async Task<bool> Remove(EventSubData[] eventSubs) {
             var httpUserAccessTokenClient = await AppCache.HttpUserAccessTokenClient.Get();
             if (httpUserAccessTokenClient is null) {
                 GD.PushWarning("Cannot get event sub because httpUserAccessTokenClient is null.");

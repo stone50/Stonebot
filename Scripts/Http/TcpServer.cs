@@ -1,7 +1,5 @@
 ﻿namespace StoneBot.Scripts.Http {
-    using App_Cache;
     using Godot;
-    using Models;
     using System;
     using System.Net;
     using System.Net.Sockets;
@@ -61,31 +59,15 @@
         }
 
         private void StartListening() => Task.Run(async () => {
-            var potentialConfigValues = await AppCache.ConfigValues.Get();
-            if (potentialConfigValues is null) {
-                GD.PushWarning("Cannot start listening because configValues is null.");
-                return;
-            }
-
-            var configValues = (ConfigValues)potentialConfigValues;
-            var tries = 0;
             while (IsRunning) {
-                if (tries > configValues.ServerMaxRetries) {
-                    GD.PushWarning("Cannot accept client because max retries is reached.");
-                    _ = Stop();
-                    return;
-                }
-
                 TcpClient client;
                 try {
                     client = await Server.AcceptTcpClientAsync();
                 } catch (Exception e) {
                     GD.PushWarning($"Could not accept client: {e}.");
-                    tries++;
-                    continue;
+                    return;
                 }
 
-                tries = 0;
                 var response = new HttpResponse();
                 try {
                     using var clientStream = client.GetStream();
