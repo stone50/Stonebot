@@ -1,12 +1,27 @@
-﻿namespace StoneBot.Scripts.Bot_Core.App_Cache.Value_Getters {
+﻿namespace StoneBot.Scripts.Bot_Core.App_Cache {
     using Godot;
     using Models;
     using System;
     using System.IO;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using System.Text.Json.Serialization;
 
-    internal static partial class ValueGetters {
+    internal class ConfigValues {
+        // TODO
+        [JsonPropertyName("authorizationPort")]
+        public int AuthorizationPort { get; set; }
+        [JsonPropertyName("botClientId")]
+        public string BotClientId { get; set; }
+        [JsonPropertyName("botClientSecret")]
+        public string BotClientSecret { get; set; }
+        [JsonPropertyName("broadcasterLogin")]
+        public string BroadcasterLogin { get; set; }
+        [JsonPropertyName("scope")]
+        public string[] Scope { get; set; }
+        [JsonPropertyName("tokenExpirationBuffer")]
+        public int TokenExpirationBuffer { get; set; }
+
         public static async Task<ConfigValues?> GetConfigValues() {
             string jsonText;
             try {

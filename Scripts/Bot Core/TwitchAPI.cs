@@ -42,7 +42,7 @@
         }
 
         // no access token
-        public static async Task<HttpResponseMessage?> GetUserAccessToken(HttpClient client, string clientId, string clientSecret, string authorizationCode, string redirectUri) {
+        public static async Task<HttpResponseMessage?> GetAccessToken(HttpClient client, string clientId, string clientSecret, string authorizationCode, string redirectUri) {
             try {
                 return await client.PostAsync($"https://id.twitch.tv/oauth2/token?&client_id={clientId}&client_secret={clientSecret}&code={authorizationCode}&grant_type=authorization_code&redirect_uri={redirectUri}", null);
             } catch (Exception e) {

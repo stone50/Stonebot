@@ -1,4 +1,4 @@
-﻿namespace StoneBot.Scripts.Bot_Core.Models {
+﻿namespace StoneBot.Scripts.Bot_Core.Models.EventSub {
     using System.Text.Json;
     using System.Text.Json.Serialization;
 
