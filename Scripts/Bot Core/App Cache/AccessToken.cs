@@ -3,6 +3,7 @@
     using Models;
     using System;
     using System.Threading.Tasks;
+    using HttpClient = System.Net.Http.HttpClient;
 
     internal class AccessToken {
         public DateTime ExpirationDate { get; protected set; }
@@ -11,8 +12,8 @@
         public bool IsAboutToExpire => DateTime.Now.AddMilliseconds(ExpirationBuffer) >= ExpirationDate;
 
         public static async Task<AccessToken?> Create() {
-            var configValues = await AppCache.ConfigValues.Get();
-            if (configValues is null) {
+            var config = await AppCache.Config.Get();
+            if (config is null) {
                 return null;
             }
 
@@ -22,11 +23,11 @@
             }
 
             var potentialData = await Util.GetMessageAs<AccessTokenData>(TwitchAPI.GetAccessToken(
-                new(),
-                configValues.BotClientId,
-                configValues.BotClientSecret,
+                new HttpClient(),
+                config.BotClientId,
+                config.BotClientSecret,
                 code,
-                $"http://localhost:{configValues.AuthorizationPort}"
+                $"http://localhost:{config.AuthorizationPort}"
             ));
             return potentialData is null ? null : new((AccessTokenData)potentialData);
         }
@@ -34,15 +35,15 @@
         public async Task<string?> GetString() => IsAboutToExpire && !await Refresh() ? null : accessToken;
 
         public async Task<bool> Refresh() {
-            var configValues = await AppCache.ConfigValues.Get();
-            if (configValues is null) {
+            var config = await AppCache.Config.Get();
+            if (config is null) {
                 return false;
             }
 
             var potentialData = await Util.GetMessageAs<AccessTokenData>(TwitchAPI.RefreshAccessToken(
-                new(),
-                configValues.BotClientId,
-                configValues.BotClientSecret,
+                new HttpClient(),
+                config.BotClientId,
+                config.BotClientSecret,
                 refreshToken
             ));
             if (potentialData is null) {

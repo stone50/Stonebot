@@ -13,7 +13,7 @@
         private WebSocketClient Client = null!;
         private readonly Dictionary<string, Func<JsonElement, Task>> NotificationHandlers = new();
 
-        // TODO: reconnect when keepalive_timeout_seconds is up
+        // TODO: refactor
 
         private EventSubWebSocketClient() { }
 

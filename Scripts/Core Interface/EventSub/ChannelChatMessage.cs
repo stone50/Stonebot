@@ -9,8 +9,8 @@
 
     internal static class ChannelChatMessage {
         public static async Task<bool> Connect(Func<ChannelChatMessageEvent, Task> handler) {
-            var configValues = await AppCache.ConfigValues.Get();
-            if (configValues is null) {
+            var config = await AppCache.Config.Get();
+            if (config is null) {
                 return false;
             }
 
@@ -34,7 +34,7 @@
                 return false;
             }
 
-            var eventSubData = await Util.GetMessageAs<EventSubData>(TwitchAPI.ChannelChatMessageEventSub(
+            var eventSubData = await Util.GetMessageAs<EventSubData>(TwitchAPI.SubscribeToChannelChatMessage(
                 client,
                 broadcaster.Id,
                 broadcaster.Id,

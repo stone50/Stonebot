@@ -7,8 +7,8 @@
         public string Id { get; private set; }
 
         public static async Task<Broadcaster?> Create() {
-            var configValues = await AppCache.ConfigValues.Get();
-            if (configValues is null) {
+            var config = await AppCache.Config.Get();
+            if (config is null) {
                 return null;
             }
 
@@ -22,7 +22,7 @@
                 return null;
             }
 
-            var potentialUsersData = await Util.GetMessageAs<UsersData>(TwitchAPI.GetUsers(client, null, new[] { configValues.BroadcasterLogin }));
+            var potentialUsersData = await Util.GetMessageAs<UsersData>(TwitchAPI.GetUsers(client, null, new[] { config.BroadcasterLogin }));
             if (potentialUsersData is null) {
                 return null;
             }

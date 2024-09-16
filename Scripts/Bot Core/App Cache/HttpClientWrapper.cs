@@ -13,8 +13,8 @@
                 return cachedClient;
             }
 
-            var configValues = await AppCache.ConfigValues.Get();
-            if (configValues is null) {
+            var config = await AppCache.Config.Get();
+            if (config is null) {
                 return null;
             }
 
@@ -25,7 +25,7 @@
 
             cachedClient = new HttpClient();
             cachedClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessTokenString}");
-            cachedClient.DefaultRequestHeaders.Add("Client-Id", configValues.BotClientId);
+            cachedClient.DefaultRequestHeaders.Add("Client-Id", config.BotClientId);
             return cachedClient;
         }
 

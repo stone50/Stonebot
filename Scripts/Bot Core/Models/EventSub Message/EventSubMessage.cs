@@ -1,7 +1,7 @@
 ﻿namespace StoneBot.Scripts.Bot_Core.Models.EventSub_Message {
     using System.Text.Json.Serialization;
 
-    public struct EventSubSessionData {
+    internal struct EventSubSessionData {
         [JsonPropertyName("id")]
         public string Id { get; set; }
         [JsonPropertyName("status")]

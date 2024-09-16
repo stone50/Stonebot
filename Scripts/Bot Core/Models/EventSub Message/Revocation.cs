@@ -1,8 +1,8 @@
 ﻿namespace StoneBot.Scripts.Bot_Core.Models.EventSub_Message {
-    using System.Text.Json.Serialization;
     using EventSub;
+    using System.Text.Json.Serialization;
 
-    public struct EventSubRevocationMessageMetadata {
+    internal struct EventSubRevocationMessageMetadata {
         [JsonPropertyName("message_id")]
         public string MessageId { get; set; }
         [JsonPropertyName("message_type")]
@@ -15,12 +15,12 @@
         public string SubscriptionVersion { get; set; }
     }
 
-    public struct EventSubRevocationMessagePayload {
+    internal struct EventSubRevocationMessagePayload {
         [JsonPropertyName("subscription")]
         public EventSubData Subscription { get; set; }
     }
 
-    public struct EventSubRevocationMessage {
+    internal struct EventSubRevocationMessage {
         [JsonPropertyName("metadata")]
         public EventSubRevocationMessageMetadata Metadata { get; set; }
         [JsonPropertyName("payload")]

@@ -10,15 +10,15 @@
 
     internal static class AuthorizationCode {
         public static async Task<string?> Create() {
-            var configValues = await AppCache.ConfigValues.Get();
-            if (configValues is null) {
+            var config = await AppCache.Config.Get();
+            if (config is null) {
                 return null;
             }
 
             var localhost = IPAddress.Parse("127.0.0.1");
             TcpListener server;
             try {
-                server = new TcpListener(localhost, configValues.AuthorizationPort);
+                server = new TcpListener(localhost, config.AuthorizationPort);
             } catch (Exception e) {
                 GD.PushWarning($"Cannot create authorization code because TcpListener construction failed: {e}.");
                 return null;
@@ -26,9 +26,9 @@
 
             var state = GetState(32);
             _ = TwitchAPI.Authorize(
-                configValues.BotClientId,
-                $"http://localhost:{configValues.AuthorizationPort}",
-                configValues.Scope,
+                config.BotClientId,
+                $"http://localhost:{config.AuthorizationPort}",
+                config.Scope,
                 false,
                 state
             );

@@ -29,11 +29,11 @@
             }
         }
 
-        public static CacheValue<ConfigValues> ConfigValues = new(App_Cache.ConfigValues.Create, null);
+        public static CacheValue<Config> Config = new(App_Cache.Config.Create, null);
         public static CacheValue<AccessToken> AccessToken = new(App_Cache.AccessToken.Create, null);
         public static CacheValue<HttpClientWrapper> HttpClientWrapper = new(App_Cache.HttpClientWrapper.Create, null);
         public static CacheValue<Broadcaster> Broadcaster = new(App_Cache.Broadcaster.Create, null);
-        public static CacheValue<EventSubWebSocketClient> EventSubWebSocketClient = new(App_Cache.ConfigValues.Create, null);
+        public static CacheValue<EventSubWebSocketClient> EventSubWebSocketClient = new(App_Cache.EventSubWebSocketClient.Create, null);
 
         // TODO: store some cached values to disk on close, and load them on startup
     }

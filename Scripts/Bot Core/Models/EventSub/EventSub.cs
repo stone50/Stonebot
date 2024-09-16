@@ -2,7 +2,7 @@
     using System.Text.Json;
     using System.Text.Json.Serialization;
 
-    public struct TransportData {
+    internal struct TransportData {
         [JsonPropertyName("method")]
         public string Method { get; set; }
         [JsonPropertyName("session_id")]
@@ -13,7 +13,7 @@
         public string? DisconnectedAt { get; set; }
     }
 
-    public struct EventSubData {
+    internal struct EventSubData {
         [JsonPropertyName("id")]
         public string Id { get; set; }
         [JsonPropertyName("status")]
@@ -32,12 +32,12 @@
         public int Cost { get; set; }
     }
 
-    public struct PaginationData {
+    internal struct PaginationData {
         [JsonPropertyName("cursor")]
         public string? Cursor { get; set; }
     }
 
-    public struct EventSubsData {
+    internal struct EventSubsData {
         [JsonPropertyName("data")]
         public EventSubData[] Data { get; set; }
         [JsonPropertyName("total")]
