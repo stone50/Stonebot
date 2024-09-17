@@ -16,18 +16,14 @@ Add a `config.json` file to the project directory:
   "botClientId": <your application client id>,
   "botClientSecret": <your application client secret>,
   "broadcasterLogin": <your Twitch login>,
-  "scope": [
-    "user:bot",
-    "user:read:chat",
-    "user:write:chat"
-  ],
+  "scope": [ "user:read:chat", "user:write:chat" ],
   "socketKeepaliveBuffer": 5000,
   "socketKeepaliveTimeout": 10,
   "tokenExpirationBuffer": 1000
 }
 ```
 -`authorizationPort` [Integer]
-This is the localhost port that will be used when you authenticate and allow the bot to interact with your Twitch channel.
+This is the localhost port that will be used when you authenticate the bot.
 This needs to be the same port that is specified in the "OAuth Redirect URLs" field in the [Twitch Console](https://dev.twitch.tv/console/apps).
 For example, if the URL is "http://localhost:6969", then set this config value to `6969`.
 

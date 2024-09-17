@@ -3,6 +3,7 @@
     using Bot_Core.Models.EventSub;
     using Core_Interface.EventSub;
     using Godot;
+    using StoneBot.Scripts.Core_Interface;
     using System.Threading.Tasks;
 
     internal partial class App : Node {
@@ -11,7 +12,8 @@
         private async Task<bool> Init() {
             _ = await AppCache.Load();
             _ = await EventSub.RemoveBy();  // remove all event sub subscriptions
-            _ = await ChannelChatMessage.Connect(HandleChatMessage);
+            _ = await EventSub.ConnectChannelChatMessage(HandleChatMessage);
+            _ = await Chat.Send("Hello World!");
             return true;
         }
 

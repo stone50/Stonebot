@@ -51,14 +51,9 @@
 
         // access token required
         public static async Task<HttpResponseMessage?> GetUsers(HttpClient client, string[]? ids = null, string[]? logins = null) {
-            if (ids is null && logins is null) {
-                GD.PushWarning("Cannot get users because ids and logins are both null.");
-                return null;
-            }
-
             var idParams = ids is null ? "" : string.Join("&", ids.Select(id => $"id={id}"));
-            var loginParams = logins is null ? "" : string.Join("&", logins.Select(logins => $"logins={logins}"));
-            var queryParams = idParams + (ids is not null && logins is not null ? "&" : "") + loginParams;
+            var loginParams = logins is null ? "" : string.Join("&", logins.Select(logins => $"login={logins}"));
+            var queryParams = $"{idParams}{(ids is not null && logins is not null ? "&" : "")}{loginParams}";
             try {
                 return await client.GetAsync($"https://api.twitch.tv/helix/users?{queryParams}");
             } catch (Exception e) {

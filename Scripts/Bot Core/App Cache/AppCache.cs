@@ -41,6 +41,7 @@
         public static CacheValue<AccessToken> AccessToken = new(App_Cache.AccessToken.Create, null);
         public static CacheValue<HttpClientWrapper> HttpClientWrapper = new(App_Cache.HttpClientWrapper.Create, null);
         public static CacheValue<Broadcaster> Broadcaster = new(App_Cache.Broadcaster.Create, null);
+        public static CacheValue<Bot> Bot = new(App_Cache.Bot.Create, null);
         public static CacheValue<WebSocketClient> WebSocketClient = new(() => new(), null);
 
         public static async Task<bool> Load() {
