@@ -146,7 +146,6 @@
                 while (IsConnected) {
                     if (DateTime.Now > keepaliveExpiration.AddMilliseconds(config.SocketKeepaliveBuffer)) {
                         _ = await Close(CloseReason.KeepaliveTimeout);
-                        GD.Print("Keepalive timeout");
                         return;
                     }
                 }
