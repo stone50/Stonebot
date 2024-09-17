@@ -24,8 +24,13 @@
                 return false;
             }
 
-            var eventSubWebSocketClient = await AppCache.EventSubWebSocketClient.Get();
-            if (eventSubWebSocketClient is null) {
+            var webSocketClient = await AppCache.WebSocketClient.Get();
+            if (webSocketClient is null) {
+                return false;
+            }
+
+            var sessionId = await webSocketClient.GetId();
+            if (sessionId is null) {
                 return false;
             }
 
@@ -38,13 +43,13 @@
                 client,
                 broadcaster.Id,
                 broadcaster.Id,
-                eventSubWebSocketClient.Id
+                sessionId
             ));
             if (eventSubData is null) {
                 return false;
             }
 
-            eventSubWebSocketClient.SetNotificationHandler("channel.chat.message", async (eventElement) => {
+            webSocketClient.SetNotificationHandler("channel.chat.message", async (eventElement) => {
                 ChannelChatMessageEvent messageEvent;
                 try {
                     messageEvent = JsonSerializer.Deserialize<ChannelChatMessageEvent>(eventElement);

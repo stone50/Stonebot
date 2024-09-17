@@ -30,16 +30,16 @@
                 return null;
             }
 
-            if (!message.IsSuccessStatusCode) {
-                GD.PushWarning($"Cannot get successful string because message.IsSuccessStatusCode is false.");
-                return null;
-            }
-
             string successfulString;
             try {
                 successfulString = await message.Content.ReadAsStringAsync();
             } catch (Exception e) {
                 GD.PushWarning($"Cannot get successful string because message.Content.ReadAsStringAsync failed: {e}.");
+                return null;
+            }
+
+            if (!message.IsSuccessStatusCode) {
+                GD.PushWarning($"Cannot get successful string because message.IsSuccessStatusCode is false: {successfulString}.");
                 return null;
             }
 

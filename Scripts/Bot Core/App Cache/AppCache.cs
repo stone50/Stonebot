@@ -1,5 +1,4 @@
 ﻿namespace StoneBot.Scripts.Bot_Core.App_Cache {
-    using Http;
     using System;
     using System.Threading.Tasks;
 
@@ -10,7 +9,7 @@
 
             public CacheValue(T? value = default) : this(() => default(T?), value) { }
 
-            public CacheValue(Func<T?> getter, T? value = default) : this(
+            public CacheValue(Func<T?> getter, T? value = null) : this(
                 async () => {
                     await Task.Yield();
                     return getter();
@@ -27,13 +26,15 @@
                 Value ??= await ValueGetter();
                 return Value;
             }
+
+            public async Task Refresh() => Value = await ValueGetter();
         }
 
         public static CacheValue<Config> Config = new(App_Cache.Config.Create, null);
         public static CacheValue<AccessToken> AccessToken = new(App_Cache.AccessToken.Create, null);
         public static CacheValue<HttpClientWrapper> HttpClientWrapper = new(App_Cache.HttpClientWrapper.Create, null);
         public static CacheValue<Broadcaster> Broadcaster = new(App_Cache.Broadcaster.Create, null);
-        public static CacheValue<EventSubWebSocketClient> EventSubWebSocketClient = new(App_Cache.EventSubWebSocketClient.Create, null);
+        public static CacheValue<WebSocketClient> WebSocketClient = new(() => new(), null);
 
         // TODO: store some cached values to disk on close, and load them on startup
     }

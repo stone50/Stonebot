@@ -24,6 +24,13 @@
                 return null;
             }
 
+            try {
+                server.Start();
+            } catch (Exception e) {
+                GD.PushWarning($"Cannot create authorization code because server.Start failed: {e}.");
+                return null;
+            }
+
             var state = GetState(32);
             _ = TwitchAPI.Authorize(
                 config.BotClientId,
@@ -32,7 +39,12 @@
                 false,
                 state
             );
-            return await GetCode(server, state);
+            var code = await GetCode(server, state);
+            try {
+                server.Stop();
+            } catch { }
+
+            return code;
         }
 
         private static string GetState(int numChars) {
@@ -54,33 +66,32 @@
                 return null;
             }
 
-            NetworkStream stream;
             try {
-                stream = client.GetStream();
+                using var stream = client.GetStream();
+
+                var url = await GetUrl(stream);
+                if (url is null) {
+                    _ = await SendBadRequest(stream);
+                    return null;
+                }
+
+                if (!GetIsStateValid(url, state)) {
+                    _ = await SendBadRequest(stream);
+                    return null;
+                }
+
+                var code = GetCode(url);
+                if (code is null) {
+                    _ = await SendBadRequest(stream);
+                    return null;
+                }
+
+                _ = await SendOkRequest(stream);
+                return code;
             } catch (Exception e) {
                 GD.PushWarning($"Cannot get code because client.GetStream failed: {e}.");
                 return null;
             }
-
-            var url = await GetUrl(stream);
-            if (url is null) {
-                _ = await SendBadRequest(stream);
-                return null;
-            }
-
-            if (!GetIsStateValid(url, state)) {
-                _ = await SendBadRequest(stream);
-                return null;
-            }
-
-            var code = GetCode(url);
-            if (code is null) {
-                _ = await SendBadRequest(stream);
-                return null;
-            }
-
-            _ = await SendOkRequest(stream);
-            return code;
         }
 
         private static async Task<string?> GetUrl(NetworkStream stream) {
@@ -115,7 +126,7 @@
 
             string url;
             try {
-                url = message.Substring(indexOfFirstSpace + 1, indexOfSecondSpace - 1);
+                url = message.Substring(indexOfFirstSpace + 1, indexOfSecondSpace - indexOfFirstSpace);
             } catch (Exception e) {
                 GD.PushWarning($"Cannot get url because message.Substring failed: {e}.");
                 return null;

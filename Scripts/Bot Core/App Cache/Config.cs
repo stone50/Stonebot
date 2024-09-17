@@ -12,6 +12,8 @@
         public readonly string BotClientSecret;
         public readonly string BroadcasterLogin;
         public readonly string[] Scope;
+        public readonly int SocketKeepaliveBuffer;
+        public readonly int SocketKeepaliveTimeout;
         public readonly int TokenExpirationBuffer;
 
         public static async Task<Config?> Create() {
@@ -40,6 +42,8 @@
             BotClientSecret = data.BotClientSecret;
             BroadcasterLogin = data.BroadcasterLogin;
             Scope = data.Scope;
+            SocketKeepaliveBuffer = data.SocketKeepaliveBuffer;
+            SocketKeepaliveTimeout = data.SocketKeepaliveTimeout;
             TokenExpirationBuffer = data.TokenExpirationBuffer;
         }
     }

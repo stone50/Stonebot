@@ -32,6 +32,6 @@
         private readonly AccessToken accessToken;
         private HttpClient? cachedClient;
 
-        private HttpClientWrapper(AccessToken token) => accessToken = token;
+        private HttpClientWrapper(AccessToken accessToken) => this.accessToken = accessToken;
     }
 }
