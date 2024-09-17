@@ -6,62 +6,45 @@
     using System.Threading.Tasks;
 
     internal static class Util {
-        public static async Task<T?> ProcessHttpResponseMessage<T>(HttpResponseMessage? response) where T : struct {
-            var responseString = await VerifyHttpResponseMessage(response);
-            if (responseString is null) {
-                GD.PushWarning("Could not process http response message because VerifyHttpResponseMessage failed.");
+        public static async Task<T?> GetMessageAs<T>(HttpResponseMessage? message) where T : struct {
+            var successfulString = await GetSuccessfulString(message);
+            if (successfulString is null) {
                 return null;
             }
 
-            T responseStruct;
+            T messageAsT;
             try {
-                responseStruct = JsonSerializer.Deserialize<T>(responseString);
+                messageAsT = JsonSerializer.Deserialize<T>(successfulString);
             } catch (Exception e) {
-                GD.PushWarning($"Could not parse response json: {e}.");
+                GD.PushWarning($"Cannot get message as {typeof(T).Name} because JsonSerializer.Deserialize failed: {e}.");
                 return null;
             }
 
-            return responseStruct;
+            return messageAsT;
         }
+        public static async Task<T?> GetMessageAs<T>(Task<HttpResponseMessage?> messageTask) where T : struct => await GetMessageAs<T>(await messageTask);
 
-        public static async Task<JsonDocument?> ProcessHttpResponseMessage(HttpResponseMessage? response) {
-            var responseString = await VerifyHttpResponseMessage(response);
-            if (responseString is null) {
-                GD.PushWarning("Could not process http response message because VerifyHttpResponseMessage failed.");
+        public static async Task<string?> GetSuccessfulString(HttpResponseMessage? message) {
+            if (message is null) {
+                GD.PushWarning("Cannot get successful string because message is null.");
                 return null;
             }
 
-            JsonDocument jsonDocument;
+            string successfulString;
             try {
-                jsonDocument = JsonDocument.Parse(responseString);
+                successfulString = await message.Content.ReadAsStringAsync();
             } catch (Exception e) {
-                GD.PushWarning($"Could not parse response json: {e}.");
+                GD.PushWarning($"Cannot get successful string because message.Content.ReadAsStringAsync failed: {e}.");
                 return null;
             }
 
-            return jsonDocument;
+            if (!message.IsSuccessStatusCode) {
+                GD.PushWarning($"Cannot get successful string because message.IsSuccessStatusCode is false: {successfulString}.");
+                return null;
+            }
+
+            return successfulString;
         }
-
-        public static async Task<string?> VerifyHttpResponseMessage(HttpResponseMessage? response) {
-            if (response is null) {
-                GD.PushWarning("Cannot process http response message because request failed.");
-                return null;
-            }
-
-            string responseString;
-            try {
-                responseString = await response.Content.ReadAsStringAsync();
-            } catch (Exception e) {
-                GD.PushWarning($"Could not read response string: {e}.");
-                return null;
-            }
-
-            if (!response.IsSuccessStatusCode) {
-                GD.PushWarning($"Cannot process http response message because request failed: {responseString}.");
-                return null;
-            }
-
-            return responseString;
-        }
+        public static async Task<string?> GetSuccessfulString(Task<HttpResponseMessage?> messageTask) => await GetSuccessfulString(await messageTask);
     }
 }

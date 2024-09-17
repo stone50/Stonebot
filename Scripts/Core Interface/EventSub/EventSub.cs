@@ -1,88 +1,70 @@
 ﻿namespace StoneBot.Scripts.Core_Interface.EventSub {
     using Bot_Core;
     using Bot_Core.App_Cache;
-    using Bot_Core.Models;
-    using Godot;
+    using Bot_Core.Models.EventSub;
     using System.Linq;
     using System.Threading.Tasks;
 
     internal static class EventSub {
         // only up to 1 of status, type, and userId should be specified
         public static async Task<EventSubsData?> Get(string? status = null, string? type = null, string? userId = null) {
-            var httpUserAccessTokenClient = await AppCache.HttpUserAccessTokenClient.Get();
-            if (httpUserAccessTokenClient is null) {
-                GD.PushWarning("Cannot get event sub because httpUserAccessTokenClient is null.");
+            var clientWrapper = await AppCache.HttpClientWrapper.Get();
+            if (clientWrapper is null) {
                 return null;
             }
 
-            EventSubsData? combinedEventSubsData = null;
+            EventSubsData? combinedData = null;
             string? cursor = null;
             while (true) {
-                var client = await httpUserAccessTokenClient.GetClient();
+                var client = await clientWrapper.GetClient();
                 if (client is null) {
-                    GD.PushWarning("Cannot get event sub because httpUserAccessTokenClient.GetClient failed.");
                     return null;
                 }
 
-                var potentialEventSubsData = await Util.ProcessHttpResponseMessage<EventSubsData>(await TwitchAPI.GetEventSubs(client, status, type, userId, cursor));
-                if (potentialEventSubsData is null) {
-                    GD.PushWarning("Cannot get event subs data because ProcessHttpResponseMessage failed.");
+                var potentialData = await Util.GetMessageAs<EventSubsData>(TwitchAPI.GetEventSubs(client, status, type, userId, cursor));
+                if (potentialData is null) {
                     return null;
                 }
 
-                var eventSubsData = (EventSubsData)potentialEventSubsData;
-                if (combinedEventSubsData is null) {
-                    combinedEventSubsData = eventSubsData;
+                var data = (EventSubsData)potentialData;
+                if (combinedData is null) {
+                    combinedData = data;
                 } else {
-                    var newCombinedEventSubsData = (EventSubsData)combinedEventSubsData;
-                    newCombinedEventSubsData.Data = newCombinedEventSubsData.Data.Concat(eventSubsData.Data).ToArray();
-                    combinedEventSubsData = newCombinedEventSubsData;
+                    var newCombinedData = (EventSubsData)combinedData;
+                    newCombinedData.Data = newCombinedData.Data.Concat(data.Data).ToArray();
+                    combinedData = newCombinedData;
                 }
 
-                if (eventSubsData.Pagination.Cursor is null) {
+                if (data.Pagination.Cursor is null) {
                     break;
                 }
 
-                cursor = eventSubsData.Pagination.Cursor;
+                cursor = data.Pagination.Cursor;
             }
 
-            return combinedEventSubsData;
+            return combinedData;
         }
 
         // only up to 1 of status, type, and userId should be specified
         public static async Task<bool> RemoveBy(string? status = null, string? type = null, string? userId = null) {
-            var potentialEventSubsData = await Get(status, type, userId);
-            if (potentialEventSubsData is null) {
-                GD.PushWarning("Cannot remove event subs because Get failed.");
-                return false;
-            }
-
-            var eventSubsData = (EventSubsData)potentialEventSubsData;
-            if (!await Remove(eventSubsData.Data)) {
-                GD.PushWarning("Cannot remove event subs because inner Remove failed.");
-                return false;
-            }
-
-            return true;
+            var potentialData = await Get(status, type, userId);
+            return potentialData is not null && await Remove(((EventSubsData)potentialData).Data);
         }
 
         public static async Task<bool> Remove(EventSubData[] eventSubs) {
-            var httpUserAccessTokenClient = await AppCache.HttpUserAccessTokenClient.Get();
-            if (httpUserAccessTokenClient is null) {
-                GD.PushWarning("Cannot get event sub because httpUserAccessTokenClient is null.");
+            var clientWrapper = await AppCache.HttpClientWrapper.Get();
+            if (clientWrapper is null) {
                 return false;
             }
 
             foreach (var eventSub in eventSubs) {
-                var client = await httpUserAccessTokenClient.GetClient();
+                var client = await clientWrapper.GetClient();
                 if (client is null) {
-                    GD.PushWarning("Cannot clear event subs because httpUserAccessTokenClient.GetClient failed.");
                     return false;
                 }
 
-                var responseString = await Util.VerifyHttpResponseMessage(await TwitchAPI.DeleteEventSub(client, eventSub.Id));
-                if (responseString is null) {
-                    GD.PushWarning($"Cannot delete event sub because VerifyHttpResponseMessage failed: {responseString}.");
+                var successfulString = await Util.GetSuccessfulString(TwitchAPI.DeleteEventSub(client, eventSub.Id));
+                if (successfulString is null) {
                     return false;
                 }
             }

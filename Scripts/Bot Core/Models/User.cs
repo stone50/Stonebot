@@ -1,7 +1,7 @@
 ﻿namespace StoneBot.Scripts.Bot_Core.Models {
     using System.Text.Json.Serialization;
 
-    public struct UserData {
+    internal struct UserData {
         [JsonPropertyName("id")]
         public string Id { get; set; }
         [JsonPropertyName("login")]
@@ -24,7 +24,7 @@
         public string CreatedAt { get; set; }
     }
 
-    public struct UsersData {
+    internal struct UsersData {
         [JsonPropertyName("data")]
         public UserData[] Data { get; set; }
     }

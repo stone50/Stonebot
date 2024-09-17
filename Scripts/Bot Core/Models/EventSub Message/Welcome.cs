@@ -1,7 +1,7 @@
 ﻿namespace StoneBot.Scripts.Bot_Core.Models.EventSub_Message {
     using System.Text.Json.Serialization;
 
-    public struct EventSubWelcomeMessageMetadata {
+    internal struct EventSubWelcomeMessageMetadata {
         [JsonPropertyName("message_id")]
         public string MessageId { get; set; }
         [JsonPropertyName("message_type")]
@@ -10,12 +10,12 @@
         public string MessageTimestamp { get; set; }
     }
 
-    public struct EventSubWelcomeMessagePayload {
+    internal struct EventSubWelcomeMessagePayload {
         [JsonPropertyName("session")]
         public EventSubSessionData Session { get; set; }
     }
 
-    public struct EventSubWelcomeMessage {
+    internal struct EventSubWelcomeMessage {
         [JsonPropertyName("metadata")]
         public EventSubWelcomeMessageMetadata Metadata { get; set; }
         [JsonPropertyName("payload")]

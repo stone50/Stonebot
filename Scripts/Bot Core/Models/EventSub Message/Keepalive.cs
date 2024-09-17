@@ -1,7 +1,7 @@
 ﻿namespace StoneBot.Scripts.Bot_Core.Models.EventSub_Message {
     using System.Text.Json.Serialization;
 
-    public struct EventSubKeepaliveMessageMetadata {
+    internal struct EventSubKeepaliveMessageMetadata {
         [JsonPropertyName("message_id")]
         public string MessageId { get; set; }
         [JsonPropertyName("message_type")]
@@ -10,9 +10,9 @@
         public string MessageTimestamp { get; set; }
     }
 
-    public struct EventSubKeepaliveMessagePayload { }
+    internal struct EventSubKeepaliveMessagePayload { }
 
-    public struct EventSubKeepaliveMessage {
+    internal struct EventSubKeepaliveMessage {
         [JsonPropertyName("metadata")]
         public EventSubKeepaliveMessageMetadata Metadata { get; set; }
         [JsonPropertyName("payload")]

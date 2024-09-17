@@ -1,7 +1,7 @@
-﻿namespace StoneBot.Scripts.Bot_Core.Models {
+﻿namespace StoneBot.Scripts.Bot_Core.Models.EventSub {
     using System.Text.Json.Serialization;
 
-    public struct ChannelChatMessageEventMessageFragmentCheermote {
+    internal struct ChannelChatMessageEventMessageFragmentCheermote {
         [JsonPropertyName("prefix")]
         public string Prefix { get; set; }
         [JsonPropertyName("bits")]
@@ -10,7 +10,7 @@
         public int Tier { get; set; }
     }
 
-    public struct ChannelChatMessageEventMessageFragmentEmote {
+    internal struct ChannelChatMessageEventMessageFragmentEmote {
         [JsonPropertyName("id")]
         public string Id { get; set; }
         [JsonPropertyName("emote_set_id")]
@@ -21,7 +21,7 @@
         public string[] Format { get; set; }
     }
 
-    public struct ChannelChatMessageEventMessageFragmentMention {
+    internal struct ChannelChatMessageEventMessageFragmentMention {
         [JsonPropertyName("user_id")]
         public string UserId { get; set; }
         [JsonPropertyName("user_name")]
@@ -30,7 +30,7 @@
         public string UserLogin { get; set; }
     }
 
-    public struct ChannelChatMessageEventMessageFragment {
+    internal struct ChannelChatMessageEventMessageFragment {
         [JsonPropertyName("type")]
         public string Type { get; set; }
 
@@ -47,7 +47,7 @@
         public ChannelChatMessageEventMessageFragmentMention? Mention { get; set; }
     }
 
-    public struct ChannelChatMessageEventMessage {
+    internal struct ChannelChatMessageEventMessage {
         [JsonPropertyName("text")]
         public string Text { get; set; }
 
@@ -55,7 +55,7 @@
         public ChannelChatMessageEventMessageFragment[] Fragments { get; set; }
     }
 
-    public struct ChannelChatMessageEventBadge {
+    internal struct ChannelChatMessageEventBadge {
         [JsonPropertyName("set_id")]
         public string SetId { get; set; }
 
@@ -66,12 +66,12 @@
         public string Info { get; set; }
     }
 
-    public struct ChannelChatMessageEventCheer {
+    internal struct ChannelChatMessageEventCheer {
         [JsonPropertyName("bits")]
         public int Bits { get; set; }
     }
 
-    public struct ChannelChatMessageEventReply {
+    internal struct ChannelChatMessageEventReply {
         [JsonPropertyName("parent_message_id")]
         public string ParentMessageId { get; set; }
         [JsonPropertyName("parent_message_body")]
@@ -92,7 +92,7 @@
         public string ThreadUserLogin { get; set; }
     }
 
-    public struct ChannelChatMessageEventSourceBadge {
+    internal struct ChannelChatMessageEventSourceBadge {
         [JsonPropertyName("set_id")]
         public string SetId { get; set; }
         [JsonPropertyName("id")]
@@ -101,7 +101,7 @@
         public string Info { get; set; }
     }
 
-    public struct ChannelChatMessageEvent {
+    internal struct ChannelChatMessageEvent {
         [JsonPropertyName("broadcaster_user_id")]
         public string BroadcasterUserId { get; set; }
 

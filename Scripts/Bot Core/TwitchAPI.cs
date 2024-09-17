@@ -10,13 +10,7 @@
 
     internal static class TwitchAPI {
         public static Process? Authorize(string clientId, string redirectUri, string[] scope, bool forceVerify = false, string? state = null) {
-            string scopeParam;
-            try {
-                scopeParam = string.Join(" ", scope);
-            } catch (Exception e) {
-                GD.PushWarning($"Could not format scope: {e}.");
-                return null;
-            }
+            var scopeParam = string.Join(" ", scope);
 
             var process = new Process();
             process.StartInfo.UseShellExecute = true;
@@ -25,85 +19,55 @@
                 process.StartInfo.FileName += $"&state={state}";
             }
 
-            bool processStarted;
             try {
-                processStarted = process.Start();
+                _ = process.Start();
             } catch (Exception e) {
-                GD.PushWarning($"Could not start authorization process: {e}.");
-                return null;
-            }
-
-            if (!processStarted) {
-                GD.PushWarning($"Cannot authorize because process start failed.");
+                GD.PushWarning($"Canot authorize because process.Start failed: {e}.");
                 return null;
             }
 
             return process;
         }
 
-        // no access token
-        public static async Task<HttpResponseMessage?> GetUserAccessToken(HttpClient client, string clientId, string clientSecret, string authorizationCode, string redirectUri) {
+        // no access token required
+        public static async Task<HttpResponseMessage?> GetAccessToken(HttpClient client, string clientId, string clientSecret, string authorizationCode, string redirectUri) {
             try {
                 return await client.PostAsync($"https://id.twitch.tv/oauth2/token?&client_id={clientId}&client_secret={clientSecret}&code={authorizationCode}&grant_type=authorization_code&redirect_uri={redirectUri}", null);
             } catch (Exception e) {
-                GD.PushWarning($"Could not get access token: {e}.");
+                GD.PushWarning($"Cannot get access token because client.PostAsync failed: {e}.");
                 return null;
             }
         }
 
-        // no access token
-        public static async Task<HttpResponseMessage?> GetAppAccessToken(HttpClient client, string clientId, string clientSecret) {
-            try {
-                return await client.PostAsync($"https://id.twitch.tv/oauth2/token?&client_id={clientId}&client_secret={clientSecret}&grant_type=client_credentials", null);
-            } catch (Exception e) {
-                GD.PushWarning($"Could not get access token: {e}.");
-                return null;
-            }
-        }
-
+        // no access token required
         public static async Task<HttpResponseMessage?> RefreshAccessToken(HttpClient client, string clientId, string clientSecret, string refreshToken) {
             try {
                 return await client.PostAsync($"https://id.twitch.tv/oauth2/token?client_id={clientId}&client_secret={clientSecret}&grant_type=refresh_token&refresh_token={refreshToken}", null);
             } catch (Exception e) {
-                GD.PushWarning($"Could not refresh access token: {e}.");
+                GD.PushWarning($"Cannot refresh access token because client.PostAsync failed: {e}.");
                 return null;
             }
         }
 
-        // app access token or user access token
+        // access token required
         public static async Task<HttpResponseMessage?> GetUsers(HttpClient client, string[]? ids = null, string[]? logins = null) {
             if (ids is null && logins is null) {
                 GD.PushWarning("Cannot get users because ids and logins are both null.");
                 return null;
             }
 
-            string idParams;
-            try {
-                idParams = ids is null ? "" : string.Join("&", ids.Select(id => $"id={id}"));
-            } catch (Exception e) {
-                GD.PushWarning($"Could not format id params: {e}.");
-                return null;
-            }
-
-            string loginParams;
-            try {
-                loginParams = logins is null ? "" : string.Join("&", logins.Select(logins => $"logins={logins}"));
-            } catch (Exception e) {
-                GD.PushWarning($"Could not format login params: {e}.");
-                return null;
-            }
-
+            var idParams = ids is null ? "" : string.Join("&", ids.Select(id => $"id={id}"));
+            var loginParams = logins is null ? "" : string.Join("&", logins.Select(logins => $"logins={logins}"));
             var queryParams = idParams + (ids is not null && logins is not null ? "&" : "") + loginParams;
-
             try {
                 return await client.GetAsync($"https://api.twitch.tv/helix/users?{queryParams}");
             } catch (Exception e) {
-                GD.PushWarning($"Could not get users: {e}.");
+                GD.PushWarning($"Cannot get users because client.GetAsync failed: {e}.");
                 return null;
             }
         }
 
-        // app access token for webhooks, user access token for websockets
+        // access token required
         // only up to 1 of status, type, and userId should be specified
         public static async Task<HttpResponseMessage?> GetEventSubs(HttpClient client, string? status = null, string? type = null, string? userId = null, string? after = null) {
             var queryParams = "";
@@ -126,23 +90,23 @@
             try {
                 return await client.GetAsync($"https://api.twitch.tv/helix/eventsub/subscriptions?{queryParams}");
             } catch (Exception e) {
-                GD.PushWarning($"Could not get event subs: {e}.");
+                GD.PushWarning($"Cannot get event subs because client.GetAsync failed: {e}.");
                 return null;
             }
         }
 
-        // app access token for webhooks, user access token for websockets
+        // access token required
         public static async Task<HttpResponseMessage?> DeleteEventSub(HttpClient client, string id) {
             try {
                 return await client.DeleteAsync($"https://api.twitch.tv/helix/eventsub/subscriptions?id={id}");
             } catch (Exception e) {
-                GD.PushWarning(e.Message);
+                GD.PushWarning($"Cannot delete event sub because client.DeleteAsync failed: {e}.");
                 return null;
             }
         }
 
-        // app access token for webhooks, user access token for websockets
-        public static async Task<HttpResponseMessage?> ChannelChatMessageEventSub(HttpClient client, string broadcasterUserId, string userId, string sessionId) {
+        // access token required
+        public static async Task<HttpResponseMessage?> SubscribeToChannelChatMessage(HttpClient client, string broadcasterUserId, string userId, string sessionId) {
             var content = new {
                 type = "channel.chat.message",
                 version = "1",
@@ -159,12 +123,12 @@
             try {
                 return await client.PostAsJsonAsync("https://api.twitch.tv/helix/eventsub/subscriptions", content);
             } catch (Exception e) {
-                GD.PushWarning(e.Message);
+                GD.PushWarning($"Cannot subscribe to channel chat message because client.PostAsJsonAsync failed: {e}.");
                 return null;
             }
         }
 
-        // app access token or user access token
+        // access token required
         public static async Task<HttpResponseMessage?> SendChatMessage(HttpClient client, string broadcasterId, string senderId, string message, string? replyParentMessageId = null) {
             dynamic content = new {
                 broadcaster_id = broadcasterId,
@@ -179,7 +143,7 @@
             try {
                 return await client.PostAsJsonAsync("https://api.twitch.tv/helix/chat/messages", (object)content);
             } catch (Exception e) {
-                GD.PushWarning($"Could not send chat message: {e}.");
+                GD.PushWarning($"Cannot send chat message because client.PostAsJsonAsync failed: {e}.");
                 return null;
             }
         }
