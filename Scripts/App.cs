@@ -1,9 +1,10 @@
 ﻿namespace StoneBot.Scripts {
     using Bot_Core.App_Cache;
     using Bot_Core.Models.EventSub;
+    using Command;
+    using Core_Interface;
     using Core_Interface.EventSub;
     using Godot;
-    using StoneBot.Scripts.Core_Interface;
     using System.Threading.Tasks;
 
     internal partial class App : Node {
@@ -17,7 +18,22 @@
             return true;
         }
 
-        private static async Task HandleChatMessage(ChannelChatMessageEvent messageEvent) => await Task.Run(() => GD.Print($"New chat from {messageEvent.ChatterUserName}: {messageEvent.Message.Text}"));
+        private static async Task HandleChatMessage(ChannelChatMessageEvent messageEvent) {
+            var bot = await AppCache.Bot.Get();
+            if (bot is null) {
+                return;
+            }
+
+            if (messageEvent.ChatterUserId == bot.Id) {
+                return;
+            }
+
+            if (await CommandHandler.Handle(messageEvent)) {
+                return;
+            }
+
+            // TODO: add response handler
+        }
 
         public override void _Notification(int what) {
             if (what == NotificationWMCloseRequest) {
