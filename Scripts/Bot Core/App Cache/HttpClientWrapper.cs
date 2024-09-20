@@ -3,19 +3,31 @@
     using HttpClient = System.Net.Http.HttpClient;
 
     internal class HttpClientWrapper {
-        public static async Task<HttpClientWrapper?> Create() {
-            var accessToken = await AppCache.AccessToken.Get();
-            return accessToken is null ? null : new(accessToken);
+        public string RefreshToken => accessToken.RefreshToken;
+
+        public static async Task<HttpClientWrapper?> CreateChatter() {
+            var config = await AppCache.Config.Get();
+            if (config is null) {
+                return null;
+            }
+
+            var token = await AccessToken.CreateChatter();
+            return token is null ? null : new(token);
+        }
+
+        public static async Task<HttpClientWrapper?> CreateListener() {
+            var config = await AppCache.Config.Get();
+            if (config is null) {
+                return null;
+            }
+
+            var token = await AccessToken.CreateListener();
+            return token is null ? null : new(token);
         }
 
         public async Task<HttpClient?> GetClient() {
             if (cachedClient is not null && !accessToken.IsAboutToExpire) {
                 return cachedClient;
-            }
-
-            var config = await AppCache.Config.Get();
-            if (config is null) {
-                return null;
             }
 
             var accessTokenString = await accessToken.GetString();
@@ -25,9 +37,11 @@
 
             cachedClient = new HttpClient();
             cachedClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessTokenString}");
-            cachedClient.DefaultRequestHeaders.Add("Client-Id", config.BotClientId);
+            cachedClient.DefaultRequestHeaders.Add("Client-Id", accessToken.ClientId);
             return cachedClient;
         }
+
+        public async Task<string?> GetAccessTokenString() => await accessToken.GetString();
 
         private readonly AccessToken accessToken;
         private HttpClient? cachedClient;

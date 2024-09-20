@@ -9,7 +9,7 @@
     using RandomNumberGenerator = System.Security.Cryptography.RandomNumberGenerator;
 
     internal static class AuthorizationCode {
-        public static async Task<string?> Create() {
+        public static async Task<string?> Create(string clientId, string[] scope) {
             var config = await AppCache.Config.Get();
             if (config is null) {
                 return null;
@@ -33,10 +33,10 @@
 
             var state = GetState(32);
             _ = TwitchAPI.Authorize(
-                config.BotClientId,
+                clientId,
                 $"http://localhost:{config.AuthorizationPort}",
-                config.Scope,
-                false,
+                scope,
+                true,
                 state
             );
             var code = await GetCode(server, state);

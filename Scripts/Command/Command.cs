@@ -5,8 +5,8 @@
 
     internal class Command {
         public bool IsEnabled = true;
-        public Permission.PermissionLevel PermissionLevel;
-        public int UseDelay;
+        public Permission.PermissionLevel PermissionLevel = Permission.PermissionLevel.Viewer;
+        public int UseDelay = 1000;
         public DateTime LastUsed { get; private set; }
         public Func<ChannelChatMessageEvent, Task> UseAction;
 

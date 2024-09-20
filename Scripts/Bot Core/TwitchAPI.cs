@@ -49,7 +49,7 @@
             }
         }
 
-        // access token required
+        // any access token required
         public static async Task<HttpResponseMessage?> GetUsers(HttpClient client, string[]? ids = null, string[]? logins = null) {
             var idParams = ids is null ? "" : string.Join("&", ids.Select(id => $"id={id}"));
             var loginParams = logins is null ? "" : string.Join("&", logins.Select(logins => $"login={logins}"));
@@ -62,7 +62,7 @@
             }
         }
 
-        // access token required
+        // any access token required
         // only up to 1 of status, type, and userId should be specified
         public static async Task<HttpResponseMessage?> GetEventSubs(HttpClient client, string? status = null, string? type = null, string? userId = null, string? after = null) {
             var queryParams = "";
@@ -90,7 +90,7 @@
             }
         }
 
-        // access token required
+        // any access token required
         public static async Task<HttpResponseMessage?> DeleteEventSub(HttpClient client, string id) {
             try {
                 return await client.DeleteAsync($"https://api.twitch.tv/helix/eventsub/subscriptions?id={id}");
@@ -100,7 +100,7 @@
             }
         }
 
-        // access token required
+        // any access token required
         public static async Task<HttpResponseMessage?> SubscribeToChannelChatMessage(HttpClient client, string broadcasterUserId, string userId, string sessionId) {
             var content = new {
                 type = "channel.chat.message",
@@ -123,7 +123,7 @@
             }
         }
 
-        // access token required
+        // bot access token required
         public static async Task<HttpResponseMessage?> SendChatMessage(HttpClient client, string broadcasterId, string senderId, string message, string? replyParentMessageId = null) {
             dynamic content = new {
                 broadcaster_id = broadcasterId,

@@ -20,7 +20,7 @@
                 return false;
             }
 
-            var clientWrapper = await AppCache.HttpClientWrapper.Get();
+            var clientWrapper = await AppCache.ChatterClientWrapper.Get();
             if (clientWrapper is null) {
                 return false;
             }

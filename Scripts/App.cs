@@ -11,7 +11,7 @@
         public App() => _ = Task.Run(Init);
 
         private async Task<bool> Init() {
-            _ = await AppCache.Load();
+            _ = await AppCache.Init();
             _ = await EventSub.RemoveBy();  // remove all event sub subscriptions
             _ = await EventSub.ConnectChannelChatMessage(HandleChatMessage);
             _ = await Chat.Send("Hello World!");
@@ -19,6 +19,8 @@
         }
 
         private static async Task HandleChatMessage(ChannelChatMessageEvent messageEvent) {
+            GD.Print($"Chat from {messageEvent.ChatterUserLogin}: {messageEvent.Message.Text}");
+
             var bot = await AppCache.Bot.Get();
             if (bot is null) {
                 return;

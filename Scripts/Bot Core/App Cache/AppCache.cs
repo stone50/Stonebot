@@ -1,6 +1,6 @@
 ﻿namespace StoneBot.Scripts.Bot_Core.App_Cache {
     using Godot;
-    using StoneBot.Scripts.Bot_Core.Models;
+    using Models;
     using System;
     using System.IO;
     using System.Text.Json;
@@ -36,13 +36,20 @@
             public T? GetWithoutRefresh() => Value;
         }
 
-        public static string? StoredRefreshToken => storedData?.RefreshToken;
+        public static string? StoredChatterRefreshToken => storedData?.ChatterRefreshToken;
+        public static string? StoredListenerRefreshToken => storedData?.ListenerRefreshToken;
         public static CacheValue<Config> Config = new(App_Cache.Config.Create, null);
-        public static CacheValue<AccessToken> AccessToken = new(App_Cache.AccessToken.Create, null);
-        public static CacheValue<HttpClientWrapper> HttpClientWrapper = new(App_Cache.HttpClientWrapper.Create, null);
-        public static CacheValue<Broadcaster> Broadcaster = new(App_Cache.Broadcaster.Create, null);
-        public static CacheValue<Bot> Bot = new(App_Cache.Bot.Create, null);
+        public static CacheValue<HttpClientWrapper> ChatterClientWrapper = new(HttpClientWrapper.CreateChatter, null);
+        public static CacheValue<HttpClientWrapper> ListenerClientWrapper = new(HttpClientWrapper.CreateListener, null);
+        public static CacheValue<User> Bot = new(User.CreateBot, null);
+        public static CacheValue<User> Broadcaster = new(User.CreateBroadcaster, null);
         public static CacheValue<WebSocketClient> WebSocketClient = new(() => new(), null);
+
+        public static async Task<bool> Init() {
+            _ = await Load();
+            var success = await ListenerClientWrapper.Get() is not null;
+            return await ChatterClientWrapper.Get() is not null && success;
+        }
 
         public static async Task<bool> Load() {
             var filePath = Path.Join(Directory.GetCurrentDirectory(), "cache.json");
@@ -63,13 +70,19 @@
         }
 
         public static async Task<bool> Save() {
-            var refreshToken = AccessToken.GetWithoutRefresh()?.RefreshToken;
-            if (refreshToken is null) {
+            var chatterClientWrapper = await ChatterClientWrapper.Get();
+            if (chatterClientWrapper is null) {
+                return false;
+            }
+
+            var listenerClientWrapper = await ListenerClientWrapper.Get();
+            if (listenerClientWrapper is null) {
                 return false;
             }
 
             var data = new AppCacheData() {
-                RefreshToken = refreshToken
+                ChatterRefreshToken = chatterClientWrapper.RefreshToken,
+                ListenerRefreshToken = listenerClientWrapper.RefreshToken,
             };
             var json = JsonSerializer.Serialize(data);
             var filePath = Path.Join(Directory.GetCurrentDirectory(), "cache.json");
