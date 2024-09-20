@@ -6,13 +6,13 @@
     internal class User {
         public string Id { get; private set; }
 
-        public static async Task<User?> Create(string? login, HttpClientWrapper clientWrapper) {
+        public static async Task<User?> Create(HttpClientWrapper clientWrapper) {
             var client = await clientWrapper.GetClient();
             if (client is null) {
                 return null;
             }
 
-            var potentialUsersData = await Util.GetMessageAs<UsersData>(TwitchAPI.GetUsers(client, null, login is null ? null : new[] { login }));
+            var potentialUsersData = await Util.GetMessageAs<UsersData>(TwitchAPI.GetUsers(client));
             if (potentialUsersData is null) {
                 return null;
             }
@@ -28,17 +28,12 @@
 
         public static async Task<User?> CreateBot() {
             var clientWrapper = await AppCache.ChatterClientWrapper.Get();
-            return clientWrapper is null ? null : await Create(null, clientWrapper);
+            return clientWrapper is null ? null : await Create(clientWrapper);
         }
 
         public static async Task<User?> CreateBroadcaster() {
-            var config = await AppCache.Config.Get();
-            if (config is null) {
-                return null;
-            }
-
-            var clientWrapper = await AppCache.ListenerClientWrapper.Get();
-            return clientWrapper is null ? null : await Create(config.BroadcasterLogin, clientWrapper);
+            var clientWrapper = await AppCache.CollectorClientWrapper.Get();
+            return clientWrapper is null ? null : await Create(clientWrapper);
         }
 
         private User(UserData data) => Id = data.Id;
