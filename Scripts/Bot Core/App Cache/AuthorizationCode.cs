@@ -18,7 +18,7 @@
             var localhost = IPAddress.Parse("127.0.0.1");
             TcpListener server;
             try {
-                server = new TcpListener(localhost, config.AuthorizationPort);
+                server = new(localhost, config.AuthorizationPort);
             } catch (Exception e) {
                 GD.PushWarning($"Cannot create authorization code because TcpListener construction failed: {e}.");
                 return null;

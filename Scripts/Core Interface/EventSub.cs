@@ -11,7 +11,7 @@
     internal static class EventSub {
         // only up to 1 of status, type, and userId should be specified
         public static async Task<EventSubsData?> Get(string? status = null, string? type = null, string? userId = null) {
-            var clientWrapper = await AppCache.ListenerClientWrapper.Get();
+            var clientWrapper = await AppCache.CollectorClientWrapper.Get();
             if (clientWrapper is null) {
                 return null;
             }
@@ -55,7 +55,7 @@
         }
 
         public static async Task<bool> Remove(EventSubData[] eventSubs) {
-            var clientWrapper = await AppCache.ListenerClientWrapper.Get();
+            var clientWrapper = await AppCache.CollectorClientWrapper.Get();
             if (clientWrapper is null) {
                 return false;
             }
@@ -83,7 +83,7 @@
                 return false;
             }
 
-            var clientWrapper = await AppCache.ListenerClientWrapper.Get();
+            var clientWrapper = await AppCache.CollectorClientWrapper.Get();
             if (clientWrapper is null) {
                 return false;
             }

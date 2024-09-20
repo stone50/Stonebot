@@ -15,13 +15,13 @@
             return token is null ? null : new(token);
         }
 
-        public static async Task<HttpClientWrapper?> CreateListener() {
+        public static async Task<HttpClientWrapper?> CreateCollector() {
             var config = await AppCache.Config.Get();
             if (config is null) {
                 return null;
             }
 
-            var token = await AccessToken.CreateListener();
+            var token = await AccessToken.CreateCollector();
             return token is null ? null : new(token);
         }
 

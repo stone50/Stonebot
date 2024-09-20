@@ -37,17 +37,17 @@
         }
 
         public static string? StoredChatterRefreshToken => storedData?.ChatterRefreshToken;
-        public static string? StoredListenerRefreshToken => storedData?.ListenerRefreshToken;
+        public static string? StoredCollectorRefreshToken => storedData?.CollectorRefreshToken;
         public static CacheValue<Config> Config = new(App_Cache.Config.Create, null);
         public static CacheValue<HttpClientWrapper> ChatterClientWrapper = new(HttpClientWrapper.CreateChatter, null);
-        public static CacheValue<HttpClientWrapper> ListenerClientWrapper = new(HttpClientWrapper.CreateListener, null);
+        public static CacheValue<HttpClientWrapper> CollectorClientWrapper = new(HttpClientWrapper.CreateCollector, null);
         public static CacheValue<User> Bot = new(User.CreateBot, null);
         public static CacheValue<User> Broadcaster = new(User.CreateBroadcaster, null);
         public static CacheValue<WebSocketClient> WebSocketClient = new(() => new(), null);
 
         public static async Task<bool> Init() {
             _ = await Load();
-            var success = await ListenerClientWrapper.Get() is not null;
+            var success = await CollectorClientWrapper.Get() is not null;
             return await ChatterClientWrapper.Get() is not null && success;
         }
 
@@ -75,14 +75,14 @@
                 return false;
             }
 
-            var listenerClientWrapper = await ListenerClientWrapper.Get();
-            if (listenerClientWrapper is null) {
+            var collectorClientWrapper = await CollectorClientWrapper.Get();
+            if (collectorClientWrapper is null) {
                 return false;
             }
 
             var data = new AppCacheData() {
                 ChatterRefreshToken = chatterClientWrapper.RefreshToken,
-                ListenerRefreshToken = listenerClientWrapper.RefreshToken,
+                CollectorRefreshToken = collectorClientWrapper.RefreshToken,
             };
             var json = JsonSerializer.Serialize(data);
             var filePath = Path.Join(Directory.GetCurrentDirectory(), "cache.json");

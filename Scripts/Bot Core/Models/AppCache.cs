@@ -4,7 +4,7 @@
     internal struct AppCacheData {
         [JsonPropertyName("chatterRefreshToken")]
         public string ChatterRefreshToken { get; set; }
-        [JsonPropertyName("listenerRefreshToken")]
-        public string ListenerRefreshToken { get; set; }
+        [JsonPropertyName("collectorRefreshToken")]
+        public string CollectorRefreshToken { get; set; }
     }
 }

@@ -47,9 +47,9 @@
             return config is null ? null : await Create(config.ChatterClientId, config.ChatterClientSecret, AppCache.StoredChatterRefreshToken, config.ChatterScope);
         }
 
-        public static async Task<AccessToken?> CreateListener() {
+        public static async Task<AccessToken?> CreateCollector() {
             var config = await AppCache.Config.Get();
-            return config is null ? null : await Create(config.ListenerClientId, config.ListenerClientSecret, AppCache.StoredListenerRefreshToken, config.ListenerScope);
+            return config is null ? null : await Create(config.CollectorClientId, config.CollectorClientSecret, AppCache.StoredCollectorRefreshToken, config.CollectorScope);
 
         }
 
