@@ -13,9 +13,8 @@
 
         private async Task<bool> Init() {
             _ = await AppCache.Init();
-            _ = await EventSub.RemoveBy();  // remove all event sub subscriptions
             _ = await EventSub.ConnectChannelChatMessage(HandleChatMessage);
-            _ = await Chat.Send("Hello World!");
+            _ = await Chat.Send("MercyWing1 :) MercyWing2");
             return true;
         }
 
@@ -40,7 +39,19 @@
 
         public override void _Notification(int what) {
             if (what == NotificationWMCloseRequest) {
-                Task.Run(async () => await AppCache.Save()).Wait();
+                var logOffTask = Task.Run(async () => await Chat.Send("logging off..."));
+                var saveCacheTask = Task.Run(async () => await AppCache.Save());
+                var clearEventSubsTask = Task.Run(async () => await EventSub.RemoveBy());
+                var closeWebSocketTask = Task.Run(async () => {
+                    var webSocket = await AppCache.WebSocketClient.Get();
+                    if (webSocket is null) {
+                        return;
+                    }
+
+                    _ = await webSocket.Close();
+                });
+                Task.WaitAll(logOffTask, saveCacheTask, clearEventSubsTask, closeWebSocketTask);
+
                 GetTree().Quit();
             }
         }
