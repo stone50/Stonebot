@@ -5,11 +5,13 @@
 
     internal static class CommandHandler {
         public static Dictionary<string, Command> Commands = new() {
-            { "commands", new(UseActions.Commands) },
-            { "enablecommand", new(UseActions.EnableCommand) },
-            { "disablecommand", new(UseActions.DisableCommand) },
-            { "hug", new(UseActions.Hug) },
-            { "lurk", new(UseActions.Lurk) },
+            { "commands", new TogglableCommand(UseActions.Commands) },
+            { "enablecommand", new(UseActions.EnableCommand) { PermissionLevel = PermissionLevel.Mod } },
+            { "disablecommand", new(UseActions.DisableCommand) { PermissionLevel = PermissionLevel.Mod } },
+            { "enablemessage", new(UseActions.EnableMessage) { PermissionLevel = PermissionLevel.Mod } },
+            { "disablemessage", new(UseActions.DisableMessage) { PermissionLevel = PermissionLevel.Mod } },
+            { "hug", new TogglableCommand(UseActions.Hug) },
+            { "lurk", new TogglableCommand(UseActions.Lurk) },
         };
 
         public static bool IsCommand(string message) => message.StartsWith('!');
