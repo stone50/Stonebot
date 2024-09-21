@@ -3,6 +3,7 @@
     using Models;
     using System;
     using System.Threading.Tasks;
+    using Twitch;
     using HttpClient = System.Net.Http.HttpClient;
 
     internal class AccessToken {

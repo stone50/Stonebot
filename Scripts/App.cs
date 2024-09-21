@@ -33,8 +33,6 @@
             if (await CommandHandler.Handle(messageEvent)) {
                 return;
             }
-
-            // TODO: add response handler
         }
 
         public override void _Notification(int what) {

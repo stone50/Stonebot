@@ -37,4 +37,11 @@
         [JsonPropertyName("user_login")]
         public string UserLogin { get; set; }
     }
+
+    internal struct PaginatedSimpleUsersData {
+        [JsonPropertyName("data")]
+        public SimpleUserData[] Data { get; set; }
+        [JsonPropertyName("pagination")]
+        public PaginationData Pagination { get; set; }
+    }
 }

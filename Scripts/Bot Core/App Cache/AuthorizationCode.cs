@@ -6,6 +6,7 @@
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
+    using Twitch;
     using RandomNumberGenerator = System.Security.Cryptography.RandomNumberGenerator;
 
     internal static class AuthorizationCode {

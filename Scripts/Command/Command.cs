@@ -5,14 +5,14 @@
 
     internal class Command {
         public bool IsEnabled = true;
-        public Permission.PermissionLevel PermissionLevel = Permission.PermissionLevel.Viewer;
+        public PermissionLevel PermissionLevel = PermissionLevel.Viewer;
         public int UseDelay = 1000;
         public DateTime LastUsed { get; private set; }
-        public Func<ChannelChatMessageEvent, Task> UseAction;
+        public Func<ChannelChatMessageEvent, PermissionLevel, Task> UseAction;
 
-        public bool IsReadyToUse => DateTime.Now < LastUsed.AddMilliseconds(UseDelay);
+        public bool IsReadyToUse => DateTime.Now > LastUsed.AddMilliseconds(UseDelay);
 
-        public Command(Func<ChannelChatMessageEvent, Task> useAction) => UseAction = useAction;
+        public Command(Func<ChannelChatMessageEvent, PermissionLevel, Task> useAction) => UseAction = useAction;
 
         public async Task<bool> Use(ChannelChatMessageEvent messageEvent) {
             if (!IsEnabled) {
@@ -29,7 +29,7 @@
             }
 
             LastUsed = DateTime.Now;
-            await UseAction(messageEvent);
+            await UseAction(messageEvent, (PermissionLevel)userPermissionLevel);
             return true;
         }
     }

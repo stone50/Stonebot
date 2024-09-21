@@ -1,6 +1,7 @@
 ﻿namespace StoneBot.Scripts.Core_Interface {
     using Bot_Core;
     using Bot_Core.App_Cache;
+    using Bot_Core.Twitch;
     using System.Threading.Tasks;
 
     internal static class Chat {

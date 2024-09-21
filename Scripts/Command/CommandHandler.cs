@@ -4,7 +4,13 @@
     using System.Threading.Tasks;
 
     internal static class CommandHandler {
-        public static Dictionary<string, Command> Commands = new(); // TODO: populate with commands
+        public static Dictionary<string, Command> Commands = new() {
+            { "commands", new(UseActions.Commands) },
+            { "enablecommand", new(UseActions.EnableCommand) },
+            { "disablecommand", new(UseActions.DisableCommand) },
+            { "hug", new(UseActions.Hug) },
+            { "lurk", new(UseActions.Lurk) },
+        };
 
         public static bool IsCommand(string message) => message.StartsWith('!');
 

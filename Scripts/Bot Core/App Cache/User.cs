@@ -2,6 +2,7 @@
     using Godot;
     using Models;
     using System.Threading.Tasks;
+    using Twitch;
 
     internal class User {
         public string Id { get; private set; }
