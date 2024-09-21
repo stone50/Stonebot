@@ -8,10 +8,12 @@
 
     internal class Config {
         public readonly int AuthorizationPort;
-        public readonly string BotClientId;
-        public readonly string BotClientSecret;
-        public readonly string BroadcasterLogin;
-        public readonly string[] Scope;
+        public readonly string ChatterClientId;
+        public readonly string ChatterClientSecret;
+        public readonly string[] ChatterScope;
+        public readonly string CollectorClientId;
+        public readonly string CollectorClientSecret;
+        public readonly string[] CollectorScope;
         public readonly int SocketKeepaliveBuffer;
         public readonly int SocketKeepaliveTimeout;
         public readonly int TokenExpirationBuffer;
@@ -38,10 +40,12 @@
 
         private Config(ConfigData data) {
             AuthorizationPort = data.AuthorizationPort;
-            BotClientId = data.BotClientId;
-            BotClientSecret = data.BotClientSecret;
-            BroadcasterLogin = data.BroadcasterLogin;
-            Scope = data.Scope;
+            ChatterClientId = data.ChatterClientId;
+            ChatterClientSecret = data.ChatterClientSecret;
+            ChatterScope = data.ChatterScope;
+            CollectorClientId = data.CollectorClientId;
+            CollectorClientSecret = data.CollectorClientSecret;
+            CollectorScope = data.CollectorScope;
             SocketKeepaliveBuffer = data.SocketKeepaliveBuffer;
             SocketKeepaliveTimeout = data.SocketKeepaliveTimeout;
             TokenExpirationBuffer = data.TokenExpirationBuffer;

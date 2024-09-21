@@ -6,10 +6,11 @@
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
+    using Twitch;
     using RandomNumberGenerator = System.Security.Cryptography.RandomNumberGenerator;
 
     internal static class AuthorizationCode {
-        public static async Task<string?> Create() {
+        public static async Task<string?> Create(string clientId, string[] scope) {
             var config = await AppCache.Config.Get();
             if (config is null) {
                 return null;
@@ -18,7 +19,7 @@
             var localhost = IPAddress.Parse("127.0.0.1");
             TcpListener server;
             try {
-                server = new TcpListener(localhost, config.AuthorizationPort);
+                server = new(localhost, config.AuthorizationPort);
             } catch (Exception e) {
                 GD.PushWarning($"Cannot create authorization code because TcpListener construction failed: {e}.");
                 return null;
@@ -33,10 +34,10 @@
 
             var state = GetState(32);
             _ = TwitchAPI.Authorize(
-                config.BotClientId,
+                clientId,
                 $"http://localhost:{config.AuthorizationPort}",
-                config.Scope,
-                false,
+                scope,
+                true,
                 state
             );
             var code = await GetCode(server, state);

@@ -28,4 +28,20 @@
         [JsonPropertyName("data")]
         public UserData[] Data { get; set; }
     }
+
+    internal struct SimpleUserData {
+        [JsonPropertyName("user_id")]
+        public string UserId { get; set; }
+        [JsonPropertyName("user_name")]
+        public string UserName { get; set; }
+        [JsonPropertyName("user_login")]
+        public string UserLogin { get; set; }
+    }
+
+    internal struct PaginatedSimpleUsersData {
+        [JsonPropertyName("data")]
+        public SimpleUserData[] Data { get; set; }
+        [JsonPropertyName("pagination")]
+        public PaginationData Pagination { get; set; }
+    }
 }

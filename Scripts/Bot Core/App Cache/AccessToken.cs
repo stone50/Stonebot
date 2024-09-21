@@ -3,21 +3,23 @@
     using Models;
     using System;
     using System.Threading.Tasks;
+    using Twitch;
     using HttpClient = System.Net.Http.HttpClient;
 
     internal class AccessToken {
+        public readonly string ClientId;
+        public readonly string ClientSecret;
         public string RefreshToken { get; private set; }
         public DateTime ExpirationDate { get; protected set; }
         public int ExpirationBuffer { get => expirationBuffer; set => SetExpirationBuffer(value); }
 
         public bool IsAboutToExpire => DateTime.Now.AddMilliseconds(ExpirationBuffer) >= ExpirationDate;
 
-        public static async Task<AccessToken?> Create() {
-            var storedRefreshToken = AppCache.StoredRefreshToken;
+        public static async Task<AccessToken?> Create(string clientId, string clientSecret, string? storedRefreshToken, string[] scope) {
             if (storedRefreshToken is not null) {
-                var potentialRefreshData = await GetData(storedRefreshToken);
+                var potentialRefreshData = await Refresh(clientId, clientSecret, storedRefreshToken);
                 if (potentialRefreshData is not null) {
-                    return new((AccessTokenData)potentialRefreshData);
+                    return new(clientId, clientSecret, (AccessTokenData)potentialRefreshData);
                 }
             }
 
@@ -26,31 +28,42 @@
                 return null;
             }
 
-            var code = await AuthorizationCode.Create();
+            var code = await AuthorizationCode.Create(clientId, scope);
             if (code is null) {
                 return null;
             }
 
             var potentialData = await Util.GetMessageAs<AccessTokenData>(TwitchAPI.GetAccessToken(
-                new HttpClient(),
-                config.BotClientId,
-                config.BotClientSecret,
-                code,
-                $"http://localhost:{config.AuthorizationPort}"
-            ));
-            return potentialData is null ? null : new((AccessTokenData)potentialData);
+                 new HttpClient(),
+                 clientId,
+                 clientSecret,
+                 code,
+                 $"http://localhost:{config.AuthorizationPort}"
+             ));
+            return potentialData is null ? null : new(clientId, clientSecret, (AccessTokenData)potentialData);
+        }
+
+        public static async Task<AccessToken?> CreateChatter() {
+            var config = await AppCache.Config.Get();
+            return config is null ? null : await Create(config.ChatterClientId, config.ChatterClientSecret, AppCache.StoredChatterRefreshToken, config.ChatterScope);
+        }
+
+        public static async Task<AccessToken?> CreateCollector() {
+            var config = await AppCache.Config.Get();
+            return config is null ? null : await Create(config.CollectorClientId, config.CollectorClientSecret, AppCache.StoredCollectorRefreshToken, config.CollectorScope);
+
         }
 
         public async Task<string?> GetString() => IsAboutToExpire && !await Refresh() ? null : accessToken;
 
         public async Task<bool> Refresh() {
-            var potentialData = await GetData(RefreshToken);
+            var potentialData = await Refresh(ClientId, ClientSecret, RefreshToken);
             if (potentialData is null) {
                 return false;
             }
 
             var data = (AccessTokenData)potentialData;
-            ExpirationDate = DateTime.Now.AddMilliseconds(data.ExpiresIn);
+            ExpirationDate = DateTime.Now.AddSeconds(data.ExpiresIn);
             accessToken = data.AccessToken;
             RefreshToken = data.RefreshToken;
             return true;
@@ -59,21 +72,24 @@
         private string accessToken;
         private int expirationBuffer = 1000;
 
-        private AccessToken(AccessTokenData data) {
+        private AccessToken(string clientId, string clientSecret, AccessTokenData data) {
+            ClientId = clientId;
+            ClientSecret = clientSecret;
             accessToken = data.AccessToken;
             RefreshToken = data.RefreshToken;
-            ExpirationDate = DateTime.Now.AddMilliseconds(data.ExpiresIn);
+            ExpirationDate = DateTime.Now.AddSeconds(data.ExpiresIn);
         }
 
-        private static async Task<AccessTokenData?> GetData(string refreshToken) {
-            var config = await AppCache.Config.Get();
-            return config is null ? null : await Util.GetMessageAs<AccessTokenData>(TwitchAPI.RefreshAccessToken(
-                new HttpClient(),
-                config.BotClientId,
-                config.BotClientSecret,
-                refreshToken
-            ));
-        }
+        private static async Task<AccessTokenData?> Refresh(
+            string clientId,
+            string clientSecret,
+            string refreshToken
+        ) => await Util.GetMessageAs<AccessTokenData>(TwitchAPI.RefreshAccessToken(
+            new HttpClient(),
+            clientId,
+            clientSecret,
+            refreshToken
+        ));
 
         private void SetExpirationBuffer(int newExpirationBuffer) {
             if (newExpirationBuffer < 0) {

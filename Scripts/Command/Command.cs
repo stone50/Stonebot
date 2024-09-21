@@ -1,25 +1,36 @@
 ﻿namespace StoneBot.Scripts.Command {
+    using Bot_Core.Models.EventSub;
     using System;
     using System.Threading.Tasks;
 
     internal class Command {
-        public string Keyword;
-        public int UseDelay;
+        public bool IsEnabled = true;
+        public PermissionLevel PermissionLevel = PermissionLevel.Viewer;
+        public int UseDelay = 1000;
         public DateTime LastUsed { get; private set; }
-        public Func<string, Task> UseAction;
+        public Func<ChannelChatMessageEvent, PermissionLevel, Task> UseAction;
 
-        public Command(string keyword, Func<string, Task> useAction) {
-            Keyword = keyword;
-            UseAction = useAction;
-        }
+        public bool IsReadyToUse => DateTime.Now > LastUsed.AddMilliseconds(UseDelay);
 
-        public async Task Use(string message) {
-            if (DateTime.Now < LastUsed.AddMilliseconds(UseDelay)) {
-                return;
+        public Command(Func<ChannelChatMessageEvent, PermissionLevel, Task> useAction) => UseAction = useAction;
+
+        public async Task<bool> Use(ChannelChatMessageEvent messageEvent) {
+            if (!IsEnabled) {
+                return false;
+            }
+
+            if (!IsReadyToUse) {
+                return false;
+            }
+
+            var userPermissionLevel = await Permission.GetHighest(messageEvent.ChatterUserId);
+            if (userPermissionLevel is null || userPermissionLevel < PermissionLevel) {
+                return false;
             }
 
             LastUsed = DateTime.Now;
-            await UseAction(message);
+            await UseAction(messageEvent, (PermissionLevel)userPermissionLevel);
+            return true;
         }
     }
 }

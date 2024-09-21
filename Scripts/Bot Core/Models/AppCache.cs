@@ -2,7 +2,9 @@
     using System.Text.Json.Serialization;
 
     internal struct AppCacheData {
-        [JsonPropertyName("refreshToken")]
-        public string RefreshToken { get; set; }
+        [JsonPropertyName("chatterRefreshToken")]
+        public string ChatterRefreshToken { get; set; }
+        [JsonPropertyName("collectorRefreshToken")]
+        public string CollectorRefreshToken { get; set; }
     }
 }

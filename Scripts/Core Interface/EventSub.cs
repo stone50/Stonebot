@@ -2,6 +2,7 @@
     using Bot_Core;
     using Bot_Core.App_Cache;
     using Bot_Core.Models.EventSub;
+    using Bot_Core.Twitch;
     using Godot;
     using System;
     using System.Linq;
@@ -11,7 +12,7 @@
     internal static class EventSub {
         // only up to 1 of status, type, and userId should be specified
         public static async Task<EventSubsData?> Get(string? status = null, string? type = null, string? userId = null) {
-            var clientWrapper = await AppCache.HttpClientWrapper.Get();
+            var clientWrapper = await AppCache.CollectorClientWrapper.Get();
             if (clientWrapper is null) {
                 return null;
             }
@@ -55,7 +56,7 @@
         }
 
         public static async Task<bool> Remove(EventSubData[] eventSubs) {
-            var clientWrapper = await AppCache.HttpClientWrapper.Get();
+            var clientWrapper = await AppCache.CollectorClientWrapper.Get();
             if (clientWrapper is null) {
                 return false;
             }
@@ -75,16 +76,9 @@
             return true;
         }
 
-        public static async Task<bool> ConnectChannelChatMessage(Func<ChannelChatMessageEvent, Task> handler) => await Connect("channel.chat.message", handler);
-
-        private static async Task<bool> Connect<TEvent>(string subscriptionType, Func<TEvent, Task> handler) where TEvent : struct {
+        public static async Task<bool> ConnectChannelChatMessage(Func<ChannelChatMessageEvent, Task> handler) {
             var config = await AppCache.Config.Get();
             if (config is null) {
-                return false;
-            }
-
-            var clientWrapper = await AppCache.HttpClientWrapper.Get();
-            if (clientWrapper is null) {
                 return false;
             }
 
@@ -108,6 +102,11 @@
                 return false;
             }
 
+            var clientWrapper = await AppCache.CollectorClientWrapper.Get();
+            if (clientWrapper is null) {
+                return false;
+            }
+
             var client = await clientWrapper.GetClient();
             if (client is null) {
                 return false;
@@ -116,17 +115,17 @@
             var eventSubData = await Util.GetMessageAs<EventSubData>(TwitchAPI.SubscribeToChannelChatMessage(
                 client,
                 broadcaster.Id,
-                bot.Id,
+                broadcaster.Id, // TODO: figure out why permission fails when this it bot.Id
                 sessionId
             ));
             if (eventSubData is null) {
                 return false;
             }
 
-            webSocketClient.SetNotificationHandler(subscriptionType, async (eventElement) => {
-                TEvent eventStruct;
+            webSocketClient.SetNotificationHandler("channel.chat.message", async (eventElement) => {
+                ChannelChatMessageEvent eventStruct;
                 try {
-                    eventStruct = JsonSerializer.Deserialize<TEvent>(eventElement);
+                    eventStruct = JsonSerializer.Deserialize<ChannelChatMessageEvent>(eventElement);
                 } catch (Exception e) {
                     GD.PushWarning($"Cannot handle channel chat message event because JsonSerializer.Deserialize failed: {e}.");
                     return;

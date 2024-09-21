@@ -4,14 +4,18 @@
     internal struct ConfigData {
         [JsonPropertyName("authorizationPort")]
         public int AuthorizationPort { get; set; }
-        [JsonPropertyName("botClientId")]
-        public string BotClientId { get; set; }
-        [JsonPropertyName("botClientSecret")]
-        public string BotClientSecret { get; set; }
-        [JsonPropertyName("broadcasterLogin")]
-        public string BroadcasterLogin { get; set; }
-        [JsonPropertyName("scope")]
-        public string[] Scope { get; set; }
+        [JsonPropertyName("chatterClientId")]
+        public string ChatterClientId { get; set; }
+        [JsonPropertyName("chatterClientSecret")]
+        public string ChatterClientSecret { get; set; }
+        [JsonPropertyName("chatterScope")]
+        public string[] ChatterScope { get; set; }
+        [JsonPropertyName("collectorClientId")]
+        public string CollectorClientId { get; set; }
+        [JsonPropertyName("collectorClientSecret")]
+        public string CollectorClientSecret { get; set; }
+        [JsonPropertyName("collectorScope")]
+        public string[] CollectorScope { get; set; }
         [JsonPropertyName("socketKeepaliveBuffer")]
         public int SocketKeepaliveBuffer { get; set; }
         [JsonPropertyName("socketKeepaliveTimeout")]

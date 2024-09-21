@@ -32,11 +32,6 @@
         public int Cost { get; set; }
     }
 
-    internal struct PaginationData {
-        [JsonPropertyName("cursor")]
-        public string? Cursor { get; set; }
-    }
-
     internal struct EventSubsData {
         [JsonPropertyName("data")]
         public EventSubData[] Data { get; set; }
