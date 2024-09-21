@@ -1,6 +1,7 @@
 ﻿namespace StoneBot.Scripts.Command {
     using Bot_Core.Models.EventSub;
     using Core_Interface;
+    using Message;
     using System;
     using System.Threading.Tasks;
 
@@ -22,16 +23,15 @@
                 return;
             }
 
-            var commandKeyword = messageParams[1];
-            if (commandKeyword is "enablecommand" or "disablecommand") {
+            if (!CommandHandler.Commands.TryGetValue(messageParams[1], out var command)) {
                 return;
             }
 
-            if (!CommandHandler.Commands.TryGetValue(commandKeyword, out var command)) {
+            if (command is not TogglableCommand togglableCommand) {
                 return;
             }
 
-            command.IsEnabled = true;
+            togglableCommand.IsEnabled = true;
         }
 
         public static async Task DisableCommand(ChannelChatMessageEvent messageEvent, PermissionLevel __) {
@@ -41,32 +41,57 @@
                 return;
             }
 
-            var commandKeyword = messageParams[1];
-            if (commandKeyword is "enablecommand" or "disablecommand") {
+            if (!CommandHandler.Commands.TryGetValue(messageParams[1], out var command)) {
                 return;
             }
 
-            if (!CommandHandler.Commands.TryGetValue(commandKeyword, out var command)) {
+            if (command is not TogglableCommand togglableCommand) {
                 return;
             }
 
-            command.IsEnabled = false;
+            togglableCommand.IsEnabled = false;
+        }
+
+        public static async Task EnableMessage(ChannelChatMessageEvent messageEvent, PermissionLevel __) {
+            await Task.Yield();
+            var messageParams = messageEvent.Message.Text.Split(' ');
+            if (messageParams.Length != 2) {
+                return;
+            }
+
+            if (!MessageHandler.Messages.TryGetValue(messageParams[1], out var message)) {
+                return;
+            }
+
+            message.IsEnabled = true;
+        }
+
+        public static async Task DisableMessage(ChannelChatMessageEvent messageEvent, PermissionLevel __) {
+            await Task.Yield();
+            var messageParams = messageEvent.Message.Text.Split(' ');
+            if (messageParams.Length != 2) {
+                return;
+            }
+
+            if (!MessageHandler.Messages.TryGetValue(messageParams[1], out var message)) {
+                return;
+            }
+
+            message.IsEnabled = false;
         }
 
         // TODO: add commands:
-        // enablemessage
-        // disablemessage
         // enabletimer
         // disabletimer
         // feed
 
         public static async Task Hug(ChannelChatMessageEvent messageEvent, PermissionLevel __) {
             if (new Random().Next(10) == 0) {
-                _ = await Chat.Send($"RaccAttack Oh no! A raccoon stole the hug, {messageEvent.ChatterUserName}!");
+                _ = await Chat.Send($"pedroJAM {messageEvent.ChatterUserName} pedroJAM");
                 return;
             }
 
-            _ = await Chat.Send($"catKISS {messageEvent.ChatterUserName}, thank you for hugging the cat!");
+            _ = await Chat.Send($"catKISS {messageEvent.ChatterUserName} catKISS");
         }
 
         public static async Task Lurk(ChannelChatMessageEvent messageEvent, PermissionLevel __) => _ = await Chat.Send($"{messageEvent.BroadcasterUserName}, thank you for your presence!");

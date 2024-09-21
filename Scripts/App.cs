@@ -5,6 +5,7 @@
     using Core_Interface;
     using Core_Interface.EventSub;
     using Godot;
+    using Message;
     using System.Threading.Tasks;
 
     internal partial class App : Node {
@@ -19,8 +20,6 @@
         }
 
         private static async Task HandleChatMessage(ChannelChatMessageEvent messageEvent) {
-            GD.Print($"Chat from {messageEvent.ChatterUserLogin}: {messageEvent.Message.Text}");
-
             var bot = await AppCache.Bot.Get();
             if (bot is null) {
                 return;
@@ -31,6 +30,10 @@
             }
 
             if (await CommandHandler.Handle(messageEvent)) {
+                return;
+            }
+
+            if (await MessageHandler.Handle(messageEvent)) {
                 return;
             }
         }

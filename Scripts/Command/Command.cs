@@ -4,7 +4,6 @@
     using System.Threading.Tasks;
 
     internal class Command {
-        public bool IsEnabled = true;
         public PermissionLevel PermissionLevel = PermissionLevel.Viewer;
         public int UseDelay = 1000;
         public DateTime LastUsed { get; private set; }
@@ -14,11 +13,7 @@
 
         public Command(Func<ChannelChatMessageEvent, PermissionLevel, Task> useAction) => UseAction = useAction;
 
-        public async Task<bool> Use(ChannelChatMessageEvent messageEvent) {
-            if (!IsEnabled) {
-                return false;
-            }
-
+        public virtual async Task<bool> Use(ChannelChatMessageEvent messageEvent) {
             if (!IsReadyToUse) {
                 return false;
             }
@@ -32,5 +27,13 @@
             await UseAction(messageEvent, (PermissionLevel)userPermissionLevel);
             return true;
         }
+    }
+
+    internal class TogglableCommand : Command {
+        public bool IsEnabled = true;
+
+        public TogglableCommand(Func<ChannelChatMessageEvent, PermissionLevel, Task> useAction) : base(useAction) { }
+
+        public override async Task<bool> Use(ChannelChatMessageEvent messageEvent) => IsEnabled && await base.Use(messageEvent);
     }
 }
