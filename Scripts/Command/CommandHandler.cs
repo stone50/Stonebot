@@ -10,6 +10,8 @@
             { "disablecommand", new(UseActions.DisableCommand) { PermissionLevel = PermissionLevel.Mod } },
             { "enablemessage", new(UseActions.EnableMessage) { PermissionLevel = PermissionLevel.Mod } },
             { "disablemessage", new(UseActions.DisableMessage) { PermissionLevel = PermissionLevel.Mod } },
+            { "enabletimer", new(UseActions.EnableTimer) { PermissionLevel = PermissionLevel.Mod } },
+            { "disabletimer", new(UseActions.DisableTimer) { PermissionLevel = PermissionLevel.Mod } },
             { "hug", new TogglableCommand(UseActions.Hug) },
             { "lurk", new TogglableCommand(UseActions.Lurk) },
         };
