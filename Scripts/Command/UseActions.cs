@@ -8,9 +8,7 @@
     using Timer;
 
     internal static class UseActions {
-        public static async Task Commands(ChannelChatMessageEvent _, PermissionLevel __) =>
-            // TODO: create a wiki page on github with a list of the commands, then send the link in chat
-            await Chat.Send("Command coming soon!");
+        public static async Task Commands(ChannelChatMessageEvent messageEvent, PermissionLevel __) => await Chat.Send($"{messageEvent.ChatterUserName} https://github.com/stone50/Stone-Bot/wiki/Commands");
 
         public static async Task EnableCommand(ChannelChatMessageEvent messageEvent, PermissionLevel __) {
             await Task.Yield();
@@ -104,6 +102,33 @@
             timer.IsEnabled = false;
         }
 
+        public static async Task Quote(ChannelChatMessageEvent messageEvent, PermissionLevel __) {
+            var customData = await AppCache.Data.Get();
+            if (customData is null) {
+                return;
+            }
+
+            var broadcaster = await AppCache.Broadcaster.Get();
+            if (broadcaster is null) {
+                return;
+            }
+
+            var messageParams = messageEvent.Message.Text.Split(' ');
+            if (messageParams.Length != 2) {
+                return;
+            }
+
+            if (!int.TryParse(messageParams[1], out var quoteIndex)) {
+                return;
+            }
+
+            if (quoteIndex < 0 || quoteIndex >= customData.Quotes.Count) {
+                return;
+            }
+
+            _ = await Chat.Send($"[{quoteIndex}] \"{customData.Quotes[quoteIndex]}\" -{broadcaster.UserName}");
+        }
+
         public static async Task AddQuote(ChannelChatMessageEvent messageEvent, PermissionLevel __) {
             var customData = await AppCache.Data.Get();
             if (customData is null) {
@@ -168,33 +193,6 @@
             }
 
             customData.Quotes[quoteIndex] = text[(indexOfSecondSpace + 1)..];
-        }
-
-        public static async Task Quote(ChannelChatMessageEvent messageEvent, PermissionLevel __) {
-            var customData = await AppCache.Data.Get();
-            if (customData is null) {
-                return;
-            }
-
-            var broadcaster = await AppCache.Broadcaster.Get();
-            if (broadcaster is null) {
-                return;
-            }
-
-            var messageParams = messageEvent.Message.Text.Split(' ');
-            if (messageParams.Length != 2) {
-                return;
-            }
-
-            if (!int.TryParse(messageParams[1], out var quoteIndex)) {
-                return;
-            }
-
-            if (quoteIndex < 0 || quoteIndex >= customData.Quotes.Count) {
-                return;
-            }
-
-            _ = await Chat.Send($"[{quoteIndex}] \"{customData.Quotes[quoteIndex]}\" -{broadcaster.UserName}");
         }
 
         public static async Task Feed(ChannelChatMessageEvent __, PermissionLevel ___) {
