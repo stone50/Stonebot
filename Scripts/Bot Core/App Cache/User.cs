@@ -6,6 +6,7 @@
 
     internal class User {
         public string Id { get; private set; }
+        public string UserName { get; private set; }
 
         public static async Task<User?> Create(HttpClientWrapper clientWrapper) {
             var client = await clientWrapper.GetClient();
@@ -37,6 +38,9 @@
             return clientWrapper is null ? null : await Create(clientWrapper);
         }
 
-        private User(UserData data) => Id = data.Id;
+        private User(UserData data) {
+            Id = data.Id;
+            UserName = data.DisplayName;
+        }
     }
 }
