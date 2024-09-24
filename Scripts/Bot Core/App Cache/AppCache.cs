@@ -97,7 +97,6 @@
 
         public static async Task<bool> SaveCustomData() {
             var data = await Data.Get();
-            GD.PushWarning(data?.ToString() ?? "null");
             if (data is null) {
                 return false;
             }
