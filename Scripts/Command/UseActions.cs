@@ -4,6 +4,7 @@
     using Message;
     using System;
     using System.Threading.Tasks;
+    using Timer;
 
     internal static class UseActions {
         public static async Task Commands(ChannelChatMessageEvent _, PermissionLevel __) =>
@@ -80,9 +81,35 @@
             message.IsEnabled = false;
         }
 
+        public static async Task EnableTimer(ChannelChatMessageEvent messageEvent, PermissionLevel __) {
+            await Task.Yield();
+            var messageParams = messageEvent.Message.Text.Split(' ');
+            if (messageParams.Length != 2) {
+                return;
+            }
+
+            if (!TimerManager.Timers.TryGetValue(messageParams[1], out var timer)) {
+                return;
+            }
+
+            timer.IsEnabled = true;
+        }
+
+        public static async Task DisableTimer(ChannelChatMessageEvent messageEvent, PermissionLevel __) {
+            await Task.Yield();
+            var messageParams = messageEvent.Message.Text.Split(' ');
+            if (messageParams.Length != 2) {
+                return;
+            }
+
+            if (!TimerManager.Timers.TryGetValue(messageParams[1], out var timer)) {
+                return;
+            }
+
+            timer.IsEnabled = false;
+        }
+
         // TODO: add commands:
-        // enabletimer
-        // disabletimer
         // feed
 
         public static async Task Hug(ChannelChatMessageEvent messageEvent, PermissionLevel __) {
