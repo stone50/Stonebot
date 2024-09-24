@@ -44,6 +44,7 @@
         public static CacheValue<User> Bot = new(User.CreateBot, null);
         public static CacheValue<User> Broadcaster = new(User.CreateBroadcaster, null);
         public static CacheValue<WebSocketClient> WebSocketClient = new(() => new(), null);
+        public static CacheValue<CustomData> Data = new(CustomData.Create, null);
 
         public static async Task<bool> Init() {
             _ = await Load();
@@ -52,10 +53,9 @@
         }
 
         public static async Task<bool> Load() {
-            var filePath = Path.Join(Directory.GetCurrentDirectory(), "cache.json");
             string json;
             try {
-                json = await File.ReadAllTextAsync(filePath);
+                json = await File.ReadAllTextAsync("cache.json");
             } catch {
                 return false;
             }
@@ -69,7 +69,7 @@
             return true;
         }
 
-        public static async Task<bool> Save() {
+        public static async Task<bool> SaveCache() {
             var chatterClientWrapper = await ChatterClientWrapper.Get();
             if (chatterClientWrapper is null) {
                 return false;
@@ -84,17 +84,37 @@
                 ChatterRefreshToken = chatterClientWrapper.RefreshToken,
                 CollectorRefreshToken = collectorClientWrapper.RefreshToken,
             };
-            var json = JsonSerializer.Serialize(data);
-            var filePath = Path.Join(Directory.GetCurrentDirectory(), "cache.json");
             try {
-                await File.WriteAllTextAsync(filePath, json);
+                await File.WriteAllTextAsync("cache.json", JsonSerializer.Serialize(data));
             } catch (Exception e) {
-                GD.PushWarning($"Cannot save because File.WriteAllTextAsync failed: {e}.");
+                GD.PushWarning($"Cannot save cache because File.WriteAllTextAsync failed: {e}.");
                 return false;
             }
 
             storedData = data;
             return true;
+        }
+
+        public static async Task<bool> SaveCustomData() {
+            var data = await Data.Get();
+            GD.PushWarning(data?.ToString() ?? "null");
+            if (data is null) {
+                return false;
+            }
+
+            try {
+                await File.WriteAllTextAsync("data.json", JsonSerializer.Serialize(data.ToDataData()));
+            } catch (Exception e) {
+                GD.PushWarning($"Cannot save custom data because File.WriteAllTextAsync failed: {e}.");
+                return false;
+            }
+
+            return true;
+        }
+
+        public static async Task Save() {
+            _ = await SaveCustomData();
+            _ = await SaveCache();
         }
 
         private static AppCacheData? storedData;

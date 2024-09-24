@@ -1,6 +1,7 @@
 # Project-specific files
 config.json
 cache.json
+data.json
 
 # Godot 4+ specific ignores
 .godot/
