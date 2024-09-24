@@ -1,10 +1,10 @@
 ﻿namespace StoneBot.Scripts.Core_Interface {
     using Bot_Core.App_Cache;
     using Bot_Core.Models.EventSub;
+    using Command;
     using Message;
-    using StoneBot.Scripts.Command;
-    using StoneBot.Scripts.Timer;
     using System.Threading.Tasks;
+    using Timer;
 
     internal static class Meta {
         public static async Task Startup() {
@@ -16,7 +16,7 @@
 
         public static async Task Shutdown() {
             _ = await Chat.Send("logging off...");
-            _ = await AppCache.Save();
+            await AppCache.Save();
             _ = await EventSub.EventSub.RemoveBy();
             var webSocket = await AppCache.WebSocketClient.Get();
             if (webSocket is not null) {
