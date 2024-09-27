@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Scripts/UI/TogglableCommandPanel.cs" id="1_3keih"]
 
-[node name="TogglableCommandPanel" type="MarginContainer" node_paths=PackedStringArray("EnableButton", "KeywordLabel", "MainButton", "DetailsContainer", "PermissionLevelMenuButton", "UseDelaySpinBox")]
+[node name="TogglableCommandPanel" type="MarginContainer" node_paths=PackedStringArray("KeywordLabel", "MainButton", "DetailsContainer", "PermissionLevelMenuButton", "UseDelaySpinBox")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -12,7 +12,6 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/margin_right = 50
 script = ExtResource("1_3keih")
-EnableButton = NodePath("")
 KeywordLabel = NodePath("VSplitContainer/MainButton/MarginContainer/KeywordLabel")
 MainButton = NodePath("VSplitContainer/MainButton")
 DetailsContainer = NodePath("VSplitContainer/DetailsContainer")

@@ -9,7 +9,7 @@
         public static async Task Startup() {
             _ = await AppCache.Init();
             _ = await EventSub.EventSub.ConnectChannelChatMessage(HandleChatMessage);
-            _ = await Chat.Send("MercyWing1 :) MercyWing2 ");
+            _ = await Chat.Send("MercyWing1 :) MercyWing2");
         }
 
         public static async Task Shutdown() {
