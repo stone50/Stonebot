@@ -9,6 +9,8 @@
     internal class CustomData {
         public List<string> Quotes;
         public int FeedCount;
+        public int FeedRecord;
+        public string FeedRecordHolder;
 
         public static async Task<CustomData?> Create() {
             if (!File.Exists("data.json")) {
@@ -36,12 +38,16 @@
 
         public CustomDataData ToDataData() => new() {
             Quotes = Quotes.ToArray(),
-            FeedCount = FeedCount
+            FeedCount = FeedCount,
+            FeedRecord = FeedRecord,
+            FeedRecordHolder = FeedRecordHolder
         };
 
         private CustomData(CustomDataData dataData) {
             Quotes = new(dataData.Quotes);
             FeedCount = dataData.FeedCount;
+            FeedRecord = dataData.FeedRecord;
+            FeedRecordHolder = dataData.FeedRecordHolder;
         }
     }
 }

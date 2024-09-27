@@ -1,24 +1,25 @@
 ﻿namespace StoneBot.Scripts.Command {
     using Bot_Core.Models.EventSub;
-    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
 
     internal static class CommandHandler {
-        public static Dictionary<string, Command> Commands = new() {
-            { "commands", new TogglableCommand(UseActions.Commands) },
-            { "enablecommand", new(UseActions.EnableCommand) { PermissionLevel = PermissionLevel.Mod } },
-            { "disablecommand", new(UseActions.DisableCommand) { PermissionLevel = PermissionLevel.Mod } },
-            { "enablemessage", new(UseActions.EnableMessage) { PermissionLevel = PermissionLevel.Mod } },
-            { "disablemessage", new(UseActions.DisableMessage) { PermissionLevel = PermissionLevel.Mod } },
-            { "enabletimer", new(UseActions.EnableTimer) { PermissionLevel = PermissionLevel.Mod } },
-            { "disabletimer", new(UseActions.DisableTimer) { PermissionLevel = PermissionLevel.Mod } },
-            { "quote", new TogglableCommand(UseActions.Quote) },
-            { "addquote", new TogglableCommand(UseActions.AddQuote) { PermissionLevel = PermissionLevel.Mod } },
-            { "deletequote", new TogglableCommand(UseActions.DeleteQuote) { PermissionLevel = PermissionLevel.Mod } },
-            { "editquote", new TogglableCommand(UseActions.EditQuote) { PermissionLevel = PermissionLevel.Mod } },
-            { "feed", new TogglableCommand(UseActions.Feed) },
-            { "hug", new TogglableCommand(UseActions.Hug) },
-            { "lurk", new TogglableCommand(UseActions.Lurk) },
+        public static Command[] Commands = new Command[] {
+            new TogglableCommand("commands", UseActions.Commands),
+            new("enablecommand", UseActions.EnableCommand) { PermissionLevel = PermissionLevel.Mod },
+            new("disablecommand", UseActions.DisableCommand) { PermissionLevel = PermissionLevel.Mod },
+            new("enablemessage", UseActions.EnableMessage) { PermissionLevel = PermissionLevel.Mod },
+            new("disablemessage", UseActions.DisableMessage) { PermissionLevel = PermissionLevel.Mod },
+            new("enabletimer", UseActions.EnableTimer) { PermissionLevel = PermissionLevel.Mod },
+            new("disabletimer", UseActions.DisableTimer) { PermissionLevel = PermissionLevel.Mod },
+            new TogglableCommand("quote", UseActions.Quote),
+            new TogglableCommand("addquote", UseActions.AddQuote) { PermissionLevel = PermissionLevel.Mod } ,
+            new TogglableCommand("deletequote", UseActions.DeleteQuote) { PermissionLevel = PermissionLevel.Mod },
+            new TogglableCommand("editquote", UseActions.EditQuote) { PermissionLevel = PermissionLevel.Mod } ,
+            new TogglableCommand("feed", UseActions.Feed),
+            new TogglableCommand("feedrecord", UseActions.FeedRecord),
+            new TogglableCommand("hug", UseActions.Hug),
+            new TogglableCommand("lurk", UseActions.Lurk)
         };
 
         public static bool IsCommand(string message) => message.StartsWith('!');
@@ -31,7 +32,10 @@
 
             var spaceIndex = commandString.IndexOf(' ');
             var keyword = commandString.Substring(1, spaceIndex == -1 ? commandString.Length - 1 : spaceIndex - 1);
-            return Commands.TryGetValue(keyword, out var command) && await command.Use(messageEvent);
+            var command = GetCommand(keyword);
+            return command is not null && await command.Use(messageEvent);
         }
+
+        public static Command? GetCommand(string keyword) => Commands.FirstOrDefault(command => command.Keyword == keyword);
     }
 }
