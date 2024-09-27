@@ -1,6 +1,5 @@
 ﻿namespace StoneBot.Scripts.Command {
     using Bot_Core.Models.EventSub;
-    using Godot;
     using System;
     using System.Threading.Tasks;
 
@@ -40,12 +39,12 @@
 
         public void SetPermissionLevel(PermissionLevel permissionLevel) {
             this.permissionLevel = permissionLevel;
-            Callable.From(() => PermissionLevelChanged.Invoke(this, PermissionLevel)).CallDeferred();
+            Util.InvokeDeferred(PermissionLevelChanged, PermissionLevel);
         }
 
         public void SetUseDelay(int useDelay) {
             this.useDelay = useDelay;
-            Callable.From(() => UseDelayChanged.Invoke(this, UseDelay)).CallDeferred();
+            Util.InvokeDeferred(UseDelayChanged, UseDelay);
         }
     }
 
@@ -61,7 +60,7 @@
 
         public void SetIsEnabled(bool isEnabled) {
             this.isEnabled = isEnabled;
-            Callable.From(() => IsEnabledChanged.Invoke(this, IsEnabled)).CallDeferred();
+            Util.InvokeDeferred(IsEnabledChanged, IsEnabled);
         }
     }
 }
