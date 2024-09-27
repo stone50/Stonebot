@@ -3,12 +3,14 @@
     using System.Threading.Tasks;
 
     internal class Timer {
+        public string Keyword;
         public bool IsEnabled { get => isEnabled; set => SetIsEnabled(value); }
         public int Interval;
         public DateTime LastTimeout { get; private set; }
         public Func<Task> TimeoutAction;
 
-        public Timer(Func<Task> timeoutAction, int interval) {
+        public Timer(string keyword, Func<Task> timeoutAction, int interval) {
+            Keyword = keyword;
             TimeoutAction = timeoutAction;
             LastTimeout = DateTime.Now;
             Interval = interval;

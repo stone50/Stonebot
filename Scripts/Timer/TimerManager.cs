@@ -1,9 +1,11 @@
 ﻿namespace StoneBot.Scripts.Timer {
-    using System.Collections.Generic;
+    using System.Linq;
 
     internal static class TimerManager {
-        public static Dictionary<string, Timer> Timers = new();
+        public static Timer[] Timers = new Timer[] {
+            new("quote", UseActions.Quote, 1800)
+        };
 
-        public static void Init() => Timers.Add("quote", new(UseActions.Quote, 1800));
+        public static Timer? GetTimer(string keyword) => Timers.FirstOrDefault(timer => timer.Keyword == keyword);
     }
 }

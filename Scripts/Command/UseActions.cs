@@ -17,10 +17,7 @@
                 return;
             }
 
-            if (!CommandHandler.Commands.TryGetValue(messageParams[1], out var command)) {
-                return;
-            }
-
+            var command = CommandHandler.GetCommand(messageParams[1]);
             if (command is not TogglableCommand togglableCommand) {
                 return;
             }
@@ -35,10 +32,7 @@
                 return;
             }
 
-            if (!CommandHandler.Commands.TryGetValue(messageParams[1], out var command)) {
-                return;
-            }
-
+            var command = CommandHandler.GetCommand(messageParams[1]);
             if (command is not TogglableCommand togglableCommand) {
                 return;
             }
@@ -53,7 +47,8 @@
                 return;
             }
 
-            if (!MessageHandler.Messages.TryGetValue(messageParams[1], out var message)) {
+            var message = MessageHandler.GetMessage(messageParams[1]);
+            if (message is null) {
                 return;
             }
 
@@ -67,7 +62,8 @@
                 return;
             }
 
-            if (!MessageHandler.Messages.TryGetValue(messageParams[1], out var message)) {
+            var message = MessageHandler.GetMessage(messageParams[1]);
+            if (message is null) {
                 return;
             }
 
@@ -81,7 +77,8 @@
                 return;
             }
 
-            if (!TimerManager.Timers.TryGetValue(messageParams[1], out var timer)) {
+            var timer = TimerManager.GetTimer(messageParams[1]);
+            if (timer is null) {
                 return;
             }
 
@@ -95,7 +92,8 @@
                 return;
             }
 
-            if (!TimerManager.Timers.TryGetValue(messageParams[1], out var timer)) {
+            var timer = TimerManager.GetTimer(messageParams[1]);
+            if (timer is null) {
                 return;
             }
 
@@ -195,14 +193,40 @@
             customData.Quotes[quoteIndex] = text[(indexOfSecondSpace + 1)..];
         }
 
-        public static async Task Feed(ChannelChatMessageEvent __, PermissionLevel ___) {
+        public static async Task Feed(ChannelChatMessageEvent messageEvent, PermissionLevel __) {
             var customData = await AppCache.Data.Get();
             if (customData is null) {
                 return;
             }
 
+            var feedCommand = CommandHandler.GetCommand("feed");
+            if (feedCommand is null) {
+                return;
+            }
+
+            var secondsSinceLastUse = (DateTime.Now - feedCommand.LastUsed).TotalSeconds;
+            if (new Random().Next(Math.Min((int)(secondsSinceLastUse * 2d), 100)) == 0) {
+                customData.FeedCount = 0;
+                _ = await Chat.Send($"popCat BARF2 BARF3 {messageEvent.ChatterUserName}, you fed the cat too many crayons!");
+                return;
+            }
+
             customData.FeedCount++;
-            _ = await Chat.Send($"popCat Crayon The cat has been fed {customData.FeedCount} time{(customData.FeedCount > 1 ? "s" : "")}.");
+            if (customData.FeedCount > customData.FeedRecord) {
+                customData.FeedRecord = customData.FeedCount;
+                customData.FeedRecordHolder = messageEvent.ChatterUserName;
+            }
+
+            _ = await Chat.Send($"popCat Crayon The cat has been fed {customData.FeedCount} time{(customData.FeedCount > 1 ? "s" : "")} in a row.");
+        }
+
+        public static async Task FeedRecord(ChannelChatMessageEvent __, PermissionLevel ___) {
+            var customData = await AppCache.Data.Get();
+            if (customData is null) {
+                return;
+            }
+
+            _ = await Chat.Send($"The record is {customData.FeedRecord}, last fed by {customData.FeedRecordHolder}.");
         }
 
         public static async Task Hug(ChannelChatMessageEvent messageEvent, PermissionLevel __) {

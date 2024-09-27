@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
 
     internal class Message {
+        public string Keyword;
         public Regex Regex;
         public bool IsEnabled = true;
         public PermissionLevel PermissionLevel = PermissionLevel.Viewer;
@@ -14,7 +15,8 @@
 
         public bool IsReadyToUse => DateTime.Now > LastUsed.AddMilliseconds(UseDelay);
 
-        public Message(Regex regex, Func<ChannelChatMessageEvent, PermissionLevel, Match, Task> useAction) {
+        public Message(string keyword, Regex regex, Func<ChannelChatMessageEvent, PermissionLevel, Match, Task> useAction) {
+            Keyword = keyword;
             Regex = regex;
             UseAction = useAction;
         }

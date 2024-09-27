@@ -4,13 +4,11 @@
     using Command;
     using Message;
     using System.Threading.Tasks;
-    using Timer;
 
     internal static class Meta {
         public static async Task Startup() {
             _ = await AppCache.Init();
             _ = await EventSub.EventSub.ConnectChannelChatMessage(HandleChatMessage);
-            TimerManager.Init();
             _ = await Chat.Send("MercyWing1 :) MercyWing2 ");
         }
 

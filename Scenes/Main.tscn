@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://b8rleoyptdrf5"]
+[gd_scene load_steps=3 format=3 uid="uid://b8rleoyptdrf5"]
 
 [ext_resource type="PackedScene" uid="uid://d301uyasbiovw" path="res://Scenes/App.tscn" id="1_bxb2c"]
+[ext_resource type="PackedScene" uid="uid://cfh0jtidpx802" path="res://Scenes/UI.tscn" id="2_av7qp"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -11,3 +12,6 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="App" parent="." instance=ExtResource("1_bxb2c")]
+
+[node name="UI" parent="." instance=ExtResource("2_av7qp")]
+layout_mode = 1
