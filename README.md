@@ -102,3 +102,21 @@ This makes it so that you do not need to authorize again.
 If you do want to authorize again (for example, if you used the wrong Twitch account), make sure the bot is not running, then delete the `cache.json` file.
 When you run the bot again, it should prompt you to authorize again.
 If you did use the wrong Twitch account to authorize, make sure to disconnect the application in that account's [settings](https://www.twitch.tv/settings/connections).
+
+### BetterTTV
+
+Some of the chat messages sent by the bot include emotes from [BetterTTV](https://betterttv.com/).
+Anyone who wants to properly view these emotes will need to have BetterTTV installed in their browser.
+The broadcaster will need to have the following emotes added to their channel:
+
+![BARF2](https://cdn.betterttv.net/emote/5f9e991d58e96102e92a76f1/1x.webp) [BARF2](https://betterttv.com/emotes/5f9e991d58e96102e92a76f1) by [SHXK3Y](https://betterttv.com/users/5de74567e7df1277b606d33c)
+
+![BARF3](https://cdn.betterttv.net/emote/5f9e992f1b017902db156fd8/1x.webp) [BARF3](https://betterttv.com/emotes/5f9e992f1b017902db156fd8) by [SHXK3Y](https://betterttv.com/users/5de74567e7df1277b606d33c)
+
+![catKISS](https://cdn.betterttv.net/emote/5f455410b2efd65d77e8cb14/1x.webp) [catKISS](https://betterttv.com/emotes/5f455410b2efd65d77e8cb14) by [Deadyz](https://betterttv.com/users/568c182801ea6722348aaeaa)
+
+![Crayon](https://cdn.betterttv.net/emote/5eb386a7813f921693550791/1x.webp) [Crayon](https://betterttv.com/emotes/5eb386a7813f921693550791) by [SemperFi_Bry](https://betterttv.com/users/5c1350257da8ec6e75dfa641)
+
+![pedroJAM](https://cdn.betterttv.net/emote/662d9cceee8f80be4860981b/1x.webp) [pedroJAM](https://betterttv.com/emotes/662d9cceee8f80be4860981b) by [italian6th](https://betterttv.com/users/5ef2a91ef91de70dea5bf160)
+
+![popCat](https://cdn.betterttv.net/emote/5fa8f232eca18f6455c2b2e1/1x.webp) [popCat](https://betterttv.com/emotes/5fa8f232eca18f6455c2b2e1) by [EthynWithAY](https://betterttv.com/users/5b458a6b9733463289f1408e)
