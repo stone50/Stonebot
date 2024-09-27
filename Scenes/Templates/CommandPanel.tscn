@@ -1,8 +1,8 @@
 [gd_scene load_steps=2 format=3 uid="uid://bjfcb6jaw0t6l"]
 
-[ext_resource type="Script" path="res://Scripts/UI/TogglableCommandPanel.cs" id="1_3keih"]
+[ext_resource type="Script" path="res://Scripts/UI/CommandPanel.cs" id="1_ep8ys"]
 
-[node name="TogglableCommandPanel" type="MarginContainer" node_paths=PackedStringArray("KeywordLabel", "MainButton", "DetailsContainer", "PermissionLevelMenuButton", "UseDelaySpinBox")]
+[node name="CommandPanel" type="MarginContainer" node_paths=PackedStringArray("KeywordLabel", "MainButton", "DetailsContainer", "PermissionLevelMenuButton", "UseDelaySpinBox")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -11,12 +11,12 @@ grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/margin_right = 50
-script = ExtResource("1_3keih")
+script = ExtResource("1_ep8ys")
 KeywordLabel = NodePath("VSplitContainer/MainButton/MarginContainer/KeywordLabel")
 MainButton = NodePath("VSplitContainer/MainButton")
 DetailsContainer = NodePath("VSplitContainer/DetailsContainer")
-PermissionLevelMenuButton = NodePath("VSplitContainer/DetailsContainer/PermissionLevelMenuButtonMarginContainer/PermissionLevelMenuButton")
-UseDelaySpinBox = NodePath("VSplitContainer/DetailsContainer/UseDelaySpinBoxMarginContainer/UseDelaySpinBox")
+PermissionLevelMenuButton = NodePath("VSplitContainer/DetailsContainer/PermissionLevelContainer/PermissionLevelMenuButtonMarginContainer/PermissionLevelMenuButton")
+UseDelaySpinBox = NodePath("VSplitContainer/DetailsContainer/UseDelayContainer/UseDelaySpinBoxMarginContainer/UseDelaySpinBox")
 
 [node name="VSplitContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
@@ -48,61 +48,69 @@ layout_mode = 2
 size_flags_vertical = 1
 vertical_alignment = 1
 
-[node name="DetailsContainer" type="GridContainer" parent="VSplitContainer"]
+[node name="DetailsContainer" type="HBoxContainer" parent="VSplitContainer"]
 visible = false
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 size_flags_vertical = 3
-columns = 4
 
-[node name="PermissionLevelLabelMarginContainer" type="MarginContainer" parent="VSplitContainer/DetailsContainer"]
+[node name="PermissionLevelContainer" type="HBoxContainer" parent="VSplitContainer/DetailsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="PermissionLevelLabelMarginContainer" type="MarginContainer" parent="VSplitContainer/DetailsContainer/PermissionLevelContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="PermissionLevelLabel" type="Label" parent="VSplitContainer/DetailsContainer/PermissionLevelLabelMarginContainer"]
+[node name="PermissionLevelLabel" type="Label" parent="VSplitContainer/DetailsContainer/PermissionLevelContainer/PermissionLevelLabelMarginContainer"]
 layout_mode = 2
 size_flags_vertical = 1
 text = "Permission Level"
 vertical_alignment = 1
 
-[node name="PermissionLevelMenuButtonMarginContainer" type="MarginContainer" parent="VSplitContainer/DetailsContainer"]
+[node name="PermissionLevelMenuButtonMarginContainer" type="MarginContainer" parent="VSplitContainer/DetailsContainer/PermissionLevelContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="PermissionLevelMenuButton" type="MenuButton" parent="VSplitContainer/DetailsContainer/PermissionLevelMenuButtonMarginContainer"]
+[node name="PermissionLevelMenuButton" type="MenuButton" parent="VSplitContainer/DetailsContainer/PermissionLevelContainer/PermissionLevelMenuButtonMarginContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 flat = false
 
-[node name="UseDelayLabelMarginContainer" type="MarginContainer" parent="VSplitContainer/DetailsContainer"]
+[node name="UseDelayContainer" type="HBoxContainer" parent="VSplitContainer/DetailsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="UseDelayLabelMarginContainer" type="MarginContainer" parent="VSplitContainer/DetailsContainer/UseDelayContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="UseDelayLabel" type="Label" parent="VSplitContainer/DetailsContainer/UseDelayLabelMarginContainer"]
+[node name="UseDelayLabel" type="Label" parent="VSplitContainer/DetailsContainer/UseDelayContainer/UseDelayLabelMarginContainer"]
 layout_mode = 2
 size_flags_vertical = 1
 text = "Use Delay"
 vertical_alignment = 1
 
-[node name="UseDelaySpinBoxMarginContainer" type="MarginContainer" parent="VSplitContainer/DetailsContainer"]
+[node name="UseDelaySpinBoxMarginContainer" type="MarginContainer" parent="VSplitContainer/DetailsContainer/UseDelayContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="UseDelaySpinBox" type="SpinBox" parent="VSplitContainer/DetailsContainer/UseDelaySpinBoxMarginContainer"]
+[node name="UseDelaySpinBox" type="SpinBox" parent="VSplitContainer/DetailsContainer/UseDelayContainer/UseDelaySpinBoxMarginContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
