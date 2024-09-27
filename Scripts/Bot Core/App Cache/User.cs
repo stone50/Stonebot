@@ -1,5 +1,4 @@
 ﻿namespace StoneBot.Scripts.Bot_Core.App_Cache {
-    using Godot;
     using Models;
     using System.Threading.Tasks;
     using Twitch;
@@ -21,7 +20,7 @@
 
             var usersData = (UsersData)potentialUsersData;
             if (usersData.Data.Length == 0) {
-                GD.PushWarning($"Cannot create broadcaster becauseusersData.Data.Length is 0.");
+                Logger.Warning($"Cannot create broadcaster becauseusersData.Data.Length is 0.");
                 return null;
             }
 

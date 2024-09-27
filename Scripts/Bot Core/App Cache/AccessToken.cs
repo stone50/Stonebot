@@ -1,5 +1,4 @@
 ﻿namespace StoneBot.Scripts.Bot_Core.App_Cache {
-    using Godot;
     using Models;
     using System;
     using System.Threading.Tasks;
@@ -93,7 +92,7 @@
 
         private void SetExpirationBuffer(int newExpirationBuffer) {
             if (newExpirationBuffer < 0) {
-                GD.PushWarning("Cannot set expiration buffer because newExpirationBuffer is less than 0.");
+                Logger.Warning("Cannot set expiration buffer because newExpirationBuffer is less than 0.");
                 throw new ArgumentOutOfRangeException(nameof(newExpirationBuffer));
             }
 

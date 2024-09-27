@@ -51,14 +51,14 @@
             try {
                 socketUri = new(uri);
             } catch (Exception e) {
-                GD.PushWarning($"Cannot connect because Uri construction failed: {e}.");
+                Logger.Warning($"Cannot connect because Uri construction failed: {e}.");
                 return false;
             }
 
             try {
                 await socket.ConnectAsync(socketUri, default);
             } catch (Exception e) {
-                GD.PushWarning($"Cannot connect because socket.ConnectAsync failed: {e}.");
+                Logger.Warning($"Cannot connect because socket.ConnectAsync failed: {e}.");
                 return false;
             }
 
@@ -73,7 +73,7 @@
             try {
                 message = JsonSerializer.Deserialize<EventSubWelcomeMessage>(request);
             } catch (Exception e) {
-                GD.PushWarning($"Cannot connect because JsonSerializer.Deserialize failed: {e}.");
+                Logger.Warning($"Cannot connect because JsonSerializer.Deserialize failed: {e}.");
                 _ = await Close(CloseReason.BadRequest);
                 return false;
             }
@@ -117,12 +117,15 @@
             try {
                 result = await socket.ReceiveAsync(buffer, default);
             } catch (Exception e) {
-                GD.PushWarning($"Cannot get request because socket.ReceiveAsync failed: {e}.");
+                Logger.Warning($"Cannot get request because socket.ReceiveAsync failed: {e}.");
                 return null;
             }
 
             if (result.CloseStatus is not null) {
-                GD.PushWarning($"Web socket server sent close request: {result.CloseStatus}: {result.CloseStatusDescription}.");
+                if (result.CloseStatus != WebSocketCloseStatus.NormalClosure) {
+                    Logger.Warning($"Web socket server sent close request: {result.CloseStatus}: {result.CloseStatusDescription}.");
+                }
+
                 _ = await Close(CloseReason.CloseMessage);
                 return null;
             }
@@ -130,7 +133,7 @@
             try {
                 return Encoding.Default.GetString(buffer, 0, result.Count);
             } catch (Exception e) {
-                GD.PushWarning($"Cannot get request because Encoding.Default.GetString failed: {e}.");
+                Logger.Warning($"Cannot get request because Encoding.Default.GetString failed: {e}.");
                 return null;
             }
         }
@@ -182,7 +185,7 @@
                         continue;
                     }
 
-                    GD.PushWarning("Cannot handle request because request is not supported.");
+                    Logger.Warning("Cannot handle request because request is not supported.");
                     _ = await Close(CloseReason.BadRequest);
                     return;
                 }
@@ -193,7 +196,7 @@
             try {
                 requestData = JsonSerializer.Deserialize<T>(request);
             } catch (Exception e) {
-                GD.PushWarning($"Cannot parse request because JsonSerializer.Deserialize failed: {e}.");
+                Logger.Warning($"Cannot parse request because JsonSerializer.Deserialize failed: {e}.");
                 requestData = default;
                 return false;
             }
@@ -212,7 +215,7 @@
         private async Task HandleReconnect(EventSubReconnectMessage message) {
             var url = message.Payload.Session.ReconnectUrl;
             if (url is null) {
-                GD.PushWarning("Cannot handle reconnect message because url is null.");
+                Logger.Warning("Cannot handle reconnect message because url is null.");
                 return;
             }
 

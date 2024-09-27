@@ -1,7 +1,6 @@
 ﻿namespace StoneBot.Scripts {
     using Bot_Core.App_Cache;
     using Bot_Core.Models;
-    using Godot;
     using System.Threading.Tasks;
     using static Core_Interface.User;
 
@@ -39,7 +38,7 @@
                         return PermissionLevel.Tier3Sub;
                 }
 
-                GD.PushWarning($"Cannot get highest because subscription tier '{tier}' is not supported.");
+                Logger.Warning($"Cannot get highest because subscription tier '{tier}' is not supported.");
                 return null;
             }
 

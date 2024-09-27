@@ -1,5 +1,4 @@
 ﻿namespace StoneBot.Scripts.Bot_Core {
-    using Godot;
     using System;
     using System.Net.Http;
     using System.Text.Json;
@@ -16,7 +15,7 @@
             try {
                 messageAsT = JsonSerializer.Deserialize<T>(successfulString);
             } catch (Exception e) {
-                GD.PushWarning($"Cannot get message as {typeof(T).Name} because JsonSerializer.Deserialize failed: {e}.");
+                Logger.Warning($"Cannot get message as {typeof(T).Name} because JsonSerializer.Deserialize failed: {e}.");
                 return null;
             }
 
@@ -26,7 +25,7 @@
 
         public static async Task<string?> GetSuccessfulString(HttpResponseMessage? message) {
             if (message is null) {
-                GD.PushWarning("Cannot get successful string because message is null.");
+                Logger.Warning("Cannot get successful string because message is null.");
                 return null;
             }
 
@@ -34,12 +33,12 @@
             try {
                 successfulString = await message.Content.ReadAsStringAsync();
             } catch (Exception e) {
-                GD.PushWarning($"Cannot get successful string because message.Content.ReadAsStringAsync failed: {e}.");
+                Logger.Warning($"Cannot get successful string because message.Content.ReadAsStringAsync failed: {e}.");
                 return null;
             }
 
             if (!message.IsSuccessStatusCode) {
-                GD.PushWarning($"Cannot get successful string because message.IsSuccessStatusCode is false: {successfulString}.");
+                Logger.Warning($"Cannot get successful string because message.IsSuccessStatusCode is false: {successfulString}.");
                 return null;
             }
 

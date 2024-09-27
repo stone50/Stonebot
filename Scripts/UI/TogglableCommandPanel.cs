@@ -10,10 +10,10 @@
         [Export]
         private Button EnableButton = null!;
 
-        public new TogglableCommand Command { get; private set; } = null!;
+        private new TogglableCommand Command = null!;
 
-        public void Init(UI ui, TogglableCommand command) {
-            base.Init(ui, command);
+        public void Init(TogglableCommand command) {
+            base.Init(command);
             Command = command;
             MainButton.Modulate = Command.IsEnabled ? Colors.White : Colors.Red;
             EnableButton.Icon = Command.IsEnabled ? DisableIcon : EnableIcon;

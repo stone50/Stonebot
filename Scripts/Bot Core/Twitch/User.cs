@@ -1,5 +1,4 @@
 ﻿namespace StoneBot.Scripts.Bot_Core.Twitch {
-    using Godot;
     using System;
     using System.Linq;
     using System.Net.Http;
@@ -15,7 +14,7 @@
             try {
                 return await client.GetAsync($"https://api.twitch.tv/helix/users?{queryParams}");
             } catch (Exception e) {
-                GD.PushWarning($"Cannot get users because client.GetAsync failed: {e}.");
+                Logger.Warning($"Cannot get users because client.GetAsync failed: {e}.");
                 return null;
             }
         }
@@ -26,7 +25,7 @@
             var queryParams = $"broadcaster_id={broadcasterId}";
             if (userId is not null) {
                 if (userId.Length > 100) {
-                    GD.PushWarning("Cannot get moderators because userId.Length is greater than 100.");
+                    Logger.Warning("Cannot get moderators because userId.Length is greater than 100.");
                     return null;
                 }
 
@@ -38,7 +37,7 @@
             try {
                 return await client.GetAsync($"https://api.twitch.tv/helix/moderation/moderators?{queryParams}");
             } catch (Exception e) {
-                GD.PushWarning($"Cannot get moderators because client.GetAsync failed: {e}.");
+                Logger.Warning($"Cannot get moderators because client.GetAsync failed: {e}.");
                 return null;
             }
         }
@@ -49,7 +48,7 @@
             var queryParams = $"broadcaster_id={broadcasterId}";
             if (userId is not null) {
                 if (userId.Length > 100) {
-                    GD.PushWarning("Cannot get vips because userId.Length is greater than 100.");
+                    Logger.Warning("Cannot get vips because userId.Length is greater than 100.");
                     return null;
                 }
 
@@ -61,7 +60,7 @@
             try {
                 return await client.GetAsync($"https://api.twitch.tv/helix/channels/vips?{queryParams}");
             } catch (Exception e) {
-                GD.PushWarning($"Cannot get vips because client.GetAsync failed: {e}.");
+                Logger.Warning($"Cannot get vips because client.GetAsync failed: {e}.");
                 return null;
             }
         }
@@ -71,7 +70,7 @@
             try {
                 return await client.GetAsync($"https://api.twitch.tv/helix/subscriptions/user?broadcaster_id={broadcasterId}&user_id={userId}");
             } catch (Exception e) {
-                GD.PushWarning(e.Message);
+                Logger.Warning(e.Message);
                 return null;
             }
         }

@@ -3,7 +3,6 @@
     using Bot_Core.App_Cache;
     using Bot_Core.Models.EventSub;
     using Bot_Core.Twitch;
-    using Godot;
     using System;
     using System.Linq;
     using System.Text.Json;
@@ -127,7 +126,7 @@
                 try {
                     eventStruct = JsonSerializer.Deserialize<ChannelChatMessageEvent>(eventElement);
                 } catch (Exception e) {
-                    GD.PushWarning($"Cannot handle channel chat message event because JsonSerializer.Deserialize failed: {e}.");
+                    Logger.Warning($"Cannot handle channel chat message event because JsonSerializer.Deserialize failed: {e}.");
                     return;
                 }
 

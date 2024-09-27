@@ -1,5 +1,4 @@
 ﻿namespace StoneBot.Scripts.Bot_Core.App_Cache {
-    using Godot;
     using Models;
     using System;
     using System.IO;
@@ -87,7 +86,7 @@
             try {
                 await File.WriteAllTextAsync("cache.json", JsonSerializer.Serialize(data));
             } catch (Exception e) {
-                GD.PushWarning($"Cannot save cache because File.WriteAllTextAsync failed: {e}.");
+                Logger.Warning($"Cannot save cache because File.WriteAllTextAsync failed: {e}.");
                 return false;
             }
 
@@ -104,7 +103,7 @@
             try {
                 await File.WriteAllTextAsync("data.json", JsonSerializer.Serialize(data.ToDataData()));
             } catch (Exception e) {
-                GD.PushWarning($"Cannot save custom data because File.WriteAllTextAsync failed: {e}.");
+                Logger.Warning($"Cannot save custom data because File.WriteAllTextAsync failed: {e}.");
                 return false;
             }
 

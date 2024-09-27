@@ -1,5 +1,4 @@
 ﻿namespace StoneBot.Scripts.Bot_Core.Twitch {
-    using Godot;
     using System;
     using System.Net.Http;
     using System.Net.Http.Json;
@@ -30,7 +29,7 @@
             try {
                 return await client.GetAsync($"https://api.twitch.tv/helix/eventsub/subscriptions?{queryParams}");
             } catch (Exception e) {
-                GD.PushWarning($"Cannot get event subs because client.GetAsync failed: {e}.");
+                Logger.Warning($"Cannot get event subs because client.GetAsync failed: {e}.");
                 return null;
             }
         }
@@ -40,7 +39,7 @@
             try {
                 return await client.DeleteAsync($"https://api.twitch.tv/helix/eventsub/subscriptions?id={id}");
             } catch (Exception e) {
-                GD.PushWarning($"Cannot delete event sub because client.DeleteAsync failed: {e}.");
+                Logger.Warning($"Cannot delete event sub because client.DeleteAsync failed: {e}.");
                 return null;
             }
         }
@@ -63,7 +62,7 @@
             try {
                 return await client.PostAsJsonAsync("https://api.twitch.tv/helix/eventsub/subscriptions", content);
             } catch (Exception e) {
-                GD.PushWarning($"Cannot subscribe to channel chat message because client.PostAsJsonAsync failed: {e}.");
+                Logger.Warning($"Cannot subscribe to channel chat message because client.PostAsJsonAsync failed: {e}.");
                 return null;
             }
         }
