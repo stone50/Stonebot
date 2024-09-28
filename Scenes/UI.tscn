@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://cfh0jtidpx802"]
+[gd_scene load_steps=4 format=3 uid="uid://cfh0jtidpx802"]
 
 [ext_resource type="PackedScene" uid="uid://bl2g33knt81sa" path="res://Scenes/CommandsTab.tscn" id="2_6t4ov"]
 [ext_resource type="PackedScene" uid="uid://gpeflpyltg7x" path="res://Scenes/LogsTab.tscn" id="2_dq60r"]
+[ext_resource type="PackedScene" uid="uid://dqmco36n8ja68" path="res://Scenes/MessagesTab.tscn" id="3_c41l2"]
 
 [node name="UI" type="Control"]
 layout_mode = 3
@@ -31,7 +32,7 @@ visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
-[node name="Messages" type="PanelContainer" parent="TabContainer"]
+[node name="Messages" parent="TabContainer" instance=ExtResource("3_c41l2")]
 visible = false
 layout_mode = 2
 metadata/_tab_index = 2
