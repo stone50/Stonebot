@@ -3,22 +3,35 @@ namespace StoneBot.Scripts {
     using System;
 
     internal static class Logger {
-        public static event EventHandler<string> DebugLogged = delegate { };
-        public static event EventHandler<string> InfoLogged = delegate { };
-        public static event EventHandler<string> WarningLogged = delegate { };
-        public static event EventHandler<string> ErrorLogged = delegate { };
+        public enum LogType {
+            Debug,
+            Info,
+            Warning,
+            Error
+        }
 
-        public static void Debug(string message) => HandleMessage("DEBUG", message, DebugLogged);
+        public struct MessageLoggedArgs {
+            public string LogMessage;
+            public LogType LogType;
+        }
 
-        public static void Info(string message) => HandleMessage("INFO", message, InfoLogged);
+        public static event EventHandler<MessageLoggedArgs> MessageLogged = delegate { };
 
-        public static void Warning(string message) => HandleMessage("WARNING", message, WarningLogged);
+        public static void Debug(string message) => Log(LogType.Debug, message);
 
-        public static void Error(string message) => HandleMessage("ERROR", message, ErrorLogged);
+        public static void Info(string message) => Log(LogType.Info, message);
 
-        private static void HandleMessage(string messageType, string message, EventHandler<string> eventHandler) {
-            GD.Print($"[{DateTime.Now}] {messageType}: {message}");
-            Util.InvokeDeferred(eventHandler, message);
+        public static void Warning(string message) => Log(LogType.Warning, message);
+
+        public static void Error(string message) => Log(LogType.Error, message);
+
+        public static void Log(LogType logType, string message) {
+            var logMessage = $"[{DateTime.Now}] {logType.ToString().ToUpper()}: {message}";
+            GD.Print(logMessage);
+            Util.InvokeDeferred(MessageLogged, new() {
+                LogMessage = logMessage,
+                LogType = logType,
+            });
         }
     }
 }
