@@ -3,9 +3,6 @@ namespace StoneBot.Scripts.UI {
     using Message;
 
     internal partial class MessagesTab : Control {
-        [Export]
-        private Container MessagesContainer = null!;
-
         public override void _Ready() {
             foreach (var message in MessageHandler.Messages) {
                 var messagePanel = Resources.MessagePanelScene.Instantiate<MessagePanel>();
@@ -13,5 +10,8 @@ namespace StoneBot.Scripts.UI {
                 MessagesContainer.AddChild(messagePanel);
             }
         }
+
+        [Export]
+        private Container MessagesContainer = null!;
     }
 }

@@ -3,15 +3,6 @@
     using System;
 
     internal partial class LogsTab : Control {
-        [Export]
-        private ScrollContainer ScrollContainer = null!;
-        [Export]
-        private Container LogsContainer = null!;
-        [Export]
-        private Button ScrollToBottomButton = null!;
-
-        private VScrollBar ScrollContainerVScrollBar = null!;
-
         public LogsTab() => Logger.MessageLogged += OnMessageLogged;
 
         public override void _Ready() {
@@ -20,6 +11,15 @@
             ScrollContainerVScrollBar.ValueChanged += OnScrollContainerVScrollBarValueChanged;
             ScrollToBottomButton.Pressed += OnScrollToBottomButtonPressed;
         }
+
+        [Export]
+        private ScrollContainer ScrollContainer = null!;
+        [Export]
+        private Container LogsContainer = null!;
+        [Export]
+        private Button ScrollToBottomButton = null!;
+
+        private VScrollBar ScrollContainerVScrollBar = null!;
 
         private void OnVisiblilityChanged() {
             if (Visible && !ScrollToBottomButton.Visible) {

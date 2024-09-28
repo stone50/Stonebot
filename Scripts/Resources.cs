@@ -9,5 +9,6 @@
         public static readonly PackedScene CommandPanelScene = GD.Load<PackedScene>("res://Scenes/Templates/CommandPanel.tscn");
         public static readonly PackedScene TogglableCommandPanelScene = GD.Load<PackedScene>("res://Scenes/Templates/TogglableCommandPanel.tscn");
         public static readonly PackedScene MessagePanelScene = GD.Load<PackedScene>("res://Scenes/Templates/MessagePanel.tscn");
+        public static readonly PackedScene TimerPanelScene = GD.Load<PackedScene>("res://Scenes/Templates/TimerPanel.tscn");
     }
 }

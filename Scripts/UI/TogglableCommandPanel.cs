@@ -3,11 +3,6 @@
     using Godot;
 
     internal partial class TogglableCommandPanel : CommandPanel {
-        [Export]
-        private Button EnableButton = null!;
-
-        private new TogglableCommand Command = null!;
-
         public void Init(TogglableCommand command) {
             base.Init(command);
             Command = command;
@@ -17,6 +12,11 @@
 
             Command.IsEnabledChanged += OnIsEnabledChanged;
         }
+
+        [Export]
+        private Button EnableButton = null!;
+
+        private new TogglableCommand Command = null!;
 
         private void OnEnableButtonPressed() => Command.IsEnabled = !Command.IsEnabled;
 

@@ -4,21 +4,6 @@
     using System;
 
     internal partial class MessagePanel : Control {
-        [Export]
-        protected Label KeywordLabel = null!;
-        [Export]
-        protected Button MainButton = null!;
-        [Export]
-        protected Container DetailsContainer = null!;
-        [Export]
-        protected MenuButton PermissionLevelMenuButton = null!;
-        [Export]
-        protected SpinBox UseDelaySpinBox = null!;
-        [Export]
-        private Button EnableButton = null!;
-
-        private Message Message = null!;
-
         public void Init(Message message) {
             Message = message;
 
@@ -43,6 +28,21 @@
 
             Message.IsEnabledChanged += OnIsEnabledChanged;
         }
+
+        [Export]
+        private Label KeywordLabel = null!;
+        [Export]
+        private Button MainButton = null!;
+        [Export]
+        private Container DetailsContainer = null!;
+        [Export]
+        private MenuButton PermissionLevelMenuButton = null!;
+        [Export]
+        private SpinBox UseDelaySpinBox = null!;
+        [Export]
+        private Button EnableButton = null!;
+
+        private Message Message = null!;
 
         private void OnMainButtonPressed() => DetailsContainer.Visible = !DetailsContainer.Visible;
 
