@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://bjfcb6jaw0t6l"]
+[gd_scene load_steps=2 format=3 uid="uid://c5ixltifs2ynd"]
 
-[ext_resource type="Script" path="res://Scripts/UI/CommandPanel.cs" id="1_ep8ys"]
+[ext_resource type="Script" path="res://Scripts/UI/MessagePanel.cs" id="1_lmcd8"]
 
-[node name="CommandPanel" type="MarginContainer" node_paths=PackedStringArray("KeywordLabel", "MainButton", "DetailsContainer", "PermissionLevelMenuButton", "UseDelaySpinBox")]
+[node name="MessagePanel" type="MarginContainer" node_paths=PackedStringArray("KeywordLabel", "MainButton", "DetailsContainer", "PermissionLevelMenuButton", "UseDelaySpinBox", "EnableButton")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -10,27 +10,32 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 theme_override_constants/margin_right = 50
-script = ExtResource("1_ep8ys")
-KeywordLabel = NodePath("VSplitContainer/MainButton/MarginContainer/KeywordLabel")
-MainButton = NodePath("VSplitContainer/MainButton")
+script = ExtResource("1_lmcd8")
+KeywordLabel = NodePath("VSplitContainer/HBoxContainer/MainButton/MarginContainer/KeywordLabel")
+MainButton = NodePath("VSplitContainer/HBoxContainer/MainButton")
 DetailsContainer = NodePath("VSplitContainer/DetailsContainer")
 PermissionLevelMenuButton = NodePath("VSplitContainer/DetailsContainer/PermissionLevelContainer/PermissionLevelMenuButtonMarginContainer/PermissionLevelMenuButton")
 UseDelaySpinBox = NodePath("VSplitContainer/DetailsContainer/UseDelayContainer/UseDelaySpinBoxMarginContainer/UseDelaySpinBox")
+EnableButton = NodePath("VSplitContainer/HBoxContainer/EnableButton")
 
 [node name="VSplitContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="MainButton" type="Button" parent="VSplitContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VSplitContainer"]
 custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MainButton" type="Button" parent="VSplitContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 focus_mode = 0
 alignment = 0
 
-[node name="MarginContainer" type="MarginContainer" parent="VSplitContainer/MainButton"]
+[node name="MarginContainer" type="MarginContainer" parent="VSplitContainer/HBoxContainer/MainButton"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -42,10 +47,17 @@ theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="KeywordLabel" type="Label" parent="VSplitContainer/MainButton/MarginContainer"]
+[node name="KeywordLabel" type="Label" parent="VSplitContainer/HBoxContainer/MainButton/MarginContainer"]
 layout_mode = 2
 size_flags_vertical = 1
 vertical_alignment = 1
+
+[node name="EnableButton" type="Button" parent="VSplitContainer/HBoxContainer"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+focus_mode = 0
+icon_alignment = 1
+expand_icon = true
 
 [node name="DetailsContainer" type="HBoxContainer" parent="VSplitContainer"]
 visible = false
@@ -56,7 +68,6 @@ size_flags_vertical = 3
 [node name="PermissionLevelContainer" type="HBoxContainer" parent="VSplitContainer/DetailsContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_vertical = 3
 
 [node name="PermissionLevelLabelMarginContainer" type="MarginContainer" parent="VSplitContainer/DetailsContainer/PermissionLevelContainer"]
 layout_mode = 2

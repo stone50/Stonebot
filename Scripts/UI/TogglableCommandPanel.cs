@@ -4,10 +4,6 @@
 
     internal partial class TogglableCommandPanel : CommandPanel {
         [Export]
-        private Texture2D EnableIcon = null!;
-        [Export]
-        private Texture2D DisableIcon = null!;
-        [Export]
         private Button EnableButton = null!;
 
         private new TogglableCommand Command = null!;
@@ -16,7 +12,7 @@
             base.Init(command);
             Command = command;
             MainButton.Modulate = Command.IsEnabled ? Colors.White : Colors.Red;
-            EnableButton.Icon = Command.IsEnabled ? DisableIcon : EnableIcon;
+            EnableButton.Icon = Command.IsEnabled ? Resources.DisableIcon : Resources.EnableIcon;
             EnableButton.Pressed += OnEnableButtonPressed;
 
             Command.IsEnabledChanged += OnIsEnabledChanged;
@@ -26,7 +22,7 @@
 
         private void OnIsEnabledChanged(object? _, bool isEnabled) {
             MainButton.Modulate = isEnabled ? Colors.White : Colors.Red;
-            EnableButton.Icon = isEnabled ? DisableIcon : EnableIcon;
+            EnableButton.Icon = isEnabled ? Resources.DisableIcon : Resources.EnableIcon;
         }
     }
 }

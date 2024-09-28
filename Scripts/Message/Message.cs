@@ -5,11 +5,18 @@
     using System.Threading.Tasks;
 
     internal class Message {
-        public string Keyword;
+        public event EventHandler<PermissionLevel> PermissionLevelChanged = delegate { };
+        public event EventHandler<int> UseDelayChanged = delegate { };
+        public event EventHandler<bool> IsEnabledChanged = delegate { };
+
+        public string Keyword { get; private set; }
         public Regex Regex;
-        public bool IsEnabled = true;
-        public PermissionLevel PermissionLevel = PermissionLevel.Viewer;
-        public int UseDelay = 1000;
+        public bool isEnabled = true;
+        public bool IsEnabled { get => isEnabled; set => SetIsEnabled(value); }
+        public PermissionLevel permissionLevel = PermissionLevel.Viewer;
+        public PermissionLevel PermissionLevel { get => permissionLevel; set => SetPermissionLevel(value); }
+        public int useDelay = 1000;
+        public int UseDelay { get => useDelay; set => SetUseDelay(value); }
         public DateTime LastUsed { get; private set; }
         public Func<ChannelChatMessageEvent, PermissionLevel, Match, Task> UseAction;
 
@@ -44,6 +51,24 @@
             LastUsed = DateTime.Now;
             await UseAction(messageEvent, (PermissionLevel)userPermissionLevel, match);
             return true;
+        }
+
+        public void SetIsEnabled(bool isEnabled) {
+            Logger.Info($"Setting is enabled for message {Keyword}.");
+            this.isEnabled = isEnabled;
+            Util.InvokeDeferred(IsEnabledChanged, IsEnabled);
+        }
+
+        public void SetPermissionLevel(PermissionLevel permissionLevel) {
+            Logger.Info($"Setting permission level for message {Keyword}.");
+            this.permissionLevel = permissionLevel;
+            Util.InvokeDeferred(PermissionLevelChanged, PermissionLevel);
+        }
+
+        public void SetUseDelay(int useDelay) {
+            Logger.Info($"Setting use delay for message {Keyword}.");
+            this.useDelay = useDelay;
+            Util.InvokeDeferred(UseDelayChanged, UseDelay);
         }
     }
 }
