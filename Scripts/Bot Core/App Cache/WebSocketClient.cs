@@ -42,6 +42,7 @@
         private DateTime keepaliveExpiration;
 
         private async Task<bool> Connect(string uri) {
+            Logger.Info("Connecting web socket client.");
             var config = await AppCache.Config.Get();
             if (config is null) {
                 return false;
@@ -85,6 +86,7 @@
         }
 
         private async Task<bool> Close(CloseReason reason) {
+            Logger.Info("Closing web socket client.");
             if (!IsConnected) {
                 return false;
             }

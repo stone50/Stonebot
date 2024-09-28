@@ -25,6 +25,7 @@
         public static bool IsCommand(string message) => message.StartsWith('!');
 
         public static async Task<bool> Handle(ChannelChatMessageEvent messageEvent) {
+            Logger.Info("Handling message event as command.");
             var commandString = messageEvent.Message.Text.Trim();
             if (!IsCommand(commandString)) {
                 return false;

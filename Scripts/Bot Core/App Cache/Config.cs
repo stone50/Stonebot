@@ -18,6 +18,7 @@
         public readonly int TokenExpirationBuffer;
 
         public static async Task<Config?> Create() {
+            Logger.Info("Creating config.");
             string configText;
             try {
                 configText = await File.ReadAllTextAsync("config.json");

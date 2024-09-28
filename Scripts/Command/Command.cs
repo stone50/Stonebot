@@ -23,6 +23,7 @@
         }
 
         public virtual async Task<bool> Use(ChannelChatMessageEvent messageEvent) {
+            Logger.Info($"Using command {Keyword}.");
             if (!IsReadyToUse) {
                 return false;
             }
@@ -38,11 +39,13 @@
         }
 
         public void SetPermissionLevel(PermissionLevel permissionLevel) {
+            Logger.Info($"Setting permission level of command {Keyword}.");
             this.permissionLevel = permissionLevel;
             Util.InvokeDeferred(PermissionLevelChanged, PermissionLevel);
         }
 
         public void SetUseDelay(int useDelay) {
+            Logger.Info($"Setting use delay of command {Keyword}.");
             this.useDelay = useDelay;
             Util.InvokeDeferred(UseDelayChanged, UseDelay);
         }
@@ -59,6 +62,7 @@
         public override async Task<bool> Use(ChannelChatMessageEvent messageEvent) => IsEnabled && await base.Use(messageEvent);
 
         public void SetIsEnabled(bool isEnabled) {
+            Logger.Info($"Setting is enabled of command {Keyword}.");
             this.isEnabled = isEnabled;
             Util.InvokeDeferred(IsEnabledChanged, IsEnabled);
         }

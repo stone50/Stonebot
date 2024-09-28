@@ -16,6 +16,7 @@
 
     internal static class Permission {
         public static async Task<PermissionLevel?> GetHighest(string userId) {
+            Logger.Info("Getting highest user permission level.");
             var broadcaster = await AppCache.Broadcaster.Get();
             if (broadcaster is not null && broadcaster.Id == userId) {
                 return PermissionLevel.Broadcaster;

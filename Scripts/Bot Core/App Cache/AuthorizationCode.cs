@@ -10,6 +10,7 @@
 
     internal static class AuthorizationCode {
         public static async Task<string?> Create(string clientId, string[] scope) {
+            Logger.Info("Creating authorization code.");
             var config = await AppCache.Config.Get();
             if (config is null) {
                 return null;
@@ -58,6 +59,7 @@
         }
 
         private static async Task<string?> GetCode(TcpListener server, string state) {
+            Logger.Info("Getting authorization code from web server.");
             TcpClient client;
             try {
                 client = await server.AcceptTcpClientAsync();
@@ -95,6 +97,7 @@
         }
 
         private static async Task<string?> GetUrl(NetworkStream stream) {
+            Logger.Info("Getting url from authorization code web server network stream.");
             var buffer = new byte[1024];
             int numBytesRead;
             try {
@@ -136,6 +139,7 @@
         }
 
         private static bool GetIsStateValid(string url, string state) {
+            Logger.Info("Getting is state valid from authorization code web server request URL.");
             var stateRegex = new Regex("state=([a-zA-Z0-9_.\\-~]*)");
             var match = stateRegex.Match(url);
             if (!match.Success) {
@@ -152,6 +156,7 @@
         }
 
         private static string? GetCode(string url) {
+            Logger.Info("Getting authorization code from web server request URL.");
             var codeRegex = new Regex("code=([a-zA-Z0-9]*)");
             var match = codeRegex.Match(url);
             if (!match.Success) {
@@ -168,6 +173,7 @@
         }
 
         private static async Task<bool> SendBadRequest(NetworkStream stream) {
+            Logger.Info("Sending bad request to authorization code web server.");
             try {
                 await stream.WriteAsync(Encoding.Default.GetBytes("HTTP/1.1 400 Bad Request\r\n\r\n<html><head><title>Authorization Failed</title></head><body><h1>:(</h1><p>Please check the logs to see why authorization failed.</p></body></html>"));
             } catch (Exception e) {
@@ -179,6 +185,7 @@
         }
 
         private static async Task<bool> SendOkRequest(NetworkStream stream) {
+            Logger.Info("Sending ok request to authorization code web server.");
             try {
                 await stream.WriteAsync(Encoding.Default.GetBytes("HTTP/1.1 200 OK\r\n\r\n<html><head><title>Authorization Succeeded</title></head><body><h1>Authorization Success! :)</h1><p>You can close this tab.</p></body></html>"));
             } catch (Exception e) {

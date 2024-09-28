@@ -7,6 +7,7 @@
 
     internal static class User {
         public static async Task<bool?> GetIsMod(string userId) {
+            Logger.Info("Getting is user mod.");
             var broadcaster = await AppCache.Broadcaster.Get();
             if (broadcaster is null) {
                 return null;
@@ -31,6 +32,7 @@
         }
 
         public static async Task<bool?> GetIsVIP(string userId) {
+            Logger.Info("Getting is user VIP.");
             var broadcaster = await AppCache.Broadcaster.Get();
             if (broadcaster is null) {
                 return null;
@@ -55,6 +57,7 @@
         }
 
         public static async Task<SimpleSubscriptionData?> CheckUserSubscriptions(string userId) {
+            Logger.Info("Checking user subscriptions.");
             var broadcaster = await AppCache.Broadcaster.Get();
             if (broadcaster is null) {
                 return null;

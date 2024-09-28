@@ -7,9 +7,6 @@
 
     internal static class AppCache {
         public class CacheValue<T> where T : class {
-            private T? Value;
-            private readonly Func<Task<T?>> ValueGetter;
-
             public CacheValue(T? value = default) : this(() => default(T?), value) { }
 
             public CacheValue(Func<T?> getter, T? value = null) : this(
@@ -33,6 +30,9 @@
             public async Task Refresh() => Value = await ValueGetter();
 
             public T? GetWithoutRefresh() => Value;
+
+            private T? Value;
+            private readonly Func<Task<T?>> ValueGetter;
         }
 
         public static string? StoredChatterRefreshToken => storedData?.ChatterRefreshToken;
@@ -46,12 +46,14 @@
         public static CacheValue<CustomData> Data = new(CustomData.Create, null);
 
         public static async Task<bool> Init() {
+            Logger.Info("Initializing app cache.");
             _ = await Load();
             var success = await CollectorClientWrapper.Get() is not null;
             return await ChatterClientWrapper.Get() is not null && success;
         }
 
         public static async Task<bool> Load() {
+            Logger.Info("Loading app cache.");
             string json;
             try {
                 json = await File.ReadAllTextAsync("cache.json");
@@ -69,6 +71,7 @@
         }
 
         public static async Task<bool> SaveCache() {
+            Logger.Info("Saving cache to file.");
             var chatterClientWrapper = await ChatterClientWrapper.Get();
             if (chatterClientWrapper is null) {
                 return false;
@@ -95,6 +98,7 @@
         }
 
         public static async Task<bool> SaveCustomData() {
+            Logger.Info("Saving custom data to file.");
             var data = await Data.Get();
             if (data is null) {
                 return false;
@@ -111,6 +115,7 @@
         }
 
         public static async Task Save() {
+            Logger.Info("Saving app cache.");
             _ = await SaveCustomData();
             _ = await SaveCache();
         }

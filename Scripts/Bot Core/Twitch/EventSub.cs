@@ -9,6 +9,7 @@
         // collector access token
         // only up to 1 of status, type, and userId should be specified
         public static async Task<HttpResponseMessage?> GetEventSubs(HttpClient client, string? status = null, string? type = null, string? userId = null, string? after = null) {
+            Logger.Info("Getting event subs from Twitch.");
             var queryParams = "";
             if (status is not null) {
                 queryParams = $"&status={status}";
@@ -36,6 +37,7 @@
 
         // collector access token
         public static async Task<HttpResponseMessage?> DeleteEventSub(HttpClient client, string id) {
+            Logger.Info("Deleting event sub from Twitch.");
             try {
                 return await client.DeleteAsync($"https://api.twitch.tv/helix/eventsub/subscriptions?id={id}");
             } catch (Exception e) {
@@ -46,6 +48,7 @@
 
         // collector access token
         public static async Task<HttpResponseMessage?> SubscribeToChannelChatMessage(HttpClient client, string broadcasterUserId, string userId, string sessionId) {
+            Logger.Info("Subscribing to channel chat message event sub on Twitch.");
             var content = new {
                 type = "channel.chat.message",
                 version = "1",

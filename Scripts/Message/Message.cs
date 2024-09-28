@@ -22,6 +22,7 @@
         }
 
         public async Task<bool> Use(ChannelChatMessageEvent messageEvent) {
+            Logger.Info($"Using message {Keyword}.");
             if (!IsEnabled) {
                 return false;
             }

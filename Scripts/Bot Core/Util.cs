@@ -6,6 +6,7 @@
 
     internal static class Util {
         public static async Task<T?> GetMessageAs<T>(HttpResponseMessage? message) where T : struct {
+            Logger.Info($"Getting http response message as {typeof(T).Name}.");
             var successfulString = await GetSuccessfulString(message);
             if (successfulString is null) {
                 return null;
@@ -24,6 +25,7 @@
         public static async Task<T?> GetMessageAs<T>(Task<HttpResponseMessage?> messageTask) where T : struct => await GetMessageAs<T>(await messageTask);
 
         public static async Task<string?> GetSuccessfulString(HttpResponseMessage? message) {
+            Logger.Info("Getting successful string from http response message.");
             if (message is null) {
                 Logger.Warning("Cannot get successful string because message is null.");
                 return null;

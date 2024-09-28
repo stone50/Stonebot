@@ -14,7 +14,47 @@
 
         public bool IsAboutToExpire => DateTime.Now.AddMilliseconds(ExpirationBuffer) >= ExpirationDate;
 
-        public static async Task<AccessToken?> Create(string clientId, string clientSecret, string? storedRefreshToken, string[] scope) {
+        public static async Task<AccessToken?> CreateChatter() {
+            Logger.Info("Creating chatter access token.");
+            var config = await AppCache.Config.Get();
+            return config is null ? null : await Create(config.ChatterClientId, config.ChatterClientSecret, AppCache.StoredChatterRefreshToken, config.ChatterScope);
+        }
+
+        public static async Task<AccessToken?> CreateCollector() {
+            Logger.Info("Creating collector access token.");
+            var config = await AppCache.Config.Get();
+            return config is null ? null : await Create(config.CollectorClientId, config.CollectorClientSecret, AppCache.StoredCollectorRefreshToken, config.CollectorScope);
+
+        }
+
+        public async Task<string?> GetString() => IsAboutToExpire && !await Refresh() ? null : accessToken;
+
+        public async Task<bool> Refresh() {
+            Logger.Info("Refreshing access token.");
+            var potentialData = await Refresh(ClientId, ClientSecret, RefreshToken);
+            if (potentialData is null) {
+                return false;
+            }
+
+            var data = (AccessTokenData)potentialData;
+            ExpirationDate = DateTime.Now.AddSeconds(data.ExpiresIn);
+            accessToken = data.AccessToken;
+            RefreshToken = data.RefreshToken;
+            return true;
+        }
+
+        private string accessToken;
+        private int expirationBuffer = 1000;
+
+        private AccessToken(string clientId, string clientSecret, AccessTokenData data) {
+            ClientId = clientId;
+            ClientSecret = clientSecret;
+            accessToken = data.AccessToken;
+            RefreshToken = data.RefreshToken;
+            ExpirationDate = DateTime.Now.AddSeconds(data.ExpiresIn);
+        }
+
+        private static async Task<AccessToken?> Create(string clientId, string clientSecret, string? storedRefreshToken, string[] scope) {
             if (storedRefreshToken is not null) {
                 var potentialRefreshData = await Refresh(clientId, clientSecret, storedRefreshToken);
                 if (potentialRefreshData is not null) {
@@ -42,43 +82,6 @@
             return potentialData is null ? null : new(clientId, clientSecret, (AccessTokenData)potentialData);
         }
 
-        public static async Task<AccessToken?> CreateChatter() {
-            var config = await AppCache.Config.Get();
-            return config is null ? null : await Create(config.ChatterClientId, config.ChatterClientSecret, AppCache.StoredChatterRefreshToken, config.ChatterScope);
-        }
-
-        public static async Task<AccessToken?> CreateCollector() {
-            var config = await AppCache.Config.Get();
-            return config is null ? null : await Create(config.CollectorClientId, config.CollectorClientSecret, AppCache.StoredCollectorRefreshToken, config.CollectorScope);
-
-        }
-
-        public async Task<string?> GetString() => IsAboutToExpire && !await Refresh() ? null : accessToken;
-
-        public async Task<bool> Refresh() {
-            var potentialData = await Refresh(ClientId, ClientSecret, RefreshToken);
-            if (potentialData is null) {
-                return false;
-            }
-
-            var data = (AccessTokenData)potentialData;
-            ExpirationDate = DateTime.Now.AddSeconds(data.ExpiresIn);
-            accessToken = data.AccessToken;
-            RefreshToken = data.RefreshToken;
-            return true;
-        }
-
-        private string accessToken;
-        private int expirationBuffer = 1000;
-
-        private AccessToken(string clientId, string clientSecret, AccessTokenData data) {
-            ClientId = clientId;
-            ClientSecret = clientSecret;
-            accessToken = data.AccessToken;
-            RefreshToken = data.RefreshToken;
-            ExpirationDate = DateTime.Now.AddSeconds(data.ExpiresIn);
-        }
-
         private static async Task<AccessTokenData?> Refresh(
             string clientId,
             string clientSecret,
@@ -91,8 +94,9 @@
         ));
 
         private void SetExpirationBuffer(int newExpirationBuffer) {
+            Logger.Info("Setting access token expiration buffer.");
             if (newExpirationBuffer < 0) {
-                Logger.Warning("Cannot set expiration buffer because newExpirationBuffer is less than 0.");
+                Logger.Error("Cannot set expiration buffer because newExpirationBuffer is less than 0.");
                 throw new ArgumentOutOfRangeException(nameof(newExpirationBuffer));
             }
 
