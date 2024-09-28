@@ -3,9 +3,6 @@
     using Godot;
 
     internal partial class CommandsTab : Control {
-        [Export]
-        private Container CommandsContainer = null!;
-
         public override void _Ready() {
             foreach (var command in CommandHandler.Commands) {
                 if (command is TogglableCommand togglableCommand) {
@@ -19,5 +16,9 @@
                 }
             }
         }
+
+        [Export]
+        private Container CommandsContainer = null!;
+
     }
 }

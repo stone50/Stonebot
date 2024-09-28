@@ -1,0 +1,96 @@
+[gd_scene load_steps=2 format=3 uid="uid://3a4qg1dtl57j"]
+
+[ext_resource type="Script" path="res://Scripts/UI/TimerPanel.cs" id="1_gfs0m"]
+
+[node name="TimerPanel" type="MarginContainer" node_paths=PackedStringArray("KeywordLabel", "MainButton", "DetailsContainer", "IntervalSpinBox", "EnableButton")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_right = 50
+script = ExtResource("1_gfs0m")
+KeywordLabel = NodePath("VSplitContainer/HBoxContainer/MainButton/MarginContainer/KeywordLabel")
+MainButton = NodePath("VSplitContainer/HBoxContainer/MainButton")
+DetailsContainer = NodePath("VSplitContainer/DetailsContainer")
+IntervalSpinBox = NodePath("VSplitContainer/DetailsContainer/IntervalContainer/IntervalSpinBoxMarginContainer/IntervalSpinBox")
+EnableButton = NodePath("VSplitContainer/HBoxContainer/EnableButton")
+
+[node name="VSplitContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VSplitContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MainButton" type="Button" parent="VSplitContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+focus_mode = 0
+alignment = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="VSplitContainer/HBoxContainer/MainButton"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="KeywordLabel" type="Label" parent="VSplitContainer/HBoxContainer/MainButton/MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 1
+vertical_alignment = 1
+
+[node name="EnableButton" type="Button" parent="VSplitContainer/HBoxContainer"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+focus_mode = 0
+icon_alignment = 1
+expand_icon = true
+
+[node name="DetailsContainer" type="HBoxContainer" parent="VSplitContainer"]
+visible = false
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="IntervalContainer" type="HBoxContainer" parent="VSplitContainer/DetailsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="IntervalLabelMarginContainer" type="MarginContainer" parent="VSplitContainer/DetailsContainer/IntervalContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="IntervalLabel" type="Label" parent="VSplitContainer/DetailsContainer/IntervalContainer/IntervalLabelMarginContainer"]
+layout_mode = 2
+size_flags_vertical = 1
+text = "Interval"
+vertical_alignment = 1
+
+[node name="IntervalSpinBoxMarginContainer" type="MarginContainer" parent="VSplitContainer/DetailsContainer/IntervalContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="IntervalSpinBox" type="SpinBox" parent="VSplitContainer/DetailsContainer/IntervalContainer/IntervalSpinBoxMarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+max_value = 2.14748e+09
+rounded = true

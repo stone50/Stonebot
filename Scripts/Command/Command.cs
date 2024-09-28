@@ -8,9 +8,7 @@
         public event EventHandler<int> UseDelayChanged = delegate { };
 
         public string Keyword { get; private set; }
-        private PermissionLevel permissionLevel = PermissionLevel.Viewer;
         public PermissionLevel PermissionLevel { get => permissionLevel; set => SetPermissionLevel(value); }
-        private int useDelay = 1000;
         public int UseDelay { get => useDelay; set => SetUseDelay(value); }
         public DateTime LastUsed { get; private set; } = DateTime.Now;
         public Func<ChannelChatMessageEvent, PermissionLevel, Task> UseAction;
@@ -49,6 +47,9 @@
             this.useDelay = useDelay;
             Util.InvokeDeferred(UseDelayChanged, UseDelay);
         }
+
+        private PermissionLevel permissionLevel = PermissionLevel.Viewer;
+        private int useDelay = 1000;
     }
 
     internal class TogglableCommand : Command {

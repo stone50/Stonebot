@@ -4,19 +4,6 @@
     using System;
 
     internal partial class CommandPanel : Control {
-        [Export]
-        protected Label KeywordLabel = null!;
-        [Export]
-        protected Button MainButton = null!;
-        [Export]
-        protected Container DetailsContainer = null!;
-        [Export]
-        protected MenuButton PermissionLevelMenuButton = null!;
-        [Export]
-        protected SpinBox UseDelaySpinBox = null!;
-
-        protected Command Command = null!;
-
         public void Init(Command command) {
             Command = command;
 
@@ -35,6 +22,19 @@
             Command.PermissionLevelChanged += OnPermissionLevelChanged;
             Command.UseDelayChanged += OnUseDelayChanged;
         }
+
+        [Export]
+        protected Label KeywordLabel = null!;
+        [Export]
+        protected Button MainButton = null!;
+        [Export]
+        protected Container DetailsContainer = null!;
+        [Export]
+        protected MenuButton PermissionLevelMenuButton = null!;
+        [Export]
+        protected SpinBox UseDelaySpinBox = null!;
+
+        protected Command Command = null!;
 
         private void OnMainButtonPressed() => DetailsContainer.Visible = !DetailsContainer.Visible;
 
