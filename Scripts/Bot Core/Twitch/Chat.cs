@@ -1,5 +1,4 @@
 ﻿namespace StoneBot.Scripts.Bot_Core.Twitch {
-    using Godot;
     using System;
     using System.Net.Http;
     using System.Net.Http.Json;
@@ -9,6 +8,7 @@
     internal static partial class TwitchAPI {
         // chatter access token
         public static async Task<HttpResponseMessage?> SendChatMessage(HttpClient client, string broadcasterId, string senderId, string message, string? replyParentMessageId = null) {
+            Logger.Info("Sending chat message to Twitch.");
             dynamic content = new {
                 broadcaster_id = broadcasterId,
                 sender_id = senderId,
@@ -22,7 +22,7 @@
             try {
                 return await client.PostAsJsonAsync("https://api.twitch.tv/helix/chat/messages", (object)content);
             } catch (Exception e) {
-                GD.PushWarning($"Cannot send chat message because client.PostAsJsonAsync failed: {e}.");
+                Logger.Warning($"Cannot send chat message because client.PostAsJsonAsync failed: {e}.");
                 return null;
             }
         }

@@ -1,8 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://cfh0jtidpx802"]
+[gd_scene load_steps=3 format=3 uid="uid://cfh0jtidpx802"]
 
-[ext_resource type="Script" path="res://Scripts/UI/UI.cs" id="1_v087a"]
+[ext_resource type="PackedScene" uid="uid://bl2g33knt81sa" path="res://Scenes/CommandsTab.tscn" id="2_6t4ov"]
+[ext_resource type="PackedScene" uid="uid://gpeflpyltg7x" path="res://Scenes/LogsTab.tscn" id="2_dq60r"]
 
-[node name="UI" type="Control" node_paths=PackedStringArray("CommandsContainer")]
+[node name="UI" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,8 +12,6 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-script = ExtResource("1_v087a")
-CommandsContainer = NodePath("TabContainer/Commands/MarginContainer/ScrollContainer/VBoxContainer")
 
 [node name="TabContainer" type="TabContainer" parent="."]
 layout_mode = 1
@@ -23,31 +22,14 @@ grow_horizontal = 2
 grow_vertical = 2
 current_tab = 0
 
-[node name="Logs" type="PanelContainer" parent="TabContainer"]
+[node name="Logs" parent="TabContainer" instance=ExtResource("2_dq60r")]
 layout_mode = 2
 metadata/_tab_index = 0
 
-[node name="Commands" type="PanelContainer" parent="TabContainer"]
+[node name="Commands" parent="TabContainer" instance=ExtResource("2_6t4ov")]
 visible = false
 layout_mode = 2
 metadata/_tab_index = 1
-
-[node name="MarginContainer" type="MarginContainer" parent="TabContainer/Commands"]
-layout_mode = 2
-theme_override_constants/margin_left = 5
-theme_override_constants/margin_top = 5
-theme_override_constants/margin_right = 5
-theme_override_constants/margin_bottom = 5
-
-[node name="ScrollContainer" type="ScrollContainer" parent="TabContainer/Commands/MarginContainer"]
-layout_mode = 2
-horizontal_scroll_mode = 0
-vertical_scroll_mode = 2
-
-[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Commands/MarginContainer/ScrollContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 2
 
 [node name="Messages" type="PanelContainer" parent="TabContainer"]
 visible = false

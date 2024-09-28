@@ -6,6 +6,7 @@
         public string RefreshToken => accessToken.RefreshToken;
 
         public static async Task<HttpClientWrapper?> CreateChatter() {
+            Logger.Info("Creating chatter http client wrapper.");
             var config = await AppCache.Config.Get();
             if (config is null) {
                 return null;
@@ -16,6 +17,7 @@
         }
 
         public static async Task<HttpClientWrapper?> CreateCollector() {
+            Logger.Info("Creating collector http client wrapper.");
             var config = await AppCache.Config.Get();
             if (config is null) {
                 return null;
@@ -26,6 +28,7 @@
         }
 
         public async Task<HttpClient?> GetClient() {
+            Logger.Info("Getting http client wrapper client.");
             if (cachedClient is not null && !accessToken.IsAboutToExpire) {
                 return cachedClient;
             }

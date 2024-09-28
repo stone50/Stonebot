@@ -1,5 +1,4 @@
 ﻿namespace StoneBot.Scripts.Bot_Core.App_Cache {
-    using Godot;
     using Models;
     using System;
     using System.IO;
@@ -19,11 +18,12 @@
         public readonly int TokenExpirationBuffer;
 
         public static async Task<Config?> Create() {
+            Logger.Info("Creating config.");
             string configText;
             try {
                 configText = await File.ReadAllTextAsync("config.json");
             } catch (Exception e) {
-                GD.PushWarning($"Cannot create config because File.ReadAllTextAsync failed: {e}.");
+                Logger.Warning($"Cannot create config because File.ReadAllTextAsync failed: {e}.");
                 return null;
             }
 
@@ -31,7 +31,7 @@
             try {
                 data = JsonSerializer.Deserialize<ConfigData>(configText);
             } catch (Exception e) {
-                GD.PushWarning($"Could not deserialize config values: {e}.");
+                Logger.Warning($"Could not deserialize config values: {e}.");
                 return null;
             }
 

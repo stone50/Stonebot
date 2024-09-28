@@ -13,6 +13,7 @@
         public string FeedRecordHolder;
 
         public static async Task<CustomData?> Create() {
+            Logger.Info("Creating custom data.");
             if (!File.Exists("data.json")) {
                 return new(new() {
                     Quotes = Array.Empty<string>()

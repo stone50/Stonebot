@@ -4,8 +4,6 @@
     using System;
 
     internal partial class CommandPanel : Control {
-        public UI UI { get; private set; } = null!;
-
         [Export]
         protected Label KeywordLabel = null!;
         [Export]
@@ -17,10 +15,9 @@
         [Export]
         protected SpinBox UseDelaySpinBox = null!;
 
-        public Command Command { get; protected set; } = null!;
+        protected Command Command = null!;
 
-        public void Init(UI ui, Command command) {
-            UI = ui;
+        public void Init(Command command) {
             Command = command;
 
             KeywordLabel.Text = Command.Keyword;
@@ -45,8 +42,8 @@
 
         private void OnUseDelaySpinBoxValueChanged(double value) => Command.UseDelay = (int)value;
 
-        private void OnPermissionLevelChanged(object? _, PermissionLevel permissionLevel) => PermissionLevelMenuButton.Text = permissionLevel.ToString();
+        private void OnPermissionLevelChanged(object? _, PermissionLevel permissionLevel) => Util.CallDeferred(() => PermissionLevelMenuButton.Text = permissionLevel.ToString());
 
-        private void OnUseDelayChanged(object? _, int useDelay) => UseDelaySpinBox.Value = useDelay;
+        private void OnUseDelayChanged(object? _, int useDelay) => Util.CallDeferred(() => UseDelaySpinBox.Value = useDelay);
     }
 }

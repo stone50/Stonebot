@@ -3,6 +3,8 @@ namespace StoneBot.Scripts {
     using System;
 
     internal static class Util {
-        public static void InvokeDeferred<T>(EventHandler<T> eventHandler, T args) => Callable.From(() => eventHandler.Invoke(null, args)).CallDeferred();
+        public static void CallDeferred(Action action) => Callable.From(action).CallDeferred();
+
+        public static void InvokeDeferred<T>(EventHandler<T> eventHandler, T args) => CallDeferred(() => eventHandler.Invoke(null, args));
     }
 }

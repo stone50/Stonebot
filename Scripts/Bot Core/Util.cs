@@ -1,5 +1,4 @@
 ﻿namespace StoneBot.Scripts.Bot_Core {
-    using Godot;
     using System;
     using System.Net.Http;
     using System.Text.Json;
@@ -7,6 +6,7 @@
 
     internal static class Util {
         public static async Task<T?> GetMessageAs<T>(HttpResponseMessage? message) where T : struct {
+            Logger.Info($"Getting http response message as {typeof(T).Name}.");
             var successfulString = await GetSuccessfulString(message);
             if (successfulString is null) {
                 return null;
@@ -16,7 +16,7 @@
             try {
                 messageAsT = JsonSerializer.Deserialize<T>(successfulString);
             } catch (Exception e) {
-                GD.PushWarning($"Cannot get message as {typeof(T).Name} because JsonSerializer.Deserialize failed: {e}.");
+                Logger.Warning($"Cannot get message as {typeof(T).Name} because JsonSerializer.Deserialize failed: {e}.");
                 return null;
             }
 
@@ -25,8 +25,9 @@
         public static async Task<T?> GetMessageAs<T>(Task<HttpResponseMessage?> messageTask) where T : struct => await GetMessageAs<T>(await messageTask);
 
         public static async Task<string?> GetSuccessfulString(HttpResponseMessage? message) {
+            Logger.Info("Getting successful string from http response message.");
             if (message is null) {
-                GD.PushWarning("Cannot get successful string because message is null.");
+                Logger.Warning("Cannot get successful string because message is null.");
                 return null;
             }
 
@@ -34,12 +35,12 @@
             try {
                 successfulString = await message.Content.ReadAsStringAsync();
             } catch (Exception e) {
-                GD.PushWarning($"Cannot get successful string because message.Content.ReadAsStringAsync failed: {e}.");
+                Logger.Warning($"Cannot get successful string because message.Content.ReadAsStringAsync failed: {e}.");
                 return null;
             }
 
             if (!message.IsSuccessStatusCode) {
-                GD.PushWarning($"Cannot get successful string because message.IsSuccessStatusCode is false: {successfulString}.");
+                Logger.Warning($"Cannot get successful string because message.IsSuccessStatusCode is false: {successfulString}.");
                 return null;
             }
 

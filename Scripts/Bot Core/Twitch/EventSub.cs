@@ -1,5 +1,4 @@
 ﻿namespace StoneBot.Scripts.Bot_Core.Twitch {
-    using Godot;
     using System;
     using System.Net.Http;
     using System.Net.Http.Json;
@@ -10,6 +9,7 @@
         // collector access token
         // only up to 1 of status, type, and userId should be specified
         public static async Task<HttpResponseMessage?> GetEventSubs(HttpClient client, string? status = null, string? type = null, string? userId = null, string? after = null) {
+            Logger.Info("Getting event subs from Twitch.");
             var queryParams = "";
             if (status is not null) {
                 queryParams = $"&status={status}";
@@ -30,23 +30,25 @@
             try {
                 return await client.GetAsync($"https://api.twitch.tv/helix/eventsub/subscriptions?{queryParams}");
             } catch (Exception e) {
-                GD.PushWarning($"Cannot get event subs because client.GetAsync failed: {e}.");
+                Logger.Warning($"Cannot get event subs because client.GetAsync failed: {e}.");
                 return null;
             }
         }
 
         // collector access token
         public static async Task<HttpResponseMessage?> DeleteEventSub(HttpClient client, string id) {
+            Logger.Info("Deleting event sub from Twitch.");
             try {
                 return await client.DeleteAsync($"https://api.twitch.tv/helix/eventsub/subscriptions?id={id}");
             } catch (Exception e) {
-                GD.PushWarning($"Cannot delete event sub because client.DeleteAsync failed: {e}.");
+                Logger.Warning($"Cannot delete event sub because client.DeleteAsync failed: {e}.");
                 return null;
             }
         }
 
         // collector access token
         public static async Task<HttpResponseMessage?> SubscribeToChannelChatMessage(HttpClient client, string broadcasterUserId, string userId, string sessionId) {
+            Logger.Info("Subscribing to channel chat message event sub on Twitch.");
             var content = new {
                 type = "channel.chat.message",
                 version = "1",
@@ -63,7 +65,7 @@
             try {
                 return await client.PostAsJsonAsync("https://api.twitch.tv/helix/eventsub/subscriptions", content);
             } catch (Exception e) {
-                GD.PushWarning($"Cannot subscribe to channel chat message because client.PostAsJsonAsync failed: {e}.");
+                Logger.Warning($"Cannot subscribe to channel chat message because client.PostAsJsonAsync failed: {e}.");
                 return null;
             }
         }

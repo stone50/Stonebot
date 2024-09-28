@@ -6,6 +6,7 @@
 
     internal static class Chat {
         public static async Task<bool> Send(string message, string? replyParentMessageId = null) {
+            Logger.Info("Sending a chat message.");
             var config = await AppCache.Config.Get();
             if (config is null) {
                 return false;

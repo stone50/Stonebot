@@ -18,6 +18,7 @@
         }
 
         public void SetIsEnabled(bool isEnabled) {
+            Logger.Info($"Setting is enabled of timer {Keyword}.");
             if (this.isEnabled == isEnabled) {
                 return;
             }

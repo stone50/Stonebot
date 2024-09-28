@@ -15,6 +15,7 @@
         };
 
         public static async Task<bool> Handle(ChannelChatMessageEvent messageEvent) {
+            Logger.Info("Handling message event as message.");
             foreach (var message in Messages) {
                 if (await message.Use(messageEvent)) {
                     return true;

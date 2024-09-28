@@ -7,12 +7,14 @@
 
     internal static class Meta {
         public static async Task Startup() {
+            Logger.Info("Starting up.");
             _ = await AppCache.Init();
             _ = await EventSub.EventSub.ConnectChannelChatMessage(HandleChatMessage);
             _ = await Chat.Send("MercyWing1 :) MercyWing2");
         }
 
         public static async Task Shutdown() {
+            Logger.Info("Shutting down.");
             _ = await Chat.Send("logging off...");
             await AppCache.Save();
             _ = await EventSub.EventSub.RemoveBy();
@@ -23,6 +25,7 @@
         }
 
         private static async Task HandleChatMessage(ChannelChatMessageEvent messageEvent) {
+            Logger.Info("Handling chat message.");
             var bot = await AppCache.Bot.Get();
             if (bot is null) {
                 return;

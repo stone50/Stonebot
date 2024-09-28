@@ -3,7 +3,6 @@
     using Bot_Core.App_Cache;
     using Bot_Core.Models.EventSub;
     using Bot_Core.Twitch;
-    using Godot;
     using System;
     using System.Linq;
     using System.Text.Json;
@@ -12,6 +11,7 @@
     internal static class EventSub {
         // only up to 1 of status, type, and userId should be specified
         public static async Task<EventSubsData?> Get(string? status = null, string? type = null, string? userId = null) {
+            Logger.Info("Getting event subs.");
             var clientWrapper = await AppCache.CollectorClientWrapper.Get();
             if (clientWrapper is null) {
                 return null;
@@ -51,11 +51,13 @@
 
         // only up to 1 of status, type, and userId should be specified
         public static async Task<bool> RemoveBy(string? status = null, string? type = null, string? userId = null) {
+            Logger.Info("Removing event subs by filters.");
             var potentialData = await Get(status, type, userId);
             return potentialData is not null && await Remove(((EventSubsData)potentialData).Data);
         }
 
         public static async Task<bool> Remove(EventSubData[] eventSubs) {
+            Logger.Info("Removing event subs.");
             var clientWrapper = await AppCache.CollectorClientWrapper.Get();
             if (clientWrapper is null) {
                 return false;
@@ -77,6 +79,7 @@
         }
 
         public static async Task<bool> ConnectChannelChatMessage(Func<ChannelChatMessageEvent, Task> handler) {
+            Logger.Info("Connecting to channel chat message event sub.");
             var config = await AppCache.Config.Get();
             if (config is null) {
                 return false;
@@ -127,7 +130,7 @@
                 try {
                     eventStruct = JsonSerializer.Deserialize<ChannelChatMessageEvent>(eventElement);
                 } catch (Exception e) {
-                    GD.PushWarning($"Cannot handle channel chat message event because JsonSerializer.Deserialize failed: {e}.");
+                    Logger.Warning($"Cannot handle channel chat message event because JsonSerializer.Deserialize failed: {e}.");
                     return;
                 }
 
