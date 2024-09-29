@@ -1,4 +1,4 @@
-﻿namespace StoneBot.Scripts.Timer {
+﻿namespace Stonebot.Scripts.Timer {
     using Bot_Core.App_Cache;
     using Core_Interface;
     using System;

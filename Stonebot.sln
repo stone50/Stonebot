@@ -1,6 +1,6 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stone-Bot", "Stone-Bot.csproj", "{CC2632A0-FED5-4F70-918B-26DE4F24DB75}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stonebot", "Stonebot.csproj", "{CC2632A0-FED5-4F70-918B-26DE4F24DB75}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

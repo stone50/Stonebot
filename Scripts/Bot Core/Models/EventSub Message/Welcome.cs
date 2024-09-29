@@ -1,4 +1,4 @@
-﻿namespace StoneBot.Scripts.Bot_Core.Models.EventSub_Message {
+﻿namespace Stonebot.Scripts.Bot_Core.Models.EventSub_Message {
     using System.Text.Json.Serialization;
 
     internal struct EventSubWelcomeMessageMetadata {

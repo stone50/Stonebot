@@ -1,4 +1,4 @@
-﻿namespace StoneBot.Scripts.Command {
+﻿namespace Stonebot.Scripts.Command {
     using Bot_Core.App_Cache;
     using Bot_Core.Models.EventSub;
     using Core_Interface;

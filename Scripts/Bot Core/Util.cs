@@ -1,4 +1,4 @@
-﻿namespace StoneBot.Scripts.Bot_Core {
+﻿namespace Stonebot.Scripts.Bot_Core {
     using System;
     using System.Net.Http;
     using System.Text.Json;

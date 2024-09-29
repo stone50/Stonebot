@@ -1,4 +1,4 @@
-﻿namespace StoneBot.Scripts.Command {
+﻿namespace Stonebot.Scripts.Command {
     using Bot_Core.Models.EventSub;
     using System;
     using System.Threading.Tasks;

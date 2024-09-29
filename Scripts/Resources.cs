@@ -1,4 +1,4 @@
-﻿namespace StoneBot.Scripts {
+﻿namespace Stonebot.Scripts {
     using Godot;
 
     internal static class Resources {

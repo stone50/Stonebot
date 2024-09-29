@@ -1,4 +1,4 @@
-﻿namespace StoneBot.Scripts.Bot_Core.App_Cache {
+﻿namespace Stonebot.Scripts.Bot_Core.App_Cache {
     using System;
     using System.Net;
     using System.Net.Sockets;
