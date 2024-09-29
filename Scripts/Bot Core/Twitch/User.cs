@@ -1,4 +1,4 @@
-﻿namespace StoneBot.Scripts.Bot_Core.Twitch {
+﻿namespace Stonebot.Scripts.Bot_Core.Twitch {
     using System;
     using System.Linq;
     using System.Net.Http;

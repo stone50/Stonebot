@@ -1,4 +1,4 @@
-﻿namespace StoneBot.Scripts.Bot_Core.App_Cache {
+﻿namespace Stonebot.Scripts.Bot_Core.App_Cache {
     using System.Threading.Tasks;
     using HttpClient = System.Net.Http.HttpClient;
 

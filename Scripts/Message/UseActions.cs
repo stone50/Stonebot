@@ -1,4 +1,4 @@
-﻿namespace StoneBot.Scripts.Message {
+﻿namespace Stonebot.Scripts.Message {
     using Bot_Core.Models.EventSub;
     using Core_Interface;
     using System.Text.RegularExpressions;

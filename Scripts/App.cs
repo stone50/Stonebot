@@ -1,4 +1,4 @@
-﻿namespace StoneBot.Scripts {
+﻿namespace Stonebot.Scripts {
     using Core_Interface;
     using Godot;
     using System.Threading.Tasks;

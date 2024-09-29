@@ -1,9 +1,16 @@
-[gd_scene load_steps=5 format=3 uid="uid://cfh0jtidpx802"]
+[gd_scene load_steps=7 format=3 uid="uid://cfh0jtidpx802"]
 
+[ext_resource type="Texture2D" uid="uid://cn2y0kuko6731" path="res://Icons/Logo.png" id="1_dkp3o"]
 [ext_resource type="PackedScene" uid="uid://bl2g33knt81sa" path="res://Scenes/CommandsTab.tscn" id="2_6t4ov"]
 [ext_resource type="PackedScene" uid="uid://gpeflpyltg7x" path="res://Scenes/LogsTab.tscn" id="2_dq60r"]
 [ext_resource type="PackedScene" uid="uid://dqmco36n8ja68" path="res://Scenes/MessagesTab.tscn" id="3_c41l2"]
 [ext_resource type="PackedScene" uid="uid://bd3165guwtheq" path="res://Scenes/TimersTab.tscn" id="4_3xaqy"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_g8xnn"]
+font_size = 32
+shadow_size = 5
+shadow_color = Color(0, 0, 0, 1)
+shadow_offset = Vector2(-1, 1)
 
 [node name="UI" type="Control"]
 layout_mode = 3
@@ -15,30 +22,54 @@ grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="TabContainer" type="TabContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/HBoxContainer/MarginContainer"]
+layout_mode = 2
+texture = ExtResource("1_dkp3o")
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Stonebot"
+label_settings = SubResource("LabelSettings_g8xnn")
+vertical_alignment = 1
+
+[node name="TabContainer" type="TabContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
 current_tab = 0
 
-[node name="Logs" parent="TabContainer" instance=ExtResource("2_dq60r")]
+[node name="Logs" parent="VBoxContainer/TabContainer" instance=ExtResource("2_dq60r")]
 layout_mode = 2
 metadata/_tab_index = 0
 
-[node name="Commands" parent="TabContainer" instance=ExtResource("2_6t4ov")]
+[node name="Commands" parent="VBoxContainer/TabContainer" instance=ExtResource("2_6t4ov")]
 visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
-[node name="Messages" parent="TabContainer" instance=ExtResource("3_c41l2")]
+[node name="Messages" parent="VBoxContainer/TabContainer" instance=ExtResource("3_c41l2")]
 visible = false
 layout_mode = 2
 metadata/_tab_index = 2
 
-[node name="Timers" parent="TabContainer" instance=ExtResource("4_3xaqy")]
+[node name="Timers" parent="VBoxContainer/TabContainer" instance=ExtResource("4_3xaqy")]
 visible = false
 layout_mode = 2
 metadata/_tab_index = 3

@@ -1,4 +1,4 @@
-﻿namespace StoneBot.Scripts.Bot_Core.Models {
+﻿namespace Stonebot.Scripts.Bot_Core.Models {
     using System.Text.Json.Serialization;
 
     internal struct UserData {

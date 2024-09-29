@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Stone Bot": {
+    "Stonebot": {
       "commandName": "Executable",
       "executablePath": "C:\\Program Files\\Godot\\Godot_v4.3-stable_mono_win64.exe",
       "workingDirectory": ".",

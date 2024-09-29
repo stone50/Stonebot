@@ -1,4 +1,4 @@
-﻿namespace StoneBot.Scripts.Timer {
+﻿namespace Stonebot.Scripts.Timer {
     using System.Linq;
 
     internal static class TimerManager {

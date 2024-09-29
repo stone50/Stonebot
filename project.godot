@@ -10,10 +10,20 @@ config_version=5
 
 [application]
 
-config/name="Stone-Bot"
+config/name="Stonebot"
+config/description="A chatbot for Twitch"
+config/version="0.1.0"
 run/main_scene="res://Scenes/Main.tscn"
 config/features=PackedStringArray("4.3", "C#", "Forward Plus")
+boot_splash/image="res://Icons/Logo.png"
+boot_splash/use_filter=false
+config/icon="res://Icons/Logo.png"
 
 [dotnet]
 
-project/assembly_name="Stone-Bot"
+project/assembly_name="Stonebot"
+
+[physics]
+
+common/physics_ticks_per_second=1
+common/max_physics_steps_per_frame=1

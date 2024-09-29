@@ -1,4 +1,4 @@
-﻿namespace StoneBot.Scripts {
+﻿namespace Stonebot.Scripts {
     using Bot_Core.App_Cache;
     using Bot_Core.Models;
     using System.Threading.Tasks;

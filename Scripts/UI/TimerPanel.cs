@@ -1,4 +1,4 @@
-﻿namespace StoneBot.Scripts.UI {
+﻿namespace Stonebot.Scripts.UI {
     using Godot;
     using Timer = Timer.Timer;
 
