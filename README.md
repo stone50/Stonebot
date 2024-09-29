@@ -30,7 +30,7 @@ Both applications need to have the same redirect URL.
 
 ### Configure the Bot
 
-Navigate to your roaming user's application data folder (ex. on Windows "C:\Users\<your user>\AppData\Roaming").
+Navigate to your roaming user's application data folder (ex. on Windows "C:\Users\\\<your user>\AppData\Roaming").
 Create a new folder named "Stonebot".
 Add a `config.json` file to the new folder with the contents:
 ```
