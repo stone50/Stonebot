@@ -1,4 +1,4 @@
-# Stone Bot
+# Stonebot
 This is a chatbot for [Twitch](https://www.twitch.tv/).
  
 ## Setup
