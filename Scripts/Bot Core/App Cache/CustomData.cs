@@ -14,7 +14,7 @@
 
         public static async Task<CustomData?> Create() {
             Logger.Info("Creating custom data.");
-            if (!File.Exists("data.json")) {
+            if (!File.Exists(Constants.DataFilePath)) {
                 return new(new() {
                     Quotes = Array.Empty<string>()
                 });
@@ -22,7 +22,7 @@
 
             string dataText;
             try {
-                dataText = await File.ReadAllTextAsync("data.json");
+                dataText = await File.ReadAllTextAsync(Constants.DataFilePath);
             } catch {
                 return null;
             }

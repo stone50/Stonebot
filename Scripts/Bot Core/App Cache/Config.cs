@@ -21,7 +21,7 @@
             Logger.Info("Creating config.");
             string configText;
             try {
-                configText = await File.ReadAllTextAsync("config.json");
+                configText = await File.ReadAllTextAsync(Constants.ConfigFilePath);
             } catch (Exception e) {
                 Logger.Warning($"Cannot create config because File.ReadAllTextAsync failed: {e}.");
                 return null;

@@ -47,6 +47,13 @@
 
         public static async Task<bool> Init() {
             Logger.Info("Initializing app cache.");
+            try {
+                _ = Directory.CreateDirectory(Constants.AppDataPath);
+            } catch (Exception e) {
+                Logger.Warning($"Cannot initialize app cache because Directory.CreateDirectory failed: {e}.");
+                return false;
+            }
+
             _ = await Load();
             var success = await CollectorClientWrapper.Get() is not null;
             return await ChatterClientWrapper.Get() is not null && success;
@@ -56,7 +63,7 @@
             Logger.Info("Loading app cache.");
             string json;
             try {
-                json = await File.ReadAllTextAsync("cache.json");
+                json = await File.ReadAllTextAsync(Constants.CacheFilePath);
             } catch {
                 return false;
             }
@@ -87,7 +94,7 @@
                 CollectorRefreshToken = collectorClientWrapper.RefreshToken,
             };
             try {
-                await File.WriteAllTextAsync("cache.json", JsonSerializer.Serialize(data));
+                await File.WriteAllTextAsync(Constants.CacheFilePath, JsonSerializer.Serialize(data));
             } catch (Exception e) {
                 Logger.Warning($"Cannot save cache because File.WriteAllTextAsync failed: {e}.");
                 return false;
@@ -105,7 +112,7 @@
             }
 
             try {
-                await File.WriteAllTextAsync("data.json", JsonSerializer.Serialize(data.ToDataData()));
+                await File.WriteAllTextAsync(Constants.DataFilePath, JsonSerializer.Serialize(data.ToDataData()));
             } catch (Exception e) {
                 Logger.Warning($"Cannot save custom data because File.WriteAllTextAsync failed: {e}.");
                 return false;

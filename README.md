@@ -30,7 +30,9 @@ Both applications need to have the same redirect URL.
 
 ### Configure the Bot
 
-Add a `config.json` file to the project folder:
+Navigate to your roaming user's application data folder (ex. on Windows "C:\Users\<your user>\AppData\Roaming").
+Create a new folder named "Stonebot".
+Add a `config.json` file to the new folder with the contents:
 ```
 {
   "authorizationPort": 6969,
@@ -97,7 +99,7 @@ When you run the bot for the first time, it should open a browser tab for you to
 
 There may be another dialog to redirect you to a confirmation page.
 
-After you close the bot, it should save your authorization information in the `cache.json` file located in the project folder.
+After you close the bot, it should save your authorization information in the `cache.json` file located in the application data folder (the same one where `config.json` is located).
 This makes it so that you do not need to authorize again.
 If you do want to authorize again (for example, if you used the wrong Twitch account), make sure the bot is not running, then delete the `cache.json` file.
 When you run the bot again, it should prompt you to authorize again.

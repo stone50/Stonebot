@@ -15,6 +15,10 @@
 
         public static async Task Shutdown() {
             Logger.Info("Shutting down.");
+            if (AppCache.CollectorClientWrapper.GetWithoutRefresh() is null || AppCache.ChatterClientWrapper.GetWithoutRefresh() is null) {
+                return;
+            }
+
             _ = await Chat.Send("logging off...");
             await AppCache.Save();
             _ = await EventSub.EventSub.RemoveBy();
