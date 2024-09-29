@@ -33,13 +33,17 @@
             }
 
             var state = GetState(32);
-            _ = TwitchAPI.Authorize(
+            var authorizationProcess = TwitchAPI.Authorize(
                 clientId,
                 $"http://localhost:{config.AuthorizationPort}",
                 scope,
                 true,
                 state
             );
+            if (authorizationProcess is null) {
+                return null;
+            }
+
             var code = await GetCode(server, state);
             try {
                 server.Stop();
