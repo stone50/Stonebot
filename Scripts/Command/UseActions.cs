@@ -239,5 +239,14 @@
         }
 
         public static async Task Lurk(ChannelChatMessageEvent messageEvent, PermissionLevel __) => _ = await Chat.Send($"{messageEvent.BroadcasterUserName}, thank you for your presence!");
+
+        public static async Task Discord(ChannelChatMessageEvent messageEvent, PermissionLevel __) {
+            var customData = await AppCache.Data.Get();
+            if (customData is null) {
+                return;
+            }
+
+            _ = Chat.Send($"{messageEvent.ChatterUserName} {customData.DiscordInvite}");
+        }
     }
 }

@@ -11,6 +11,7 @@
         public int FeedCount;
         public int FeedRecord;
         public string FeedRecordHolder;
+        public string DiscordInvite;
 
         public static async Task<CustomData?> Create() {
             Logger.Info("Creating custom data.");
@@ -41,7 +42,8 @@
             Quotes = Quotes.ToArray(),
             FeedCount = FeedCount,
             FeedRecord = FeedRecord,
-            FeedRecordHolder = FeedRecordHolder
+            FeedRecordHolder = FeedRecordHolder,
+            DiscordInvite = DiscordInvite
         };
 
         private CustomData(CustomDataData dataData) {
@@ -49,6 +51,7 @@
             FeedCount = dataData.FeedCount;
             FeedRecord = dataData.FeedRecord;
             FeedRecordHolder = dataData.FeedRecordHolder;
+            DiscordInvite = dataData.DiscordInvite;
         }
     }
 }

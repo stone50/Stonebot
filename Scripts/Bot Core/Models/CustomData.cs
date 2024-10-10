@@ -10,5 +10,7 @@
         public int FeedRecord { get; set; }
         [JsonPropertyName("feedRecordHolder")]
         public string FeedRecordHolder { get; set; }
+        [JsonPropertyName("discordInvite")]
+        public string DiscordInvite { get; set; }
     }
 }
