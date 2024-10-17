@@ -22,6 +22,7 @@
         public event EventHandler<CloseReason> Closed = delegate { };
 
         public bool IsConnected { get; private set; } = false;
+        public bool IsClosing { get; private set; } = false;
 
         public async Task<bool> Connect() {
             var config = await AppCache.Config.Get();
@@ -91,6 +92,11 @@
                 return false;
             }
 
+            if (IsClosing) {
+                return false;
+            }
+
+            IsClosing = true;
             var status = reason switch {
                 CloseReason.Manual => WebSocketCloseStatus.NormalClosure,
                 CloseReason.BadRequest => WebSocketCloseStatus.InvalidMessageType,
@@ -103,12 +109,14 @@
                 await socket.CloseAsync(status, "", default);
             } catch (Exception e) {
                 GD.PushError($"Cannot close because socket.CloseAsync failed: {e}.");
+                IsClosing = false;
                 return false;
             }
 
-            socket = new();
             IsConnected = false;
+            socket = new();
             id = null;
+            IsClosing = false;
             Closed.Invoke(this, reason);
             return true;
         }
