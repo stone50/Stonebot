@@ -56,8 +56,8 @@
             return simpleUsersData is null ? null : ((PaginatedSimpleUsersData)simpleUsersData).Data.Length == 1;
         }
 
-        public static async Task<SimpleSubscriptionData?> CheckUserSubscriptions(string userId) {
-            Logger.Info("Checking user subscriptions.");
+        public static async Task<int?> GetSubTier(string userId) {
+            Logger.Info("Getting is user subscriber.");
             var broadcaster = await AppCache.Broadcaster.Get();
             if (broadcaster is null) {
                 return null;
@@ -73,17 +73,24 @@
                 return null;
             }
 
-            var potentialSubscriptionsData = await Util.GetMessageAs<SimpleSubscriptionsData>(TwitchAPI.CheckUserSubscription(
+            var potentialSubscriptionsData = await Util.GetMessageAs<PaginatedSubscriptionsData>(TwitchAPI.GetBroadcasterSubscriptions(
                 client,
                 broadcaster.Id,
-                userId
+                new[] { userId }
             ));
             if (potentialSubscriptionsData is null) {
                 return null;
             }
 
-            var subscriptionsData = (SimpleSubscriptionsData)potentialSubscriptionsData;
-            return subscriptionsData.Data.Length == 0 ? null : subscriptionsData.Data[0];
+            var subscriptionsData = (PaginatedSubscriptionsData)potentialSubscriptionsData;
+            return subscriptionsData.Data.Length == 0
+                ? null
+                : subscriptionsData.Data[0].Tier switch {
+                    "1000" => 1,
+                    "2000" => 2,
+                    "3000" => 3,
+                    _ => null,
+                };
         }
     }
 }

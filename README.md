@@ -38,10 +38,14 @@ Add a `config.json` file to the new folder with the contents:
   "authorizationPort": 6969,
   "chatterClientId": <your chatter application client id>,
   "chatterClientSecret": <your chatter application client secret>,
-  "chatterScope": [ "user:write:chat" ],
+  "chatterScope": ["user:write:chat", "user:read:chat"],
   "collectorClientId": <your collector application client id>,
   "collectorClientSecret": <your collector client secret>,
-  "collectorScope": [ "user:read:chat", "channel:read:vips", "channel:read:subscriptions", "moderation:read" ],
+  "collectorScope": [
+	"channel:read:vips",
+	"channel:read:subscriptions",
+	"moderation:read"
+  ],
   "socketKeepaliveBuffer": 5000,
   "socketKeepaliveTimeout": 10,
   "tokenExpirationBuffer": 1000

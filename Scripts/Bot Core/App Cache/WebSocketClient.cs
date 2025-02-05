@@ -1,7 +1,7 @@
 ﻿namespace Stonebot.Scripts.Bot_Core.App_Cache {
-    using Models.EventSub_Message;
-    using Models.EventSub;
     using Core_Interface.EventSub;
+    using Models.EventSub;
+    using Models.EventSub_Message;
     using System;
     using System.Collections.Generic;
     using System.Net.WebSockets;

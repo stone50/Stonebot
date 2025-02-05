@@ -116,7 +116,7 @@
                 return false;
             }
 
-            var clientWrapper = await AppCache.CollectorClientWrapper.Get();
+            var clientWrapper = await AppCache.ChatterClientWrapper.Get();
             if (clientWrapper is null) {
                 return false;
             }
@@ -129,7 +129,7 @@
             var eventSubData = await Util.GetMessageAs<EventSubData>(TwitchAPI.SubscribeToChannelChatMessage(
                 client,
                 broadcaster.Id,
-                broadcaster.Id,
+                bot.Id,
                 sessionId
             ));
             if (eventSubData is null) {

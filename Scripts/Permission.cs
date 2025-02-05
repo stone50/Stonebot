@@ -1,6 +1,5 @@
 ﻿namespace Stonebot.Scripts {
     using Bot_Core.App_Cache;
-    using Bot_Core.Models;
     using System.Threading.Tasks;
     using static Core_Interface.User;
 
@@ -27,19 +26,18 @@
                 return PermissionLevel.Mod;
             }
 
-            var potentialSubData = await CheckUserSubscriptions(userId);
-            if (potentialSubData is not null) {
-                var tier = ((SimpleSubscriptionData)potentialSubData).Tier;
-                switch (tier) {
-                    case "1":
+            var subTier = await GetSubTier(userId);
+            if (subTier is not null) {
+                switch (subTier) {
+                    case 1:
                         return PermissionLevel.Tier1Sub;
-                    case "2":
+                    case 2:
                         return PermissionLevel.Tier2Sub;
-                    case "3":
+                    case 3:
                         return PermissionLevel.Tier3Sub;
                 }
 
-                Logger.Warning($"Cannot get highest because subscription tier '{tier}' is not supported.");
+                Logger.Warning($"Cannot get highest because subscription tier '{subTier}' is not supported.");
                 return null;
             }
 

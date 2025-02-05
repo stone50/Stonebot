@@ -5,6 +5,6 @@
         [JsonPropertyName("data")]
         public SimpleUserData[] Data { get; set; }
         [JsonPropertyName("pagination")]
-        private PaginationData Pagination { get; set; }
+        public PaginationData Pagination { get; set; }
     }
 }
