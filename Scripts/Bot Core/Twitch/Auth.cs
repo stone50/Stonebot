@@ -12,7 +12,7 @@
 
             var process = new Process();
             process.StartInfo.UseShellExecute = true;
-            process.StartInfo.FileName = $"https://id.twitch.tv/oauth2/authorize?client_id={clientId}&force_verify={forceVerify}&redirect_uri={redirectUri}&response_type=code&scope={scopeParam}";
+            process.StartInfo.FileName = $"https://id.twitch.tv/oauth2/authorize?client_id={clientId}&force_verify={(forceVerify ? "true" : "false")}&redirect_uri={redirectUri}&response_type=code&scope={scopeParam}";
             if (state is not null) {
                 process.StartInfo.FileName += $"&state={state}";
             }
@@ -31,7 +31,7 @@
         public static async Task<HttpResponseMessage?> GetAccessToken(HttpClient client, string clientId, string clientSecret, string authorizationCode, string redirectUri) {
             Logger.Info("Getting access token from Twitch.");
             try {
-                return await client.PostAsync($"https://id.twitch.tv/oauth2/token?&client_id={clientId}&client_secret={clientSecret}&code={authorizationCode}&grant_type=authorization_code&redirect_uri={redirectUri}", null);
+                return await client.PostAsync($"https://id.twitch.tv/oauth2/token?client_id={clientId}&client_secret={clientSecret}&code={authorizationCode}&grant_type=authorization_code&redirect_uri={redirectUri}", null);
             } catch (Exception e) {
                 Logger.Warning($"Cannot get access token because client.PostAsync failed: {e}.");
                 return null;

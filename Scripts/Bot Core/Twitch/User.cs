@@ -69,12 +69,25 @@
         }
 
         // collector access token
-        public static async Task<HttpResponseMessage?> CheckUserSubscription(HttpClient client, string broadcasterId, string userId) {
-            Logger.Info("Checking user subscription through Twitch.");
+        public static async Task<HttpResponseMessage?> GetBroadcasterSubscriptions(HttpClient client, string broadcasterId, string[]? userId = null, string? first = null, string? after = null, string? before = null) {
+            Logger.Info("Getting subscriptions through Twitch.");
+            var queryParams = $"broadcaster_id={broadcasterId}";
+            if (userId is not null) {
+                if (userId.Length > 100) {
+                    Logger.Warning("Cannot get subscriptions because userId.Length is greater than 100.");
+                    return null;
+                }
+
+                queryParams += $"&{string.Join("&", userId.Select(id => $"user_id={id}"))}";
+            }
+
+            queryParams += first is null ? "" : $"&first={first}";
+            queryParams += after is null ? "" : $"&after={after}";
+            queryParams += before is null ? "" : $"&before={before}";
             try {
-                return await client.GetAsync($"https://api.twitch.tv/helix/subscriptions/user?broadcaster_id={broadcasterId}&user_id={userId}");
+                return await client.GetAsync($"https://api.twitch.tv/helix/subscriptions?{queryParams}");
             } catch (Exception e) {
-                Logger.Warning(e.Message);
+                Logger.Warning($"Cannot get subscriptions because client.GetAsync failed: {e}.");
                 return null;
             }
         }
