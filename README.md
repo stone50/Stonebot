@@ -30,8 +30,8 @@ Both applications need to have the same redirect URL.
 
 ### Configure the Bot
 
-Navigate the bot's application data folder (ex. on Windows "C:\Users\\\<your user>\AppData\Roaming\Godot\app_userdata").
-Create a new folder named "Stonebot".
+Navigate to the bot's application data folder (ex. on Windows "C:\Users\\\<your user>\AppData\Roaming\Godot\app_userdata").
+Navigate to or create a new folder named "Stonebot".
 Add a `config.json` file to the new folder with the contents:
 ```
 {
