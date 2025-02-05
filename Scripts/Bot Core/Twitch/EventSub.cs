@@ -47,6 +47,16 @@
         }
 
         // collector access token
+        public static async Task<HttpResponseMessage?> AddEventSub<T>(HttpClient client, T content) {
+            try {
+                return await client.PostAsJsonAsync("https://api.twitch.tv/helix/eventsub/subscriptions", content);
+            } catch (Exception e) {
+                Logger.Warning($"Cannot add event sub because client.PostAsJsonAsync failed: {e}.");
+                return null;
+            }
+        }
+
+        // collector access token
         public static async Task<HttpResponseMessage?> SubscribeToChannelChatMessage(HttpClient client, string broadcasterUserId, string userId, string sessionId) {
             Logger.Info("Subscribing to channel chat message event sub on Twitch.");
             var content = new {
@@ -61,13 +71,7 @@
                     session_id = sessionId
                 }
             };
-
-            try {
-                return await client.PostAsJsonAsync("https://api.twitch.tv/helix/eventsub/subscriptions", content);
-            } catch (Exception e) {
-                Logger.Warning($"Cannot subscribe to channel chat message because client.PostAsJsonAsync failed: {e}.");
-                return null;
-            }
+            return await AddEventSub(client, content);
         }
     }
 }

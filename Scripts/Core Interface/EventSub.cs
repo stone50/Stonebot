@@ -78,6 +78,17 @@
             return true;
         }
 
+        public static async Task<bool> Add(EventSubData eventSub) {
+            Logger.Info("Adding event sub.");
+            var clientWrapper = await AppCache.CollectorClientWrapper.Get();
+            if (clientWrapper is null) {
+                return false;
+            }
+
+            var client = await clientWrapper.GetClient();
+            return client is not null && await Util.GetMessageAs<EventSubData>(TwitchAPI.AddEventSub(client, eventSub)) is not null;
+        }
+
         public static async Task<bool> ConnectChannelChatMessage(Func<ChannelChatMessageEvent, Task> handler) {
             Logger.Info("Connecting to channel chat message event sub.");
             var config = await AppCache.Config.Get();
@@ -118,7 +129,7 @@
             var eventSubData = await Util.GetMessageAs<EventSubData>(TwitchAPI.SubscribeToChannelChatMessage(
                 client,
                 broadcaster.Id,
-                broadcaster.Id, // TODO: figure out why permission fails when this it bot.Id
+                broadcaster.Id,
                 sessionId
             ));
             if (eventSubData is null) {

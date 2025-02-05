@@ -1,6 +1,7 @@
 ﻿namespace Stonebot.Scripts.Bot_Core.App_Cache {
-    using Godot;
     using Models.EventSub_Message;
+    using Models.EventSub;
+    using Core_Interface.EventSub;
     using System;
     using System.Collections.Generic;
     using System.Net.WebSockets;
@@ -26,7 +27,16 @@
 
         public async Task<bool> Connect() {
             var config = await AppCache.Config.Get();
-            return config is not null && await Connect($"wss://eventsub.wss.twitch.tv/ws?keepalive_timeout_seconds={config.SocketKeepaliveTimeout}");
+            if (config is null) {
+                return false;
+            }
+
+            if (!await Connect($"wss://eventsub.wss.twitch.tv/ws?keepalive_timeout_seconds={config.SocketKeepaliveTimeout}")) {
+                return false;
+            }
+
+            await StartListening();
+            return true;
         }
 
         public async Task<bool> Close() => await Close(CloseReason.Manual);
@@ -82,7 +92,6 @@
 
             id = message.Payload.Session.Id;
             keepaliveExpiration = DateTime.Now.AddSeconds(message.Payload.Session.KeepaliveTimeoutSeconds ?? config.SocketKeepaliveTimeout);
-            _ = StartListening();
             return true;
         }
 
@@ -108,7 +117,7 @@
             try {
                 await socket.CloseAsync(status, "", default);
             } catch (Exception e) {
-                GD.PushError($"Cannot close because socket.CloseAsync failed: {e}.");
+                Logger.Warning($"Cannot close because socket.CloseAsync failed: {e}.");
                 IsClosing = false;
                 return false;
             }
@@ -229,7 +238,38 @@
                 return;
             }
 
-            _ = await Close(CloseReason.ReconnectMessage);
+            var broadcaster = await AppCache.Broadcaster.Get();
+            if (broadcaster is null) {
+                return;
+            }
+
+            var potentialEventSubs = await EventSub.Get(null, null, broadcaster.Id);
+            if (potentialEventSubs is null) {
+                return;
+            }
+
+            var eventSubs = (EventSubsData)potentialEventSubs;
+            if (!await Close(CloseReason.ReconnectMessage)) {
+                return;
+            }
+
+            if (!await Connect(url)) {
+                return;
+            }
+
+            if (id is null) {
+                return;
+            }
+
+            foreach (var eventSub in eventSubs.Data) {
+                var newEventSub = eventSub;
+                var newEventSubTransport = newEventSub.Transport;
+                newEventSubTransport.SessionId = id;
+                newEventSub.Transport = newEventSubTransport;
+                if (!await EventSub.Add(newEventSub)) {
+                    return;
+                }
+            }
         }
     }
 }
