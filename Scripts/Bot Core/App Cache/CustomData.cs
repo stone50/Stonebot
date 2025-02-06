@@ -12,6 +12,7 @@
         public int FeedRecord;
         public string FeedRecordHolder;
         public string DiscordInvite;
+        public string YouTubeLink;
 
         public static async Task<CustomData?> Create() {
             Logger.Info("Creating custom data.");
@@ -43,7 +44,8 @@
             FeedCount = FeedCount,
             FeedRecord = FeedRecord,
             FeedRecordHolder = FeedRecordHolder,
-            DiscordInvite = DiscordInvite
+            DiscordInvite = DiscordInvite,
+            YouTubeLink = YouTubeLink
         };
 
         private CustomData(CustomDataData dataData) {
@@ -52,6 +54,7 @@
             FeedRecord = dataData.FeedRecord;
             FeedRecordHolder = dataData.FeedRecordHolder;
             DiscordInvite = dataData.DiscordInvite;
+            YouTubeLink = dataData.YouTubeLink;
         }
     }
 }

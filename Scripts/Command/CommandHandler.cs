@@ -20,7 +20,8 @@
             new TogglableCommand("feedrecord", UseActions.FeedRecord),
             new TogglableCommand("hug", UseActions.Hug),
             new TogglableCommand("lurk", UseActions.Lurk),
-            new TogglableCommand("discord", UseActions.Discord)
+            new TogglableCommand("discord", UseActions.Discord),
+            new TogglableCommand("yt", UseActions.YouTube)
         };
 
         public static bool IsCommand(string message) => message.StartsWith('!');
