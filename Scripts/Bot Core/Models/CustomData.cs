@@ -12,5 +12,7 @@
         public string FeedRecordHolder { get; set; }
         [JsonPropertyName("discordInvite")]
         public string DiscordInvite { get; set; }
+        [JsonPropertyName("youTubeLink")]
+        public string YouTubeLink { get; set; }
     }
 }

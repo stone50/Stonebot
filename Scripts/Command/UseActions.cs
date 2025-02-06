@@ -248,5 +248,14 @@
 
             _ = Chat.Send($"{messageEvent.ChatterUserName} {customData.DiscordInvite}");
         }
+
+        public static async Task YouTube(ChannelChatMessageEvent messageEvent, PermissionLevel __) {
+            var customData = await AppCache.Data.Get();
+            if (customData is null) {
+                return;
+            }
+
+            _ = Chat.Send($"{messageEvent.ChatterUserName} {customData.YouTubeLink}");
+        }
     }
 }
