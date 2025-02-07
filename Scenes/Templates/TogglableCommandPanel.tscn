@@ -1,8 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://c24m4seai2gb1"]
+[gd_scene load_steps=3 format=3 uid="uid://c24m4seai2gb1"]
 
 [ext_resource type="Script" path="res://Scripts/UI/TogglableCommandPanel.cs" id="1_ltjnb"]
+[ext_resource type="Texture2D" uid="uid://c25tx7mhckdb5" path="res://Icons/drop down closed.svg" id="2_sw4a6"]
 
-[node name="TogglableCommandPanel" type="MarginContainer" node_paths=PackedStringArray("EnableButton", "KeywordLabel", "MainButton", "DetailsContainer", "PermissionLevelMenuButton", "UseDelaySpinBox")]
+[node name="TogglableCommandPanel" type="MarginContainer" node_paths=PackedStringArray("EnableButton", "KeywordLabel", "MainButton", "DropDownIcon", "DetailsContainer", "PermissionLevelMenuButton", "UseDelaySpinBox")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -12,8 +13,9 @@ size_flags_horizontal = 3
 theme_override_constants/margin_right = 50
 script = ExtResource("1_ltjnb")
 EnableButton = NodePath("VSplitContainer/HBoxContainer/EnableButton")
-KeywordLabel = NodePath("VSplitContainer/HBoxContainer/MainButton/MarginContainer/KeywordLabel")
+KeywordLabel = NodePath("VSplitContainer/HBoxContainer/MainButton/MainButtonContainer/MarginContainer/KeywordLabel")
 MainButton = NodePath("VSplitContainer/HBoxContainer/MainButton")
+DropDownIcon = NodePath("VSplitContainer/HBoxContainer/MainButton/MainButtonContainer/DropDownIcon")
 DetailsContainer = NodePath("VSplitContainer/DetailsContainer")
 PermissionLevelMenuButton = NodePath("VSplitContainer/DetailsContainer/PermissionLevelContainer/PermissionLevelMenuButtonMarginContainer/PermissionLevelMenuButton")
 UseDelaySpinBox = NodePath("VSplitContainer/DetailsContainer/UseDelayContainer/UseDelaySpinBoxMarginContainer/UseDelaySpinBox")
@@ -34,20 +36,32 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 focus_mode = 0
 alignment = 0
+expand_icon = true
 
-[node name="MarginContainer" type="MarginContainer" parent="VSplitContainer/HBoxContainer/MainButton"]
+[node name="MainButtonContainer" type="HBoxContainer" parent="VSplitContainer/HBoxContainer/MainButton"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="DropDownIcon" type="TextureRect" parent="VSplitContainer/HBoxContainer/MainButton/MainButtonContainer"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+texture = ExtResource("2_sw4a6")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="MarginContainer" type="MarginContainer" parent="VSplitContainer/HBoxContainer/MainButton/MainButtonContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="KeywordLabel" type="Label" parent="VSplitContainer/HBoxContainer/MainButton/MarginContainer"]
+[node name="KeywordLabel" type="Label" parent="VSplitContainer/HBoxContainer/MainButton/MainButtonContainer/MarginContainer"]
 layout_mode = 2
 size_flags_vertical = 1
 vertical_alignment = 1
@@ -94,7 +108,9 @@ custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+icon = ExtResource("2_sw4a6")
 flat = false
+expand_icon = true
 
 [node name="UseDelayContainer" type="HBoxContainer" parent="VSplitContainer/DetailsContainer"]
 layout_mode = 2

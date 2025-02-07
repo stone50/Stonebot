@@ -15,16 +15,21 @@
             Timer.IntervalChanged += OnIntervalChanged;
 
             MainButton.Modulate = Timer.IsEnabled ? Colors.White : Colors.Red;
-            EnableButton.Icon = Timer.IsEnabled ? Resources.DisableIcon : Resources.EnableIcon;
+            EnableButton.Icon = Timer.IsEnabled ? Resources.EnableIcon : Resources.DisableIcon;
             EnableButton.Pressed += OnEnableButtonPressed;
 
             Timer.IsEnabledChanged += OnIsEnabledChanged;
+
+            EnableButton.MouseEntered += OnMouseEnteredEnableButton;
+            EnableButton.MouseExited += OnMouseExitedEnableButton;
         }
 
         [Export]
         private Label KeywordLabel = null!;
         [Export]
         private Button MainButton = null!;
+        [Export]
+        private TextureRect DropDownIcon = null!;
         [Export]
         private Container DetailsContainer = null!;
         [Export]
@@ -34,7 +39,12 @@
 
         private Timer Timer = null!;
 
-        private void OnMainButtonPressed() => DetailsContainer.Visible = !DetailsContainer.Visible;
+        private bool IsHovering = false;
+
+        private void OnMainButtonPressed() {
+            DetailsContainer.Visible = !DetailsContainer.Visible;
+            DropDownIcon.Texture = DetailsContainer.Visible ? Resources.DropDownOpenIcon : Resources.DropDownClosedIcon;
+        }
 
         private void OnIntervalSpinBoxValueChanged(double value) => Timer.Interval = (int)value;
 
@@ -44,7 +54,19 @@
 
         private void OnIsEnabledChanged(object? _, bool isEnabled) {
             MainButton.Modulate = isEnabled ? Colors.White : Colors.Red;
-            EnableButton.Icon = isEnabled ? Resources.DisableIcon : Resources.EnableIcon;
+            UpdateIcon();
         }
+
+        private void OnMouseEnteredEnableButton() {
+            IsHovering = true;
+            UpdateIcon();
+        }
+
+        private void OnMouseExitedEnableButton() {
+            IsHovering = false;
+            UpdateIcon();
+        }
+
+        private void UpdateIcon() => EnableButton.Icon = Timer.IsEnabled ^ IsHovering ? Resources.EnableIcon : Resources.DisableIcon;
     }
 }

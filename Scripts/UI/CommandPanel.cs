@@ -15,6 +15,7 @@
                 PermissionLevelMenuButton.GetPopup().AddItem(permissionLevel.ToString(), (int)permissionLevel);
             }
 
+            PermissionLevelMenuButton.Toggled += OnPermissionLevelMenuButtonToggled;
             PermissionLevelMenuButton.GetPopup().IdPressed += OnPermissionLevelMenuButtonPopupIdPressed;
             UseDelaySpinBox.Value = Command.UseDelay;
             UseDelaySpinBox.ValueChanged += OnUseDelaySpinBoxValueChanged;
@@ -28,6 +29,8 @@
         [Export]
         protected Button MainButton = null!;
         [Export]
+        protected TextureRect DropDownIcon = null!;
+        [Export]
         protected Container DetailsContainer = null!;
         [Export]
         protected MenuButton PermissionLevelMenuButton = null!;
@@ -36,7 +39,12 @@
 
         protected Command Command = null!;
 
-        private void OnMainButtonPressed() => DetailsContainer.Visible = !DetailsContainer.Visible;
+        private void OnMainButtonPressed() {
+            DetailsContainer.Visible = !DetailsContainer.Visible;
+            DropDownIcon.Texture = DetailsContainer.Visible ? Resources.DropDownOpenIcon : Resources.DropDownClosedIcon;
+        }
+
+        private void OnPermissionLevelMenuButtonToggled(bool toggledOn) => PermissionLevelMenuButton.Icon = toggledOn ? Resources.DropDownOpenIcon : Resources.DropDownClosedIcon;
 
         private void OnPermissionLevelMenuButtonPopupIdPressed(long id) => Command.PermissionLevel = (PermissionLevel)id;
 

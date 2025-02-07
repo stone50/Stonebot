@@ -1,8 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://3a4qg1dtl57j"]
+[gd_scene load_steps=3 format=3 uid="uid://3a4qg1dtl57j"]
 
 [ext_resource type="Script" path="res://Scripts/UI/TimerPanel.cs" id="1_gfs0m"]
+[ext_resource type="Texture2D" uid="uid://c25tx7mhckdb5" path="res://Icons/drop down closed.svg" id="2_f7pip"]
 
-[node name="TimerPanel" type="MarginContainer" node_paths=PackedStringArray("KeywordLabel", "MainButton", "DetailsContainer", "IntervalSpinBox", "EnableButton")]
+[node name="TimerPanel" type="MarginContainer" node_paths=PackedStringArray("KeywordLabel", "MainButton", "DropDownIcon", "DetailsContainer", "IntervalSpinBox", "EnableButton")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -11,8 +12,9 @@ grow_vertical = 2
 size_flags_horizontal = 3
 theme_override_constants/margin_right = 50
 script = ExtResource("1_gfs0m")
-KeywordLabel = NodePath("VSplitContainer/HBoxContainer/MainButton/MarginContainer/KeywordLabel")
+KeywordLabel = NodePath("VSplitContainer/HBoxContainer/MainButton/MainButtonContainer/MarginContainer/KeywordLabel")
 MainButton = NodePath("VSplitContainer/HBoxContainer/MainButton")
+DropDownIcon = NodePath("VSplitContainer/HBoxContainer/MainButton/MainButtonContainer/DropDownIcon")
 DetailsContainer = NodePath("VSplitContainer/DetailsContainer")
 IntervalSpinBox = NodePath("VSplitContainer/DetailsContainer/IntervalContainer/IntervalSpinBoxMarginContainer/IntervalSpinBox")
 EnableButton = NodePath("VSplitContainer/HBoxContainer/EnableButton")
@@ -34,19 +36,31 @@ size_flags_vertical = 3
 focus_mode = 0
 alignment = 0
 
-[node name="MarginContainer" type="MarginContainer" parent="VSplitContainer/HBoxContainer/MainButton"]
+[node name="MainButtonContainer" type="HBoxContainer" parent="VSplitContainer/HBoxContainer/MainButton"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="DropDownIcon" type="TextureRect" parent="VSplitContainer/HBoxContainer/MainButton/MainButtonContainer"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_horizontal = 0
+texture = ExtResource("2_f7pip")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="MarginContainer" type="MarginContainer" parent="VSplitContainer/HBoxContainer/MainButton/MainButtonContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="KeywordLabel" type="Label" parent="VSplitContainer/HBoxContainer/MainButton/MarginContainer"]
+[node name="KeywordLabel" type="Label" parent="VSplitContainer/HBoxContainer/MainButton/MainButtonContainer/MarginContainer"]
 layout_mode = 2
 size_flags_vertical = 1
 vertical_alignment = 1

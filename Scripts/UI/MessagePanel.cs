@@ -15,6 +15,7 @@
                 PermissionLevelMenuButton.GetPopup().AddItem(permissionLevel.ToString(), (int)permissionLevel);
             }
 
+            PermissionLevelMenuButton.Toggled += OnPermissionLevelMenuButtonToggled;
             PermissionLevelMenuButton.GetPopup().IdPressed += OnPermissionLevelMenuButtonPopupIdPressed;
             UseDelaySpinBox.Value = Message.UseDelay;
             UseDelaySpinBox.ValueChanged += OnUseDelaySpinBoxValueChanged;
@@ -23,16 +24,21 @@
             Message.UseDelayChanged += OnUseDelayChanged;
 
             MainButton.Modulate = Message.IsEnabled ? Colors.White : Colors.Red;
-            EnableButton.Icon = Message.IsEnabled ? Resources.DisableIcon : Resources.EnableIcon;
+            EnableButton.Icon = Message.IsEnabled ? Resources.EnableIcon : Resources.DisableIcon;
             EnableButton.Pressed += OnEnableButtonPressed;
 
             Message.IsEnabledChanged += OnIsEnabledChanged;
+
+            EnableButton.MouseEntered += OnMouseEnteredEnableButton;
+            EnableButton.MouseExited += OnMouseExitedEnableButton;
         }
 
         [Export]
         private Label KeywordLabel = null!;
         [Export]
         private Button MainButton = null!;
+        [Export]
+        private TextureRect DropDownIcon = null!;
         [Export]
         private Container DetailsContainer = null!;
         [Export]
@@ -44,7 +50,14 @@
 
         private Message Message = null!;
 
-        private void OnMainButtonPressed() => DetailsContainer.Visible = !DetailsContainer.Visible;
+        private bool IsHovering = false;
+
+        private void OnMainButtonPressed() {
+            DetailsContainer.Visible = !DetailsContainer.Visible;
+            DropDownIcon.Texture = DetailsContainer.Visible ? Resources.DropDownOpenIcon : Resources.DropDownClosedIcon;
+        }
+
+        private void OnPermissionLevelMenuButtonToggled(bool toggledOn) => PermissionLevelMenuButton.Icon = toggledOn ? Resources.DropDownOpenIcon : Resources.DropDownClosedIcon;
 
         private void OnPermissionLevelMenuButtonPopupIdPressed(long id) => Message.PermissionLevel = (PermissionLevel)id;
 
@@ -58,7 +71,19 @@
 
         private void OnIsEnabledChanged(object? _, bool isEnabled) {
             MainButton.Modulate = isEnabled ? Colors.White : Colors.Red;
-            EnableButton.Icon = isEnabled ? Resources.DisableIcon : Resources.EnableIcon;
+            UpdateIcon();
         }
+
+        private void OnMouseEnteredEnableButton() {
+            IsHovering = true;
+            UpdateIcon();
+        }
+
+        private void OnMouseExitedEnableButton() {
+            IsHovering = false;
+            UpdateIcon();
+        }
+
+        private void UpdateIcon() => EnableButton.Icon = Message.IsEnabled ^ IsHovering ? Resources.EnableIcon : Resources.DisableIcon;
     }
 }
