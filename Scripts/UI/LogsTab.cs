@@ -9,6 +9,7 @@
             VisibilityChanged += OnVisiblilityChanged;
             ScrollContainerVScrollBar = ScrollContainer.GetVScrollBar();
             ScrollContainerVScrollBar.ValueChanged += OnScrollContainerVScrollBarValueChanged;
+            ScrollContainerVScrollBar.Changed += OnScrollContainerVScrollBarChanged;
             ScrollToBottomButton.Pressed += OnScrollToBottomButtonPressed;
         }
 
@@ -29,7 +30,11 @@
 
         private void OnScrollToBottomButtonPressed() => ScrollToBottom();
 
-        private void OnScrollContainerVScrollBarValueChanged(double value) => ScrollToBottomButton.Visible = Math.Max(0, ScrollContainerVScrollBar.MaxValue - ScrollContainerVScrollBar.Size.Y) != (int)value;
+        private void OnScrollContainerVScrollBarValueChanged(double _) => UpdateScrollToBottomButton();
+
+        private void OnScrollContainerVScrollBarChanged() => UpdateScrollToBottomButton();
+
+        private void UpdateScrollToBottomButton() => ScrollToBottomButton.Visible = Math.Max(0, ScrollContainerVScrollBar.MaxValue - ScrollContainerVScrollBar.Size.Y) != (int)ScrollContainerVScrollBar.Value;
 
         private void OnMessageLogged(object? _, Logger.MessageLoggedArgs args) {
             var shouldScrollDown = Math.Max(0, ScrollContainerVScrollBar.MaxValue - ScrollContainerVScrollBar.Size.Y) == ScrollContainerVScrollBar.Value;
