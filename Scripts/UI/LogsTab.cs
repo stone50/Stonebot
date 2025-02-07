@@ -2,12 +2,14 @@
     using Bot_Core.App_Cache;
     using Godot;
     using System;
+    using System.Diagnostics;
 
     internal partial class LogsTab : Control {
         public LogsTab() => Logger.MessageLogged += OnMessageLogged;
 
         public override void _Ready() {
             VisibilityChanged += OnVisiblilityChanged;
+            FilesButton.Pressed += OnFilesButtonPressed;
             ScrollContainerVScrollBar = ScrollContainer.GetVScrollBar();
             ScrollContainerVScrollBar.ValueChanged += OnScrollContainerVScrollBarValueChanged;
             ScrollContainerVScrollBar.Changed += OnScrollContainerVScrollBarChanged;
@@ -19,6 +21,8 @@
         [Export]
         private Container LogsContainer = null!;
         [Export]
+        private Button FilesButton = null!;
+        [Export]
         private Button ScrollToBottomButton = null!;
 
         private VScrollBar ScrollContainerVScrollBar = null!;
@@ -29,13 +33,20 @@
             }
         }
 
+        private void OnFilesButtonPressed() => Process.Start(new ProcessStartInfo() {
+            FileName = Constants.LogsPath,
+            UseShellExecute = true
+        });
+
         private void OnScrollToBottomButtonPressed() => ScrollToBottom();
 
         private void OnScrollContainerVScrollBarValueChanged(double _) => UpdateScrollToBottomButton();
 
         private void OnScrollContainerVScrollBarChanged() => UpdateScrollToBottomButton();
 
-        private void UpdateScrollToBottomButton() => ScrollToBottomButton.Visible = Math.Max(0, ScrollContainerVScrollBar.MaxValue - ScrollContainerVScrollBar.Size.Y) != (int)ScrollContainerVScrollBar.Value;
+        private void UpdateScrollToBottomButton() => ScrollToBottomButton.Visible = !GetShouldScrollToBottom();
+
+        private bool GetShouldScrollToBottom() => Math.Max(0, ScrollContainerVScrollBar.MaxValue - ScrollContainerVScrollBar.Size.Y) == ScrollContainerVScrollBar.Value;
 
         private async void OnMessageLogged(object? _, Logger.MessageLoggedArgs args) {
             var config = await AppCache.Config.Get();
@@ -47,7 +58,6 @@
                 LogsContainer.RemoveChild(LogsContainer.GetChild(0));
             }
 
-            var shouldScrollDown = Math.Max(0, ScrollContainerVScrollBar.MaxValue - ScrollContainerVScrollBar.Size.Y) == ScrollContainerVScrollBar.Value;
             var logPanel = Resources.LogPanelScene.Instantiate<LogPanel>();
             logPanel.Init(args.LogMessage);
             logPanel.SelfModulate = args.LogType switch {
@@ -57,7 +67,7 @@
                 _ => Colors.White,
             };
             LogsContainer.AddChild(logPanel);
-            if (shouldScrollDown) {
+            if (GetShouldScrollToBottom()) {
                 DelayScrollToBottom();
             }
         }
