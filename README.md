@@ -46,6 +46,7 @@ Add a `config.json` file to the new folder with the contents:
 	"channel:read:subscriptions",
 	"moderation:read"
   ],
+  "displayLogLimit": 1000,
   "socketKeepaliveBuffer": 5000,
   "socketKeepaliveTimeout": 10,
   "tokenExpirationBuffer": 1000
@@ -79,6 +80,10 @@ Note: If you click the "New Secret" button again, the previous secret will be in
 -`collectorScope` [List of Strings]
 This is a list of [Twitch Scopes](https://dev.twitch.tv/docs/authentication/scopes/#twitch-api-scopes).
 These scopes determine what the collector application is allowed to do.
+
+-`displayLogLimit` [Integer]
+This is the number of logs that will be displayed in the Logs tab. Older logs will be removed in favor of newer logs.
+This only affects the UI; all logs can be found in the log file located in the bot's application data folder.
 
 -`socketKeepaliveBuffer` [Integer]
 This is the number of milliseconds that the bot will wait after `socketKeepaliveTimeout` before assuming that it has disconnected.

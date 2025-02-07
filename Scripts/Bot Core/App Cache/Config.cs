@@ -13,6 +13,7 @@
         public readonly string CollectorClientId;
         public readonly string CollectorClientSecret;
         public readonly string[] CollectorScope;
+        public readonly int DisplayLogLimit;
         public readonly int SocketKeepaliveBuffer;
         public readonly int SocketKeepaliveTimeout;
         public readonly int TokenExpirationBuffer;
@@ -46,6 +47,7 @@
             CollectorClientId = data.CollectorClientId;
             CollectorClientSecret = data.CollectorClientSecret;
             CollectorScope = data.CollectorScope;
+            DisplayLogLimit = data.DisplayLogLimit;
             SocketKeepaliveBuffer = data.SocketKeepaliveBuffer;
             SocketKeepaliveTimeout = data.SocketKeepaliveTimeout;
             TokenExpirationBuffer = data.TokenExpirationBuffer;

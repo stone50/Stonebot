@@ -1,4 +1,5 @@
 ﻿namespace Stonebot.Scripts.UI {
+    using Bot_Core.App_Cache;
     using Godot;
     using System;
 
@@ -36,7 +37,16 @@
 
         private void UpdateScrollToBottomButton() => ScrollToBottomButton.Visible = Math.Max(0, ScrollContainerVScrollBar.MaxValue - ScrollContainerVScrollBar.Size.Y) != (int)ScrollContainerVScrollBar.Value;
 
-        private void OnMessageLogged(object? _, Logger.MessageLoggedArgs args) {
+        private async void OnMessageLogged(object? _, Logger.MessageLoggedArgs args) {
+            var config = await AppCache.Config.Get();
+            if (config is null) {
+                return;
+            }
+
+            if (LogsContainer.GetChildCount() == config.DisplayLogLimit) {
+                LogsContainer.RemoveChild(LogsContainer.GetChild(0));
+            }
+
             var shouldScrollDown = Math.Max(0, ScrollContainerVScrollBar.MaxValue - ScrollContainerVScrollBar.Size.Y) == ScrollContainerVScrollBar.Value;
             var logPanel = Resources.LogPanelScene.Instantiate<LogPanel>();
             logPanel.Init(args.LogMessage);
