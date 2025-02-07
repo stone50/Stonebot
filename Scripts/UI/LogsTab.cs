@@ -44,7 +44,9 @@
 
         private void OnScrollContainerVScrollBarChanged() => UpdateScrollToBottomButton();
 
-        private void UpdateScrollToBottomButton() => ScrollToBottomButton.Visible = Math.Max(0, ScrollContainerVScrollBar.MaxValue - ScrollContainerVScrollBar.Size.Y) != ScrollContainerVScrollBar.Value;
+        private void UpdateScrollToBottomButton() => ScrollToBottomButton.Visible = !GetShouldScrollToBottom();
+
+        private bool GetShouldScrollToBottom() => Math.Max(0, ScrollContainerVScrollBar.MaxValue - ScrollContainerVScrollBar.Size.Y) == ScrollContainerVScrollBar.Value;
 
         private async void OnMessageLogged(object? _, Logger.MessageLoggedArgs args) {
             var config = await AppCache.Config.Get();
@@ -56,7 +58,6 @@
                 LogsContainer.RemoveChild(LogsContainer.GetChild(0));
             }
 
-            var shouldScrollDown = Math.Max(0, ScrollContainerVScrollBar.MaxValue - ScrollContainerVScrollBar.Size.Y) == ScrollContainerVScrollBar.Value;
             var logPanel = Resources.LogPanelScene.Instantiate<LogPanel>();
             logPanel.Init(args.LogMessage);
             logPanel.SelfModulate = args.LogType switch {
@@ -66,7 +67,7 @@
                 _ => Colors.White,
             };
             LogsContainer.AddChild(logPanel);
-            if (shouldScrollDown) {
+            if (GetShouldScrollToBottom()) {
                 DelayScrollToBottom();
             }
         }
