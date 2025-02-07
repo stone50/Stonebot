@@ -15,6 +15,7 @@
                 PermissionLevelMenuButton.GetPopup().AddItem(permissionLevel.ToString(), (int)permissionLevel);
             }
 
+            PermissionLevelMenuButton.Toggled += OnPermissionLevelMenuButtonToggled;
             PermissionLevelMenuButton.GetPopup().IdPressed += OnPermissionLevelMenuButtonPopupIdPressed;
             UseDelaySpinBox.Value = Message.UseDelay;
             UseDelaySpinBox.ValueChanged += OnUseDelaySpinBoxValueChanged;
@@ -37,6 +38,8 @@
         [Export]
         private Button MainButton = null!;
         [Export]
+        private TextureRect DropDownIcon = null!;
+        [Export]
         private Container DetailsContainer = null!;
         [Export]
         private MenuButton PermissionLevelMenuButton = null!;
@@ -49,7 +52,12 @@
 
         private bool IsHovering = false;
 
-        private void OnMainButtonPressed() => DetailsContainer.Visible = !DetailsContainer.Visible;
+        private void OnMainButtonPressed() {
+            DetailsContainer.Visible = !DetailsContainer.Visible;
+            DropDownIcon.Texture = DetailsContainer.Visible ? Resources.DropDownOpenIcon : Resources.DropDownClosedIcon;
+        }
+
+        private void OnPermissionLevelMenuButtonToggled(bool toggledOn) => PermissionLevelMenuButton.Icon = toggledOn ? Resources.DropDownOpenIcon : Resources.DropDownClosedIcon;
 
         private void OnPermissionLevelMenuButtonPopupIdPressed(long id) => Message.PermissionLevel = (PermissionLevel)id;
 

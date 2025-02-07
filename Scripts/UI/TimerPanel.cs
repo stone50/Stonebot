@@ -29,6 +29,8 @@
         [Export]
         private Button MainButton = null!;
         [Export]
+        private TextureRect DropDownIcon = null!;
+        [Export]
         private Container DetailsContainer = null!;
         [Export]
         private SpinBox IntervalSpinBox = null!;
@@ -39,7 +41,10 @@
 
         private bool IsHovering = false;
 
-        private void OnMainButtonPressed() => DetailsContainer.Visible = !DetailsContainer.Visible;
+        private void OnMainButtonPressed() {
+            DetailsContainer.Visible = !DetailsContainer.Visible;
+            DropDownIcon.Texture = DetailsContainer.Visible ? Resources.DropDownOpenIcon : Resources.DropDownClosedIcon;
+        }
 
         private void OnIntervalSpinBoxValueChanged(double value) => Timer.Interval = (int)value;
 
