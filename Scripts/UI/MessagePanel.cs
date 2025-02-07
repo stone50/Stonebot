@@ -23,10 +23,13 @@
             Message.UseDelayChanged += OnUseDelayChanged;
 
             MainButton.Modulate = Message.IsEnabled ? Colors.White : Colors.Red;
-            EnableButton.Icon = Message.IsEnabled ? Resources.DisableIcon : Resources.EnableIcon;
+            EnableButton.Icon = Message.IsEnabled ? Resources.EnableIcon : Resources.DisableIcon;
             EnableButton.Pressed += OnEnableButtonPressed;
 
             Message.IsEnabledChanged += OnIsEnabledChanged;
+
+            EnableButton.MouseEntered += OnMouseEnteredEnableButton;
+            EnableButton.MouseExited += OnMouseExitedEnableButton;
         }
 
         [Export]
@@ -44,6 +47,8 @@
 
         private Message Message = null!;
 
+        private bool IsHovering = false;
+
         private void OnMainButtonPressed() => DetailsContainer.Visible = !DetailsContainer.Visible;
 
         private void OnPermissionLevelMenuButtonPopupIdPressed(long id) => Message.PermissionLevel = (PermissionLevel)id;
@@ -58,7 +63,19 @@
 
         private void OnIsEnabledChanged(object? _, bool isEnabled) {
             MainButton.Modulate = isEnabled ? Colors.White : Colors.Red;
-            EnableButton.Icon = isEnabled ? Resources.DisableIcon : Resources.EnableIcon;
+            UpdateIcon();
         }
+
+        private void OnMouseEnteredEnableButton() {
+            IsHovering = true;
+            UpdateIcon();
+        }
+
+        private void OnMouseExitedEnableButton() {
+            IsHovering = false;
+            UpdateIcon();
+        }
+
+        private void UpdateIcon() => EnableButton.Icon = Message.IsEnabled ^ IsHovering ? Resources.EnableIcon : Resources.DisableIcon;
     }
 }
