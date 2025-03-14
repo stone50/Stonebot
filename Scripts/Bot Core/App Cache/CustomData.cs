@@ -1,12 +1,13 @@
 ﻿namespace Stonebot.Scripts.Bot_Core.App_Cache {
     using Models;
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Text.Json;
     using System.Threading.Tasks;
 
     internal class CustomData {
-        public List<string> Quotes;
+        public readonly List<string> Quotes;
         public int FeedCount;
         public int FeedRecord;
         public string FeedRecordHolder;
@@ -15,23 +16,24 @@
 
         public static async Task<CustomData?> Create() {
             Logger.Info("Creating custom data.");
+
             if (!File.Exists(Constants.DataFilePath)) {
-                return new(new() {
-                    Quotes = []
-                });
+                return new(new() { Quotes = [] });
             }
 
             string dataText;
             try {
                 dataText = await File.ReadAllTextAsync(Constants.DataFilePath);
-            } catch {
+            } catch (Exception e) {
+                Logger.Warning($"Could not create custom data because file read all text attempt failed: {e}. Context value: {Constants.DataFilePath}.");
                 return null;
             }
 
             CustomDataData dataData;
             try {
                 dataData = JsonSerializer.Deserialize<CustomDataData>(dataText);
-            } catch {
+            } catch (Exception e) {
+                Logger.Warning($"Could not create custom data because json serializer deserialize attempt failed: {e}. Context value: {dataText}.");
                 return null;
             }
 
