@@ -3,7 +3,6 @@
     using System;
     using System.Threading.Tasks;
     using Twitch;
-    using HttpClient = System.Net.Http.HttpClient;
 
     internal class AccessToken {
         public readonly string ClientId;
@@ -135,7 +134,7 @@
             }
 
             var potentialData = await Util.GetMessageAs<AccessTokenData>(TwitchAPI.GetAccessToken(
-                 new HttpClient(),
+                 new(),
                  clientId,
                  clientSecret,
                  code,
@@ -162,7 +161,7 @@
             string clientSecret,
             string refreshToken
         ) => await Util.GetMessageAs<AccessTokenData>(TwitchAPI.RefreshAccessToken(
-            new HttpClient(),
+            new(),
             clientId,
             clientSecret,
             refreshToken

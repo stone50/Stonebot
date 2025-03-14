@@ -7,34 +7,38 @@
 
         public static async Task<HttpClientWrapper?> CreateChatter() {
             Logger.Info("Creating chatter http client wrapper.");
-            var config = await AppCache.Config.Get();
-            if (config is null) {
+
+            var token = await AccessToken.CreateChatter();
+            if (token is null) {
+                Logger.Warning("Could not create chatter http client wrapper because access token create chatter attempt failed.");
                 return null;
             }
 
-            var token = await AccessToken.CreateChatter();
-            return token is null ? null : new(token);
+            return new(token);
         }
 
         public static async Task<HttpClientWrapper?> CreateCollector() {
             Logger.Info("Creating collector http client wrapper.");
-            var config = await AppCache.Config.Get();
-            if (config is null) {
+
+            var token = await AccessToken.CreateCollector();
+            if (token is null) {
+                Logger.Warning("Could not create collector http client wrapper because access token create collector attempt failed.");
                 return null;
             }
 
-            var token = await AccessToken.CreateCollector();
-            return token is null ? null : new(token);
+            return new(token);
         }
 
         public async Task<HttpClient?> GetClient() {
             Logger.Info("Getting http client wrapper client.");
+
             if (cachedClient is not null && !accessToken.IsAboutToExpire) {
                 return cachedClient;
             }
 
             var accessTokenString = await accessToken.GetString();
             if (accessTokenString is null) {
+                Logger.Warning("Could not get http client wrapper client because access token get string attempt failed.");
                 return null;
             }
 
