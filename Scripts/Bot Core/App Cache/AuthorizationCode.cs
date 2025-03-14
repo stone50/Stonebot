@@ -11,8 +11,10 @@
     internal static partial class AuthorizationCode {
         public static async Task<string?> Create(string clientId, string[] scope) {
             Logger.Info("Creating authorization code.");
+
             var config = await AppCache.Config.Get();
             if (config is null) {
+                Logger.Warning("Could not create authorization code because config get attempt failed.");
                 return null;
             }
 
@@ -21,14 +23,14 @@
             try {
                 server = new(localhost, config.AuthorizationPort);
             } catch (Exception e) {
-                Logger.Warning($"Cannot create authorization code because TcpListener construction failed: {e}.");
+                Logger.Warning($"Could not create authorization code because TcpListener construct attempt failed: {e}. Found: {config.AuthorizationPort}.");
                 return null;
             }
 
             try {
                 server.Start();
             } catch (Exception e) {
-                Logger.Warning($"Cannot create authorization code because server.Start failed: {e}.");
+                Logger.Warning($"Could not create authorization code because server start attempt failed: {e}.");
                 return null;
             }
 
@@ -41,13 +43,21 @@
                 state
             );
             if (authorizationProcess is null) {
+                Logger.Warning("Could not create authorization code because Twitch authorize attempt failed.");
                 return null;
             }
 
             var code = await GetCode(server, state);
             try {
                 server.Stop();
-            } catch { }
+            } catch (Exception e) {
+                Logger.Warning($"Server stop attempt failed: {e}.");
+            }
+
+            if (code is null) {
+                Logger.Warning("Could not create authorization code because get code attempt failed.");
+                return null;
+            }
 
             return code;
         }
@@ -63,12 +73,11 @@
         }
 
         private static async Task<string?> GetCode(TcpListener server, string state) {
-            Logger.Info("Getting authorization code from web server.");
             TcpClient client;
             try {
                 client = await server.AcceptTcpClientAsync();
             } catch (Exception e) {
-                Logger.Warning($"Cannot get code because server.AcceptTcpClientAsync failed: {e}.");
+                Logger.Warning($"Could not get authorization code because server accept client attempt failed: {e}.");
                 return null;
             }
 
@@ -77,37 +86,51 @@
 
                 var url = await GetUrl(stream);
                 if (url is null) {
-                    _ = await SendBadRequest(stream);
+                    if (!await SendBadRequest(stream)) {
+                        Logger.Warning("Send bad request attempt failed.");
+                    }
+
+                    Logger.Warning("Could not get authorization code because get url attempt failed.");
                     return null;
                 }
 
                 if (!GetIsStateValid(url, state)) {
-                    _ = await SendBadRequest(stream);
+                    if (!await SendBadRequest(stream)) {
+                        Logger.Warning("Send bad request attempt failed.");
+                    }
+
+                    Logger.Warning("Could not get authorization code because get is valid state attempt failed.");
                     return null;
                 }
 
-                var code = GetCode(url);
+                var code = GetCodeFromUrl(url);
                 if (code is null) {
-                    _ = await SendBadRequest(stream);
+                    if (!await SendBadRequest(stream)) {
+                        Logger.Warning("Send bad request attempt failed.");
+                    }
+
+                    Logger.Warning($"Could not get authorization code because get code from url attempt failed. Found: {url}.");
                     return null;
                 }
 
-                _ = await SendOkRequest(stream);
+                if (!await SendOkRequest(stream)) {
+                    Logger.Warning("Send ok request attempt failed.");
+                }
+
                 return code;
             } catch (Exception e) {
-                Logger.Warning($"Cannot get code because client.GetStream failed: {e}.");
+                Logger.Warning($"Could not get authorization code because client get stream attempt failed: {e}.");
                 return null;
             }
         }
 
         private static async Task<string?> GetUrl(NetworkStream stream) {
-            Logger.Info("Getting url from authorization code web server network stream.");
             var buffer = new byte[1024];
             int numBytesRead;
             try {
                 numBytesRead = await stream.ReadAsync(buffer);
             } catch (Exception e) {
-                Logger.Warning($"Cannot get url because stream.ReadAsync failed: {e}.");
+                Logger.Warning($"Could not get url because stream read attempt failed: {e}.");
                 return null;
             }
 
@@ -115,27 +138,35 @@
             try {
                 message = Encoding.Default.GetString(buffer, 0, numBytesRead);
             } catch (Exception e) {
-                Logger.Warning($"Cannot get url because Encoding.Default.GetString failed: {e}.");
+                Logger.Warning($"Could not get url because encoding default get string attempt failed: {e}.");
                 return null;
             }
 
+            void LogParsingWarning() => Logger.Warning($"Could not get url because message could not be parsed. Found: {message}.");
             var indexOfFirstSpace = message.IndexOf(' ');
             if (indexOfFirstSpace == -1) {
-                Logger.Warning("Cannot get url because indexOfFirstSpace is -1.");
+                LogParsingWarning();
                 return null;
             }
 
-            var indexOfSecondSpace = message.IndexOf(' ', indexOfFirstSpace + 1);
+            int indexOfSecondSpace;
+            try {
+                indexOfSecondSpace = message.IndexOf(' ', indexOfFirstSpace + 1);
+            } catch {
+                LogParsingWarning();
+                return null;
+            }
+
             if (indexOfSecondSpace == -1) {
-                Logger.Warning("Cannot get url because indexOfSecondSpace is -1.");
+                LogParsingWarning();
                 return null;
             }
 
             string url;
             try {
                 url = message.Substring(indexOfFirstSpace + 1, indexOfSecondSpace - indexOfFirstSpace);
-            } catch (Exception e) {
-                Logger.Warning($"Cannot get url because message.Substring failed: {e}.");
+            } catch {
+                LogParsingWarning();
                 return null;
             }
 
@@ -143,33 +174,33 @@
         }
 
         private static bool GetIsStateValid(string url, string state) {
-            Logger.Info("Getting is state valid from authorization code web server request URL.");
             var stateRegex = StateRegex();
             var match = stateRegex.Match(url);
+            void LogMatchWarning() => Logger.Warning($"Could not get is state valid because state regex match attempt failed. Found: {url}.");
             if (!match.Success) {
-                Logger.Warning("Cannot get is state valid because match.Success is false.");
+                LogMatchWarning();
                 return false;
             }
 
             if (match.Groups.Count != 2) {
-                Logger.Warning("Cannot get is state valid because match.Groups.Count is not 2.");
+                LogMatchWarning();
                 return false;
             }
 
             return match.Groups[1].Value == state;
         }
 
-        private static string? GetCode(string url) {
-            Logger.Info("Getting authorization code from web server request URL.");
+        private static string? GetCodeFromUrl(string url) {
             var codeRegex = CodeRegex();
             var match = codeRegex.Match(url);
+            void LogMatchWarning() => Logger.Warning($"Could not get authorization code from url because code regex match attempt failed. Found: {url}.");
             if (!match.Success) {
-                Logger.Warning($"Cannot get code becausematch.Success is false.");
+                LogMatchWarning();
                 return null;
             }
 
             if (match.Groups.Count != 2) {
-                Logger.Warning($"Cannot get code because match.Groups.Count is not 2.");
+                LogMatchWarning();
                 return null;
             }
 
@@ -177,11 +208,10 @@
         }
 
         private static async Task<bool> SendBadRequest(NetworkStream stream) {
-            Logger.Info("Sending bad request to authorization code web server.");
             try {
                 await stream.WriteAsync(Encoding.Default.GetBytes("HTTP/1.1 400 Bad Request\r\n\r\n<html><head><title>Authorization Failed</title></head><body><h1>:(</h1><p>Please check the logs to see why authorization failed.</p></body></html>"));
             } catch (Exception e) {
-                Logger.Warning($"Cannot send bad request because stream.WriteAsync failed: {e}.");
+                Logger.Warning($"Could not send bad request because stream write attempt failed: {e}.");
                 return false;
             }
 
@@ -189,11 +219,10 @@
         }
 
         private static async Task<bool> SendOkRequest(NetworkStream stream) {
-            Logger.Info("Sending ok request to authorization code web server.");
             try {
                 await stream.WriteAsync(Encoding.Default.GetBytes("HTTP/1.1 200 OK\r\n\r\n<html><head><title>Authorization Succeeded</title></head><body><h1>Authorization Success! :)</h1><p>You can close this tab.</p></body></html>"));
             } catch (Exception e) {
-                Logger.Warning($"Cannot send ok request because stream.WriteAsync failed: {e}.");
+                Logger.Warning($"Could not send ok request because stream write attempt failed: {e}.");
                 return false;
             }
 
