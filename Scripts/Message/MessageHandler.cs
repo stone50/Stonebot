@@ -4,15 +4,15 @@
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
 
-    internal static class MessageHandler {
-        public static Message[] Messages = new Message[] {
-            new("failedcommand", new("^!"), UseActions.FailedCommand),
-            new("divorce", new("divorce", RegexOptions.IgnoreCase), UseActions.Divorce),
-            new("ihype", new("^\\s*i\\s*$", RegexOptions.IgnoreCase), UseActions.IHype),
-            new("mugmoment", new("mug", RegexOptions.IgnoreCase), UseActions.MugMoment),
-            new("peace", new("peace", RegexOptions.IgnoreCase), UseActions.Peace),
-            new("stonebot", new("stonebot", RegexOptions.IgnoreCase), UseActions.Stonebot)
-        };
+    internal static partial class MessageHandler {
+        public static Message[] Messages = [
+            new("failedcommand", FailedCommandRegex(), UseActions.FailedCommand),
+            new("divorce", DivorceRegex(), UseActions.Divorce),
+            new("ihype", IHypeRegex(), UseActions.IHype),
+            new("mugmoment", MugMomentRegex(), UseActions.MugMoment),
+            new("peace", PeaceRegex(), UseActions.Peace),
+            new("stonebot", StonebotRegex(), UseActions.Stonebot)
+        ];
 
         public static async Task<bool> Handle(ChannelChatMessageEvent messageEvent) {
             Logger.Info("Handling message event as message.");
@@ -26,5 +26,23 @@
         }
 
         public static Message? GetMessage(string keyword) => Messages.FirstOrDefault(message => message.Keyword == keyword);
+
+        [GeneratedRegex("^!")]
+        private static partial Regex FailedCommandRegex();
+
+        [GeneratedRegex("divorce", RegexOptions.IgnoreCase, "en-US")]
+        private static partial Regex DivorceRegex();
+
+        [GeneratedRegex("^\\s*i\\s*$", RegexOptions.IgnoreCase, "en-US")]
+        private static partial Regex IHypeRegex();
+
+        [GeneratedRegex("mug", RegexOptions.IgnoreCase, "en-US")]
+        private static partial Regex MugMomentRegex();
+
+        [GeneratedRegex("peace", RegexOptions.IgnoreCase, "en-US")]
+        private static partial Regex PeaceRegex();
+
+        [GeneratedRegex("stonebot", RegexOptions.IgnoreCase, "en-US")]
+        private static partial Regex StonebotRegex();
     }
 }

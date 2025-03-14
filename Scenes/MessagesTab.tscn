@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dqmco36n8ja68"]
 
-[ext_resource type="Script" path="res://Scripts/UI/MessagesTab.cs" id="1_uxjkl"]
+[ext_resource type="Script" uid="uid://hjfyf1leg234" path="res://Scripts/UI/MessagesTab.cs" id="1_uxjkl"]
 
 [node name="MessagesTab" type="PanelContainer" node_paths=PackedStringArray("MessagesContainer")]
 anchors_preset = 15

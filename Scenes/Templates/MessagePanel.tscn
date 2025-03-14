@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://c5ixltifs2ynd"]
 
-[ext_resource type="Script" path="res://Scripts/UI/MessagePanel.cs" id="1_lmcd8"]
+[ext_resource type="Script" uid="uid://b867ag25pbqhj" path="res://Scripts/UI/MessagePanel.cs" id="1_lmcd8"]
 [ext_resource type="Texture2D" uid="uid://c25tx7mhckdb5" path="res://Icons/drop down closed.svg" id="2_htod7"]
 
 [node name="MessagePanel" type="MarginContainer" node_paths=PackedStringArray("KeywordLabel", "MainButton", "DropDownIcon", "DetailsContainer", "PermissionLevelMenuButton", "UseDelaySpinBox", "EnableButton")]

@@ -4,7 +4,7 @@
     using System.Threading.Tasks;
 
     internal static class CommandHandler {
-        public static Command[] Commands = new Command[] {
+        public static Command[] Commands = [
             new TogglableCommand("commands", UseActions.Commands),
             new("enablecommand", UseActions.EnableCommand) { PermissionLevel = PermissionLevel.Mod },
             new("disablecommand", UseActions.DisableCommand) { PermissionLevel = PermissionLevel.Mod },
@@ -22,7 +22,7 @@
             new TogglableCommand("lurk", UseActions.Lurk),
             new TogglableCommand("discord", UseActions.Discord),
             new TogglableCommand("yt", UseActions.YouTube)
-        };
+        ];
 
         public static bool IsCommand(string message) => message.StartsWith('!');
 

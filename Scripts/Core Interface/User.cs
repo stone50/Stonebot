@@ -26,7 +26,7 @@
             var simpleUsersData = await Util.GetMessageAs<PaginatedSimpleUsersData>(TwitchAPI.GetModerators(
                 client,
                 broadcaster.Id,
-                new[] { userId }
+                [userId]
             ));
             return simpleUsersData is null ? null : ((PaginatedSimpleUsersData)simpleUsersData).Data.Length == 1;
         }
@@ -51,7 +51,7 @@
             var simpleUsersData = await Util.GetMessageAs<PaginatedSimpleUsersData>(TwitchAPI.GetVIPs(
                 client,
                 broadcaster.Id,
-                new[] { userId }
+                [userId]
             ));
             return simpleUsersData is null ? null : ((PaginatedSimpleUsersData)simpleUsersData).Data.Length == 1;
         }
@@ -76,7 +76,7 @@
             var potentialSubscriptionsData = await Util.GetMessageAs<PaginatedSubscriptionsData>(TwitchAPI.GetBroadcasterSubscriptions(
                 client,
                 broadcaster.Id,
-                new[] { userId }
+                [userId]
             ));
             if (potentialSubscriptionsData is null) {
                 return null;

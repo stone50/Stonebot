@@ -8,7 +8,7 @@
     using Twitch;
     using RandomNumberGenerator = System.Security.Cryptography.RandomNumberGenerator;
 
-    internal static class AuthorizationCode {
+    internal static partial class AuthorizationCode {
         public static async Task<string?> Create(string clientId, string[] scope) {
             Logger.Info("Creating authorization code.");
             var config = await AppCache.Config.Get();
@@ -144,7 +144,7 @@
 
         private static bool GetIsStateValid(string url, string state) {
             Logger.Info("Getting is state valid from authorization code web server request URL.");
-            var stateRegex = new Regex("state=([a-zA-Z0-9_.\\-~]*)");
+            var stateRegex = StateRegex();
             var match = stateRegex.Match(url);
             if (!match.Success) {
                 Logger.Warning("Cannot get is state valid because match.Success is false.");
@@ -161,7 +161,7 @@
 
         private static string? GetCode(string url) {
             Logger.Info("Getting authorization code from web server request URL.");
-            var codeRegex = new Regex("code=([a-zA-Z0-9]*)");
+            var codeRegex = CodeRegex();
             var match = codeRegex.Match(url);
             if (!match.Success) {
                 Logger.Warning($"Cannot get code becausematch.Success is false.");
@@ -199,5 +199,11 @@
 
             return true;
         }
+
+        [GeneratedRegex("state=([a-zA-Z0-9_.\\-~]*)")]
+        private static partial Regex StateRegex();
+
+        [GeneratedRegex("code=([a-zA-Z0-9]*)")]
+        private static partial Regex CodeRegex();
     }
 }

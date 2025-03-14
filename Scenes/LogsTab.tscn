@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://gpeflpyltg7x"]
 
-[ext_resource type="Script" path="res://Scripts/UI/LogsTab.cs" id="1_r7ik5"]
+[ext_resource type="Script" uid="uid://devx8t6epi6ay" path="res://Scripts/UI/LogsTab.cs" id="1_r7ik5"]
 [ext_resource type="Texture2D" uid="uid://c1bm58mfnvu02" path="res://Icons/folder.svg" id="2_hq8q0"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hvq17"]

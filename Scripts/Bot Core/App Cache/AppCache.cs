@@ -6,7 +6,7 @@
     using System.Threading.Tasks;
 
     internal static class AppCache {
-        public class CacheValue<T> where T : class {
+        public class CacheValue<T>(Func<Task<T?>> getter, T? value = null) where T : class {
             public CacheValue(T? value = default) : this(() => default(T?), value) { }
 
             public CacheValue(Func<T?> getter, T? value = null) : this(
@@ -17,22 +17,14 @@
                 value
             ) { }
 
-            public CacheValue(Func<Task<T?>> getter, T? value = null) {
-                ValueGetter = getter;
-                Value = value;
-            }
-
             public async Task<T?> Get() {
-                Value ??= await ValueGetter();
-                return Value;
+                value ??= await getter();
+                return value;
             }
 
-            public async Task Refresh() => Value = await ValueGetter();
+            public async Task Refresh() => value = await getter();
 
-            public T? GetWithoutRefresh() => Value;
-
-            private T? Value;
-            private readonly Func<Task<T?>> ValueGetter;
+            public T? GetWithoutRefresh() => value;
         }
 
         public static string? StoredChatterRefreshToken => storedData?.ChatterRefreshToken;

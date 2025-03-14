@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bd3165guwtheq"]
 
-[ext_resource type="Script" path="res://Scripts/UI/TimersTab.cs" id="1_a5xx5"]
+[ext_resource type="Script" uid="uid://cufv7k4kj5o86" path="res://Scripts/UI/TimersTab.cs" id="1_a5xx5"]
 
 [node name="TimersTab" type="PanelContainer" node_paths=PackedStringArray("TimersContainer")]
 anchors_preset = 15

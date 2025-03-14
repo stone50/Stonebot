@@ -4,26 +4,20 @@
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
 
-    internal class Message {
+    internal class Message(string keyword, Regex regex, Func<ChannelChatMessageEvent, PermissionLevel, Match, Task> useAction) {
         public event EventHandler<PermissionLevel> PermissionLevelChanged = delegate { };
         public event EventHandler<int> UseDelayChanged = delegate { };
         public event EventHandler<bool> IsEnabledChanged = delegate { };
 
-        public string Keyword { get; private set; }
-        public Regex Regex;
+        public string Keyword { get; private set; } = keyword;
+        public Regex Regex = regex;
         public bool IsEnabled { get => isEnabled; set => SetIsEnabled(value); }
         public PermissionLevel PermissionLevel { get => permissionLevel; set => SetPermissionLevel(value); }
         public int UseDelay { get => useDelay; set => SetUseDelay(value); }
         public DateTime LastUsed { get; private set; }
-        public Func<ChannelChatMessageEvent, PermissionLevel, Match, Task> UseAction;
+        public Func<ChannelChatMessageEvent, PermissionLevel, Match, Task> UseAction = useAction;
 
         public bool IsReadyToUse => DateTime.Now > LastUsed.AddMilliseconds(UseDelay);
-
-        public Message(string keyword, Regex regex, Func<ChannelChatMessageEvent, PermissionLevel, Match, Task> useAction) {
-            Keyword = keyword;
-            Regex = regex;
-            UseAction = useAction;
-        }
 
         public async Task<bool> Use(ChannelChatMessageEvent messageEvent) {
             Logger.Info($"Using message {Keyword}.");
