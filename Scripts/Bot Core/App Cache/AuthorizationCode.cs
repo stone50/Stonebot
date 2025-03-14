@@ -23,7 +23,7 @@
             try {
                 server = new(localhost, config.AuthorizationPort);
             } catch (Exception e) {
-                Logger.Warning($"Could not create authorization code because TcpListener construct attempt failed: {e}. Found: {config.AuthorizationPort}.");
+                Logger.Warning($"Could not create authorization code because TcpListener construct attempt failed: {e}. Context value: {config.AuthorizationPort}.");
                 return null;
             }
 
@@ -109,7 +109,7 @@
                         Logger.Warning("Send bad request attempt failed.");
                     }
 
-                    Logger.Warning($"Could not get authorization code because get code from url attempt failed. Found: {url}.");
+                    Logger.Warning($"Could not get authorization code because get code from url attempt failed. Context value: {url}.");
                     return null;
                 }
 
@@ -142,7 +142,7 @@
                 return null;
             }
 
-            void LogParsingWarning() => Logger.Warning($"Could not get url because message could not be parsed. Found: {message}.");
+            void LogParsingWarning() => Logger.Warning($"Could not get url because message could not be parsed. Context value: {message}.");
             var indexOfFirstSpace = message.IndexOf(' ');
             if (indexOfFirstSpace == -1) {
                 LogParsingWarning();
@@ -176,7 +176,7 @@
         private static bool GetIsStateValid(string url, string state) {
             var stateRegex = StateRegex();
             var match = stateRegex.Match(url);
-            void LogMatchWarning() => Logger.Warning($"Could not get is state valid because state regex match attempt failed. Found: {url}.");
+            void LogMatchWarning() => Logger.Warning($"Could not get is state valid because state regex match attempt failed. Context value: {url}.");
             if (!match.Success) {
                 LogMatchWarning();
                 return false;
@@ -193,7 +193,7 @@
         private static string? GetCodeFromUrl(string url) {
             var codeRegex = CodeRegex();
             var match = codeRegex.Match(url);
-            void LogMatchWarning() => Logger.Warning($"Could not get authorization code from url because code regex match attempt failed. Found: {url}.");
+            void LogMatchWarning() => Logger.Warning($"Could not get authorization code from url because code regex match attempt failed. Context value: {url}.");
             if (!match.Success) {
                 LogMatchWarning();
                 return null;

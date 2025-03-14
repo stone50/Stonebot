@@ -20,11 +20,12 @@
 
         public static async Task<Config?> Create() {
             Logger.Info("Creating config.");
+
             string configText;
             try {
                 configText = await File.ReadAllTextAsync(Constants.ConfigFilePath);
             } catch (Exception e) {
-                Logger.Warning($"Cannot create config because File.ReadAllTextAsync failed: {e}.");
+                Logger.Warning($"Could not create config because file read all text attempt failed: {e}. Context value: {Constants.ConfigFilePath}.");
                 return null;
             }
 
@@ -32,7 +33,7 @@
             try {
                 data = JsonSerializer.Deserialize<ConfigData>(configText);
             } catch (Exception e) {
-                Logger.Warning($"Could not deserialize config values: {e}.");
+                Logger.Warning($"Could not create config because json serializer deserialize attempt failed: {e}. Context value: {configText}.");
                 return null;
             }
 
