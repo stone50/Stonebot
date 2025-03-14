@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bl2g33knt81sa"]
 
-[ext_resource type="Script" path="res://Scripts/UI/CommandsTab.cs" id="1_k3tnu"]
+[ext_resource type="Script" uid="uid://dvnqjmoewv2u6" path="res://Scripts/UI/CommandsTab.cs" id="1_k3tnu"]
 
 [node name="CommandsTab" type="PanelContainer" node_paths=PackedStringArray("CommandsContainer")]
 anchors_preset = 15

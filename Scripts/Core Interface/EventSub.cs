@@ -4,7 +4,6 @@
     using Bot_Core.Models.EventSub;
     using Bot_Core.Twitch;
     using System;
-    using System.Linq;
     using System.Text.Json;
     using System.Threading.Tasks;
 
@@ -35,7 +34,7 @@
                     combinedData = data;
                 } else {
                     var newCombinedData = (EventSubsData)combinedData;
-                    newCombinedData.Data = newCombinedData.Data.Concat(data.Data).ToArray();
+                    newCombinedData.Data = [.. newCombinedData.Data, .. data.Data];
                     combinedData = newCombinedData;
                 }
 

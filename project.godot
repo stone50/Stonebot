@@ -14,9 +14,9 @@ config/name="Stonebot"
 config/description="A chatbot for Twitch"
 config/version="0.4.0"
 run/main_scene="res://Scenes/Main.tscn"
-config/features=PackedStringArray("4.3", "C#", "Forward Plus")
-boot_splash/image="res://Icons/Logo.png"
+config/features=PackedStringArray("4.4", "C#", "Forward Plus")
 boot_splash/use_filter=false
+boot_splash/image="res://Icons/Logo.png"
 config/icon="res://Icons/Logo.png"
 
 [dotnet]

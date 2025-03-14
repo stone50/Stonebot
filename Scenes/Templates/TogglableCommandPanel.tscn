@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://c24m4seai2gb1"]
 
-[ext_resource type="Script" path="res://Scripts/UI/TogglableCommandPanel.cs" id="1_ltjnb"]
+[ext_resource type="Script" uid="uid://uch1pk0jr55m" path="res://Scripts/UI/TogglableCommandPanel.cs" id="1_ltjnb"]
 [ext_resource type="Texture2D" uid="uid://c25tx7mhckdb5" path="res://Icons/drop down closed.svg" id="2_sw4a6"]
 
 [node name="TogglableCommandPanel" type="MarginContainer" node_paths=PackedStringArray("EnableButton", "KeywordLabel", "MainButton", "DropDownIcon", "DetailsContainer", "PermissionLevelMenuButton", "UseDelaySpinBox")]

@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://3a4qg1dtl57j"]
 
-[ext_resource type="Script" path="res://Scripts/UI/TimerPanel.cs" id="1_gfs0m"]
+[ext_resource type="Script" uid="uid://cmj3o3qg1wkkt" path="res://Scripts/UI/TimerPanel.cs" id="1_gfs0m"]
 [ext_resource type="Texture2D" uid="uid://c25tx7mhckdb5" path="res://Icons/drop down closed.svg" id="2_f7pip"]
 
 [node name="TimerPanel" type="MarginContainer" node_paths=PackedStringArray("KeywordLabel", "MainButton", "DropDownIcon", "DetailsContainer", "IntervalSpinBox", "EnableButton")]

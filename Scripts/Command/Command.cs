@@ -3,22 +3,17 @@
     using System;
     using System.Threading.Tasks;
 
-    internal class Command {
+    internal class Command(string keyword, Func<ChannelChatMessageEvent, PermissionLevel, Task> useAction) {
         public event EventHandler<PermissionLevel> PermissionLevelChanged = delegate { };
         public event EventHandler<int> UseDelayChanged = delegate { };
 
-        public string Keyword { get; private set; }
+        public string Keyword { get; private set; } = keyword;
         public PermissionLevel PermissionLevel { get => permissionLevel; set => SetPermissionLevel(value); }
         public int UseDelay { get => useDelay; set => SetUseDelay(value); }
         public DateTime LastUsed { get; private set; } = DateTime.Now;
-        public Func<ChannelChatMessageEvent, PermissionLevel, Task> UseAction;
+        public Func<ChannelChatMessageEvent, PermissionLevel, Task> UseAction = useAction;
 
         public bool IsReadyToUse => DateTime.Now > LastUsed.AddMilliseconds(UseDelay);
-
-        public Command(string keyword, Func<ChannelChatMessageEvent, PermissionLevel, Task> useAction) {
-            Keyword = keyword;
-            UseAction = useAction;
-        }
 
         public virtual async Task<bool> Use(ChannelChatMessageEvent messageEvent) {
             Logger.Info($"Using command {Keyword}.");
@@ -52,13 +47,11 @@
         private int useDelay = 1000;
     }
 
-    internal class TogglableCommand : Command {
+    internal class TogglableCommand(string keyword, Func<ChannelChatMessageEvent, PermissionLevel, Task> useAction) : Command(keyword, useAction) {
         public event EventHandler<bool> IsEnabledChanged = delegate { };
 
         private bool isEnabled = true;
         public bool IsEnabled { get => isEnabled; set => SetIsEnabled(value); }
-
-        public TogglableCommand(string keyword, Func<ChannelChatMessageEvent, PermissionLevel, Task> useAction) : base(keyword, useAction) { }
 
         public override async Task<bool> Use(ChannelChatMessageEvent messageEvent) => IsEnabled && await base.Use(messageEvent);
 

@@ -1,6 +1,5 @@
 ﻿namespace Stonebot.Scripts.Bot_Core.App_Cache {
     using Models;
-    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Text.Json;
@@ -18,7 +17,7 @@
             Logger.Info("Creating custom data.");
             if (!File.Exists(Constants.DataFilePath)) {
                 return new(new() {
-                    Quotes = Array.Empty<string>()
+                    Quotes = []
                 });
             }
 
@@ -40,7 +39,7 @@
         }
 
         public CustomDataData ToDataData() => new() {
-            Quotes = Quotes.ToArray(),
+            Quotes = [.. Quotes],
             FeedCount = FeedCount,
             FeedRecord = FeedRecord,
             FeedRecordHolder = FeedRecordHolder,
@@ -49,7 +48,7 @@
         };
 
         private CustomData(CustomDataData dataData) {
-            Quotes = new(dataData.Quotes);
+            Quotes = [.. dataData.Quotes];
             FeedCount = dataData.FeedCount;
             FeedRecord = dataData.FeedRecord;
             FeedRecordHolder = dataData.FeedRecordHolder;

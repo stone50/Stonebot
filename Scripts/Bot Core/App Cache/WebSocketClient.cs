@@ -49,7 +49,7 @@
 
         private string? id;
         private ClientWebSocket socket = new();
-        private readonly Dictionary<string, Func<JsonElement, Task>> notificationHandlers = new();
+        private readonly Dictionary<string, Func<JsonElement, Task>> notificationHandlers = [];
         private DateTime keepaliveExpiration;
 
         private async Task<bool> Connect(string uri) {
