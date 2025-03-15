@@ -40,14 +40,18 @@
             return new(dataData);
         }
 
-        public CustomDataData ToDataData() => new() {
-            Quotes = [.. Quotes],
-            FeedCount = FeedCount,
-            FeedRecord = FeedRecord,
-            FeedRecordHolder = FeedRecordHolder,
-            DiscordInvite = DiscordInvite,
-            YouTubeLink = YouTubeLink
-        };
+        public CustomDataData ToDataData() {
+            Logger.Info("Getting custom data as custom data data.");
+
+            return new() {
+                Quotes = [.. Quotes],
+                FeedCount = FeedCount,
+                FeedRecord = FeedRecord,
+                FeedRecordHolder = FeedRecordHolder,
+                DiscordInvite = DiscordInvite,
+                YouTubeLink = YouTubeLink
+            };
+        }
 
         private CustomData(CustomDataData dataData) {
             Quotes = [.. dataData.Quotes];

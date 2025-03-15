@@ -48,7 +48,17 @@
             return cachedClient;
         }
 
-        public async Task<string?> GetAccessTokenString() => await accessToken.GetString();
+        public async Task<string?> GetAccessTokenString() {
+            Logger.Info("Getting http client wrapper access token string.");
+
+            var accessTokenString = await accessToken.GetString();
+            if (accessTokenString is null) {
+                Logger.Warning("Could not get http client wrapper access token string because access token get string attempt failed.");
+                return null;
+            }
+
+            return accessTokenString;
+        }
 
         private readonly AccessToken accessToken;
         private HttpClient? cachedClient;

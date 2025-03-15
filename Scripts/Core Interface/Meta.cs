@@ -6,7 +6,7 @@
     using System.Threading.Tasks;
 
     internal static class Meta {
-        public static async Task Startup() {
+        public static async void Startup() {
             Logger.Info("Starting up.");
             _ = await AppCache.Init();
             _ = await EventSub.EventSub.ConnectChannelChatMessage(HandleChatMessage);
@@ -20,7 +20,7 @@
             }
 
             _ = await Chat.Send("logging off...");
-            await AppCache.Save();
+            _ = await AppCache.SaveAll();
             _ = await EventSub.EventSub.RemoveBy();
             var webSocket = await AppCache.WebSocketClient.Get();
             if (webSocket is not null) {

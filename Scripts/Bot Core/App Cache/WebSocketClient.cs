@@ -9,6 +9,7 @@
     using System.Text.Json;
     using System.Threading.Tasks;
 
+    // TODO: This whole class needs to be rewritten. The flow of data is unclear and prone to bugs.
     internal class WebSocketClient {
         public enum CloseReason {
             Manual,
@@ -26,12 +27,16 @@
         public bool IsClosing { get; private set; } = false;
 
         public async Task<bool> Connect() {
+            Logger.Info("Connecting web socket client.");
+
             var config = await AppCache.Config.Get();
             if (config is null) {
+                Logger.Warning("Could not connect web socket client because config get attempt failed.");
                 return false;
             }
 
-            if (!await Connect($"wss://eventsub.wss.twitch.tv/ws?keepalive_timeout_seconds={config.SocketKeepaliveTimeout}")) {
+            if (!await ConnectTo($"wss://eventsub.wss.twitch.tv/ws?keepalive_timeout_seconds={config.SocketKeepaliveTimeout}")) {
+                Logger.Warning("Could not connect web socket client because connect to attempt failed.");
                 return false;
             }
 
@@ -41,7 +46,16 @@
 
         public async Task<bool> Close() => await Close(CloseReason.Manual);
 
-        public async Task<string?> GetId() => !IsConnected && !await Connect() ? null : id;
+        public async Task<string?> GetId() {
+            Logger.Info("Getting web socket client id.");
+
+            if (!IsConnected && !await Connect()) {
+                Logger.Warning("Could not get web socket client id because the web socket client is not connected and the connect attempt failed.");
+                return null;
+            }
+
+            return id;
+        }
 
         public void SetNotificationHandler(string subscriptionType, Func<JsonElement, Task> handler) => notificationHandlers[subscriptionType] = handler;
 
@@ -52,10 +66,10 @@
         private readonly Dictionary<string, Func<JsonElement, Task>> notificationHandlers = [];
         private DateTime keepaliveExpiration;
 
-        private async Task<bool> Connect(string uri) {
-            Logger.Info("Connecting web socket client.");
+        private async Task<bool> ConnectTo(string uri) {
             var config = await AppCache.Config.Get();
             if (config is null) {
+                Logger.Warning("Could not connect web socket client because config get attempt failed.");
                 return false;
             }
 
@@ -63,21 +77,25 @@
             try {
                 socketUri = new(uri);
             } catch (Exception e) {
-                Logger.Warning($"Cannot connect because Uri construction failed: {e}.");
+                Logger.Warning($"Could not connect web socket client because uri construct attempt failed: {e}. Context value: {uri}.");
                 return false;
             }
 
             try {
                 await socket.ConnectAsync(socketUri, default);
             } catch (Exception e) {
-                Logger.Warning($"Cannot connect because socket.ConnectAsync failed: {e}.");
+                Logger.Warning($"Could not connect web socket client because socket connect attempt failed: {e}. Context value: {socketUri}.");
                 return false;
             }
 
             IsConnected = true;
             var request = await GetRequest();
             if (request is null) {
-                _ = await Close(CloseReason.BadRequest);
+                if (!await Close(CloseReason.BadRequest)) {
+                    Logger.Warning("Close attempt failed.");
+                }
+
+                Logger.Warning("Could not connect web socket client because get request attempt failed.");
                 return false;
             }
 
@@ -85,8 +103,11 @@
             try {
                 message = JsonSerializer.Deserialize<EventSubWelcomeMessage>(request);
             } catch (Exception e) {
-                Logger.Warning($"Cannot connect because JsonSerializer.Deserialize failed: {e}.");
-                _ = await Close(CloseReason.BadRequest);
+                if (!await Close(CloseReason.BadRequest)) {
+                    Logger.Warning("Close attempt failed.");
+                }
+
+                Logger.Warning($"Could not connect web socket client because json serialize deserialize attempt failed: {e}. Context value: {request}.");
                 return false;
             }
 
@@ -96,12 +117,13 @@
         }
 
         private async Task<bool> Close(CloseReason reason) {
-            Logger.Info("Closing web socket client.");
             if (!IsConnected) {
+                Logger.Warning("Could not close web socket client because the web socket client is not connected.");
                 return false;
             }
 
             if (IsClosing) {
+                Logger.Warning("Could not close web socket client because the web socket client is closing.");
                 return false;
             }
 
@@ -117,8 +139,8 @@
             try {
                 await socket.CloseAsync(status, "", default);
             } catch (Exception e) {
-                Logger.Warning($"Cannot close because socket.CloseAsync failed: {e}.");
                 IsClosing = false;
+                Logger.Warning($"Could not close web socket client because socket close attempt failed: {e}.");
                 return false;
             }
 
@@ -136,23 +158,23 @@
             try {
                 result = await socket.ReceiveAsync(buffer, default);
             } catch (Exception e) {
-                Logger.Warning($"Cannot get request because socket.ReceiveAsync failed: {e}.");
+                Logger.Warning($"Could not get request because socket receive attempt failed: {e}.");
                 return null;
             }
 
             if (result.CloseStatus is not null) {
-                if (result.CloseStatus != WebSocketCloseStatus.NormalClosure) {
-                    Logger.Warning($"Web socket server sent close request: {result.CloseStatus}: {result.CloseStatusDescription}.");
+                if (!await Close(CloseReason.CloseMessage)) {
+                    Logger.Warning("Close attempt failed.");
                 }
 
-                _ = await Close(CloseReason.CloseMessage);
+                Logger.Warning($"Could not get request because socket recieve attempt failed. Context value: {result.CloseStatus}.");
                 return null;
             }
 
             try {
                 return Encoding.Default.GetString(buffer, 0, result.Count);
             } catch (Exception e) {
-                Logger.Warning($"Cannot get request because Encoding.Default.GetString failed: {e}.");
+                Logger.Warning($"Could not get request because encoding default get string failed: {e}.");
                 return null;
             }
         }
@@ -160,7 +182,11 @@
         private async Task StartListening() {
             var config = await AppCache.Config.Get();
             if (config is null) {
-                _ = await Close(CloseReason.InternalError);
+                if (!await Close(CloseReason.InternalError)) {
+                    Logger.Warning("Close attempt failed.");
+                }
+
+                Logger.Warning("Could not start listening");
                 return;
             }
 
@@ -253,7 +279,7 @@
                 return;
             }
 
-            if (!await Connect(url)) {
+            if (!await ConnectTo(url)) {
                 return;
             }
 

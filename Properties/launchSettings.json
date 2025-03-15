@@ -2,7 +2,7 @@
   "profiles": {
     "Stonebot": {
       "commandName": "Executable",
-      "executablePath": "C:\\Program Files\\Godot\\Godot_v4.3-stable_mono_win64.exe",
+      "executablePath": "C:\\Program Files\\Godot\\Godot_v4.4-stable_mono_win64.exe",
       "workingDirectory": ".",
       "nativeDebugging": true
     }

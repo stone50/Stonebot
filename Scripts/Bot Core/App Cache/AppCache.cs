@@ -17,33 +17,14 @@
                 value
             ) { }
 
-            public async Task<T?> Get() {
-                Logger.Info("Getting cache value.");
-
-                if (value is null && !await Refresh()) {
-                    Logger.Warning("Could not get cache value because the cache value is null and the refresh attempt failed.");
-                    return null;
-                }
-
-                return value;
-            }
+            public async Task<T?> Get() => value is null && !await Refresh() ? null : value;
 
             public async Task<bool> Refresh() {
-                Logger.Info("Refreshing cahce value.");
-
                 value = await getter();
-                if (value is null) {
-                    Logger.Warning("Could not refresh cache value because getter attempt failed.");
-                    return false;
-                }
-
-                return true;
+                return value is not null;
             }
 
-            public T? GetWithoutRefresh() {
-                Logger.Info("Getting cahce value without refresh.");
-                return value;
-            }
+            public T? GetWithoutRefresh() => value;
         }
 
         public static string? StoredChatterRefreshToken => storedData?.ChatterRefreshToken;
@@ -68,16 +49,6 @@
 
             if (!await Load()) {
                 Logger.Warning("App cache load attempt failed.");
-            }
-
-            if (await CollectorClientWrapper.Get() is null) {
-                Logger.Warning("Could not initialize app cache because collector client wrapper get attempt failed.");
-                return false;
-            }
-
-            if (await ChatterClientWrapper.Get() is null) {
-                Logger.Warning("Could not initialize app cache because chatter client wrapper get attempt failed.");
-                return false;
             }
 
             return true;
