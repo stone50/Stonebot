@@ -25,7 +25,7 @@
             try {
                 dataText = await File.ReadAllTextAsync(Constants.DataFilePath);
             } catch (Exception e) {
-                Logger.Warning($"Could not create custom data because file read all text attempt failed: {e}. Context value: {Constants.DataFilePath}.");
+                Logger.Warning($"Could not create custom data because file read all text attempt failed: {e}.");
                 return null;
             }
 
@@ -33,7 +33,7 @@
             try {
                 dataData = JsonSerializer.Deserialize<CustomDataData>(dataText);
             } catch (Exception e) {
-                Logger.Warning($"Could not create custom data because json serializer deserialize attempt failed: {e}. Context value: {dataText}.");
+                Logger.Warning($"Could not create custom data because json serializer deserialize attempt failed: {e}. Data text: {dataText}.");
                 return null;
             }
 
