@@ -47,7 +47,7 @@
                 return false;
             }
 
-            if (!await Load()) {
+            if (File.Exists(Constants.CacheFilePath) && !await Load()) {
                 Logger.Warning("App cache load attempt failed.");
             }
 

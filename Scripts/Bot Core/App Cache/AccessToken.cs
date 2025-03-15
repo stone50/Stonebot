@@ -78,10 +78,10 @@
         }
 
         public bool SetExpirationBuffer(int newExpirationBuffer) {
-            Logger.Info("Setting access token expiration buffer.");
+            Logger.Info($"Setting access token expiration buffer. New expiration buffer: {newExpirationBuffer}.");
 
             if (newExpirationBuffer < 0) {
-                Logger.Warning($"Could not set access token expiration buffer because the `{nameof(newExpirationBuffer)}` parameter is less than 0. New expiration buffer: {newExpirationBuffer}.");
+                Logger.Warning($"Could not set access token expiration buffer because the `{nameof(newExpirationBuffer)}` parameter is less than 0.");
                 return false;
             }
 
@@ -93,7 +93,7 @@
 
         private AccessToken(string clientId, string clientSecret, AccessTokenData data, int expirationBuffer) {
             if (expirationBuffer < 0) {
-                Logger.Error($"Could not construct new access token because the `{nameof(expirationBuffer)}` parameter is less than 0. Context value: {expirationBuffer}.");
+                Logger.Error($"Could not construct new access token because the `{nameof(expirationBuffer)}` parameter is less than 0. Expiration buffer: {expirationBuffer}.");
                 throw new ArgumentOutOfRangeException(nameof(expirationBuffer));
             }
 
