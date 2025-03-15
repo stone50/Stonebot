@@ -18,51 +18,86 @@
             ) { }
 
             public async Task<T?> Get() {
-                value ??= await getter();
+                Logger.Info("Getting cache value.");
+
+                if (value is null && !await Refresh()) {
+                    Logger.Warning("Could not get cache value because the cache value is null and the refresh attempt failed.");
+                    return null;
+                }
+
                 return value;
             }
 
-            public async Task Refresh() => value = await getter();
+            public async Task<bool> Refresh() {
+                Logger.Info("Refreshing cahce value.");
 
-            public T? GetWithoutRefresh() => value;
+                value = await getter();
+                if (value is null) {
+                    Logger.Warning("Could not refresh cache value because getter attempt failed.");
+                    return false;
+                }
+
+                return true;
+            }
+
+            public T? GetWithoutRefresh() {
+                Logger.Info("Getting cahce value without refresh.");
+                return value;
+            }
         }
 
         public static string? StoredChatterRefreshToken => storedData?.ChatterRefreshToken;
         public static string? StoredCollectorRefreshToken => storedData?.CollectorRefreshToken;
-        public static CacheValue<Config> Config = new(App_Cache.Config.Create, null);
-        public static CacheValue<HttpClientWrapper> ChatterClientWrapper = new(HttpClientWrapper.CreateChatter, null);
-        public static CacheValue<HttpClientWrapper> CollectorClientWrapper = new(HttpClientWrapper.CreateCollector, null);
-        public static CacheValue<User> Bot = new(User.CreateBot, null);
-        public static CacheValue<User> Broadcaster = new(User.CreateBroadcaster, null);
-        public static CacheValue<WebSocketClient> WebSocketClient = new(() => new(), null);
-        public static CacheValue<CustomData> Data = new(CustomData.Create, null);
+        public static readonly CacheValue<Config> Config = new(App_Cache.Config.Create, null);
+        public static readonly CacheValue<HttpClientWrapper> ChatterClientWrapper = new(HttpClientWrapper.CreateChatter, null);
+        public static readonly CacheValue<HttpClientWrapper> CollectorClientWrapper = new(HttpClientWrapper.CreateCollector, null);
+        public static readonly CacheValue<User> Bot = new(User.CreateBot, null);
+        public static readonly CacheValue<User> Broadcaster = new(User.CreateBroadcaster, null);
+        public static readonly CacheValue<WebSocketClient> WebSocketClient = new(() => new(), null);
+        public static readonly CacheValue<CustomData> Data = new(CustomData.Create, null);
 
         public static async Task<bool> Init() {
             Logger.Info("Initializing app cache.");
+
             try {
                 _ = Directory.CreateDirectory(Constants.AppDataPath);
             } catch (Exception e) {
-                Logger.Warning($"Cannot initialize app cache because Directory.CreateDirectory failed: {e}.");
+                Logger.Warning($"Could not initialize app cache because directory create directory attempt failed: {e}.");
                 return false;
             }
 
-            _ = await Load();
-            var success = await CollectorClientWrapper.Get() is not null;
-            return await ChatterClientWrapper.Get() is not null && success;
+            if (!await Load()) {
+                Logger.Warning("App cache load attempt failed.");
+            }
+
+            if (await CollectorClientWrapper.Get() is null) {
+                Logger.Warning("Could not initialize app cache because collector client wrapper get attempt failed.");
+                return false;
+            }
+
+            if (await ChatterClientWrapper.Get() is null) {
+                Logger.Warning("Could not initialize app cache because chatter client wrapper get attempt failed.");
+                return false;
+            }
+
+            return true;
         }
 
         public static async Task<bool> Load() {
             Logger.Info("Loading app cache.");
+
             string json;
             try {
                 json = await File.ReadAllTextAsync(Constants.CacheFilePath);
-            } catch {
+            } catch (Exception e) {
+                Logger.Warning($"Could not load app cache because file read all text attempt failed: {e}.");
                 return false;
             }
 
             try {
                 storedData = JsonSerializer.Deserialize<AppCacheData>(json);
-            } catch {
+            } catch (Exception e) {
+                Logger.Warning($"Could not load app cache because json serializer deserialize attempt failed: {e}.");
                 return false;
             }
 
@@ -70,14 +105,17 @@
         }
 
         public static async Task<bool> SaveCache() {
-            Logger.Info("Saving cache to file.");
+            Logger.Info("Saving app cache.");
+
             var chatterClientWrapper = await ChatterClientWrapper.Get();
             if (chatterClientWrapper is null) {
+                Logger.Warning("Could not save app cache because chatter client wrapper get attempt failed.");
                 return false;
             }
 
             var collectorClientWrapper = await CollectorClientWrapper.Get();
             if (collectorClientWrapper is null) {
+                Logger.Warning("Could not save app cache because collector client wrapper get attept failed.");
                 return false;
             }
 
@@ -88,7 +126,7 @@
             try {
                 await File.WriteAllTextAsync(Constants.CacheFilePath, JsonSerializer.Serialize(data));
             } catch (Exception e) {
-                Logger.Warning($"Cannot save cache because File.WriteAllTextAsync failed: {e}.");
+                Logger.Warning($"Could not save app cache because file write all text attempt failed: {e}.");
                 return false;
             }
 
@@ -97,26 +135,39 @@
         }
 
         public static async Task<bool> SaveCustomData() {
-            Logger.Info("Saving custom data to file.");
+            Logger.Info("Saving custom data.");
+
             var data = await Data.Get();
             if (data is null) {
+                Logger.Warning("Could not save custom data because data get attempt failed.");
                 return false;
             }
 
             try {
                 await File.WriteAllTextAsync(Constants.DataFilePath, JsonSerializer.Serialize(data.ToDataData()));
             } catch (Exception e) {
-                Logger.Warning($"Cannot save custom data because File.WriteAllTextAsync failed: {e}.");
+                Logger.Warning($"Could not save custom data because file write all text attempt failed: {e}.");
                 return false;
             }
 
             return true;
         }
 
-        public static async Task Save() {
-            Logger.Info("Saving app cache.");
-            _ = await SaveCustomData();
-            _ = await SaveCache();
+        public static async Task<bool> SaveAll() {
+            Logger.Info("Saving all app cache.");
+
+            var success = true;
+            if (!await SaveCustomData()) {
+                Logger.Warning("Could not save all app cache because save custom data attempt failed.");
+                success = false;
+            }
+
+            if (!await SaveCache()) {
+                Logger.Warning("Could not save all app cache because save cache attempt failed.");
+                success = false;
+            }
+
+            return success;
         }
 
         private static AppCacheData? storedData;

@@ -23,7 +23,7 @@
             try {
                 server = new(localhost, config.AuthorizationPort);
             } catch (Exception e) {
-                Logger.Warning($"Could not create authorization code because TcpListener construct attempt failed: {e}. Context value: {config.AuthorizationPort}.");
+                Logger.Warning($"Could not create authorization code because TcpListener construct attempt failed: {e}. Config authorization port: {config.AuthorizationPort}.");
                 return null;
             }
 
@@ -51,7 +51,7 @@
             try {
                 server.Stop();
             } catch (Exception e) {
-                Logger.Warning($"Server stop attempt failed: {e}.");
+                Logger.Warning($"Authorization code server stop attempt failed: {e}.");
             }
 
             if (code is null) {
@@ -83,33 +83,29 @@
 
             try {
                 using var stream = client.GetStream();
+                async Task DoSendBadRequest() {
+                    if (!await SendBadRequest(stream)) {
+                        Logger.Warning("Authorization code send bad request attempt failed.");
+                    }
+                }
 
                 var url = await GetUrl(stream);
                 if (url is null) {
-                    if (!await SendBadRequest(stream)) {
-                        Logger.Warning("Send bad request attempt failed.");
-                    }
-
+                    await DoSendBadRequest();
                     Logger.Warning("Could not get authorization code because get url attempt failed.");
                     return null;
                 }
 
                 if (!GetIsStateValid(url, state)) {
-                    if (!await SendBadRequest(stream)) {
-                        Logger.Warning("Send bad request attempt failed.");
-                    }
-
+                    await DoSendBadRequest();
                     Logger.Warning("Could not get authorization code because get is valid state attempt failed.");
                     return null;
                 }
 
                 var code = GetCodeFromUrl(url);
                 if (code is null) {
-                    if (!await SendBadRequest(stream)) {
-                        Logger.Warning("Send bad request attempt failed.");
-                    }
-
-                    Logger.Warning($"Could not get authorization code because get code from url attempt failed. Context value: {url}.");
+                    await DoSendBadRequest();
+                    Logger.Warning($"Could not get authorization code because get code from url attempt failed. Url: {url}.");
                     return null;
                 }
 
@@ -130,7 +126,7 @@
             try {
                 numBytesRead = await stream.ReadAsync(buffer);
             } catch (Exception e) {
-                Logger.Warning($"Could not get url because stream read attempt failed: {e}.");
+                Logger.Warning($"Could not authorization code get url because stream read attempt failed: {e}.");
                 return null;
             }
 
@@ -138,11 +134,11 @@
             try {
                 message = Encoding.Default.GetString(buffer, 0, numBytesRead);
             } catch (Exception e) {
-                Logger.Warning($"Could not get url because encoding default get string attempt failed: {e}.");
+                Logger.Warning($"Could not authorization code get url because encoding default get string attempt failed: {e}.");
                 return null;
             }
 
-            void LogParsingWarning() => Logger.Warning($"Could not get url because message could not be parsed. Context value: {message}.");
+            void LogParsingWarning() => Logger.Warning($"Could not authorization code get url because message could not be parsed. Message: {message}.");
             var indexOfFirstSpace = message.IndexOf(' ');
             if (indexOfFirstSpace == -1) {
                 LogParsingWarning();
@@ -176,7 +172,7 @@
         private static bool GetIsStateValid(string url, string state) {
             var stateRegex = StateRegex();
             var match = stateRegex.Match(url);
-            void LogMatchWarning() => Logger.Warning($"Could not get is state valid because state regex match attempt failed. Context value: {url}.");
+            void LogMatchWarning() => Logger.Warning($"Could not authorization code get is state valid because state regex match attempt failed. Url: {url}.");
             if (!match.Success) {
                 LogMatchWarning();
                 return false;
@@ -193,7 +189,7 @@
         private static string? GetCodeFromUrl(string url) {
             var codeRegex = CodeRegex();
             var match = codeRegex.Match(url);
-            void LogMatchWarning() => Logger.Warning($"Could not get authorization code from url because code regex match attempt failed. Context value: {url}.");
+            void LogMatchWarning() => Logger.Warning($"Could not get authorization code from url because code regex match attempt failed. Url: {url}.");
             if (!match.Success) {
                 LogMatchWarning();
                 return null;
@@ -211,7 +207,7 @@
             try {
                 await stream.WriteAsync(Encoding.Default.GetBytes("HTTP/1.1 400 Bad Request\r\n\r\n<html><head><title>Authorization Failed</title></head><body><h1>:(</h1><p>Please check the logs to see why authorization failed.</p></body></html>"));
             } catch (Exception e) {
-                Logger.Warning($"Could not send bad request because stream write attempt failed: {e}.");
+                Logger.Warning($"Could not authorization code send bad request because stream write attempt failed: {e}.");
                 return false;
             }
 
@@ -222,7 +218,7 @@
             try {
                 await stream.WriteAsync(Encoding.Default.GetBytes("HTTP/1.1 200 OK\r\n\r\n<html><head><title>Authorization Succeeded</title></head><body><h1>Authorization Success! :)</h1><p>You can close this tab.</p></body></html>"));
             } catch (Exception e) {
-                Logger.Warning($"Could not send ok request because stream write attempt failed: {e}.");
+                Logger.Warning($"Could not authorization code send ok request because stream write attempt failed: {e}.");
                 return false;
             }
 

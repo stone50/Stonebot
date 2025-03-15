@@ -81,7 +81,7 @@
             Logger.Info("Setting access token expiration buffer.");
 
             if (newExpirationBuffer < 0) {
-                Logger.Warning($"Could not set access token expiration buffer because the `{nameof(newExpirationBuffer)}` parameter is less than 0. Context value: {newExpirationBuffer}.");
+                Logger.Warning($"Could not set access token expiration buffer because the `{nameof(newExpirationBuffer)}` parameter is less than 0. New expiration buffer: {newExpirationBuffer}.");
                 return false;
             }
 
