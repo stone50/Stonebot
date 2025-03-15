@@ -25,7 +25,7 @@
             try {
                 configText = await File.ReadAllTextAsync(Constants.ConfigFilePath);
             } catch (Exception e) {
-                Logger.Warning($"Could not create config because file read all text attempt failed: {e}. Context value: {Constants.ConfigFilePath}.");
+                Logger.Warning($"Could not create config because file read all text attempt failed: {e}.");
                 return null;
             }
 
@@ -33,7 +33,7 @@
             try {
                 data = JsonSerializer.Deserialize<ConfigData>(configText);
             } catch (Exception e) {
-                Logger.Warning($"Could not create config because json serializer deserialize attempt failed: {e}. Context value: {configText}.");
+                Logger.Warning($"Could not create config because json serializer deserialize attempt failed: {e}. Config text: {configText}.");
                 return null;
             }
 
