@@ -49,8 +49,8 @@
         private bool GetShouldScrollToBottom() => Math.Max(0, ScrollContainerVScrollBar.MaxValue - ScrollContainerVScrollBar.Size.Y) == ScrollContainerVScrollBar.Value;
 
         private void OnMessageLogged(object? _, Logger.MessageLoggedArgs args) {
-            // some logs are create before config is loaded, so default log limit is 1000
-            if (LogsContainer.GetChildCount() == (AppCache.Config.GetWithoutRefresh()?.DisplayLogLimit ?? 1000)) {
+            // some logs are create before config is loaded, so use a default log limit
+            if (LogsContainer.GetChildCount() == (AppCache.Config.GetWithoutRefresh()?.DisplayLogLimit ?? Constants.DefaultDisplayLogLimit)) {
                 LogsContainer.RemoveChild(LogsContainer.GetChild(0));
             }
 
