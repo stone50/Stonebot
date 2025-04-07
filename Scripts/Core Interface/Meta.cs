@@ -8,13 +8,19 @@
     internal static class Meta {
         public static async void Startup() {
             Logger.Info("Starting up.");
-            _ = await AppCache.Init();
+
+            if (!await AppCache.Init()) {
+                Logger.Warning("Could not start up because app cache init attempt failed.");
+                return;
+            }
+
             _ = await EventSub.EventSub.ConnectChannelChatMessage(HandleChatMessage);
             _ = await Chat.Send("MercyWing1 :) MercyWing2");
         }
 
         public static async Task Shutdown() {
             Logger.Info("Shutting down.");
+
             if (AppCache.CollectorClientWrapper.GetWithoutRefresh() is null || AppCache.ChatterClientWrapper.GetWithoutRefresh() is null) {
                 return;
             }
@@ -30,8 +36,10 @@
 
         private static async Task HandleChatMessage(ChannelChatMessageEvent messageEvent) {
             Logger.Info("Handling chat message.");
+
             var bot = await AppCache.Bot.Get();
             if (bot is null) {
+                Logger.Warning("Could not handle chat message because bot get attempt failed.");
                 return;
             }
 
