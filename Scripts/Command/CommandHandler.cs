@@ -24,19 +24,28 @@
             new TogglableCommand("yt", UseActions.YouTube)
         ];
 
-        public static bool IsCommand(string message) => message.StartsWith('!');
-
-        public static async Task<bool> Handle(ChannelChatMessageEvent messageEvent) {
+        public static async Task<bool?> Handle(ChannelChatMessageEvent messageEvent) {
             Logger.Info("Handling message event as command.");
+
             var commandString = messageEvent.Message.Text.Trim();
-            if (!IsCommand(commandString)) {
+            if (!commandString.StartsWith('!')) {
                 return false;
             }
 
             var spaceIndex = commandString.IndexOf(' ');
             var keyword = commandString.Substring(1, spaceIndex == -1 ? commandString.Length - 1 : spaceIndex - 1);
             var command = GetCommand(keyword);
-            return command is not null && await command.Use(messageEvent);
+            if (command is null) {
+                return false;
+            }
+
+            var useResult = await command.Use(messageEvent);
+            if (useResult is null) {
+                Logger.Warning("Could not handle message event as command because command use attempt failed.");
+                return null;
+            }
+
+            return useResult;
         }
 
         public static Command? GetCommand(string keyword) => Commands.FirstOrDefault(command => command.Keyword == keyword);
