@@ -8,18 +8,22 @@
     internal static class User {
         public static async Task<bool?> GetIsMod(string userId) {
             Logger.Info("Getting is user mod.");
+
             var broadcaster = await AppCache.Broadcaster.Get();
             if (broadcaster is null) {
+                Logger.Warning("Could not get is user mod because broadcaster get attempt failed.");
                 return null;
             }
 
             var clientWrapper = await AppCache.CollectorClientWrapper.Get();
             if (clientWrapper is null) {
+                Logger.Warning("Could not get is user mod because collector client wrapper get attempt failed.");
                 return null;
             }
 
             var client = await clientWrapper.GetClient();
             if (client is null) {
+                Logger.Warning("Could not get is user mod because client wrapper get client attempt failed.");
                 return null;
             }
 
@@ -28,23 +32,32 @@
                 broadcaster.Id,
                 [userId]
             ));
-            return simpleUsersData is null ? null : ((PaginatedSimpleUsersData)simpleUsersData).Data.Length == 1;
+            if (simpleUsersData is null) {
+                Logger.Warning("Could not get is user mod because Twitch API get moderators attempt failed.");
+                return null;
+            }
+
+            return ((PaginatedSimpleUsersData)simpleUsersData).Data.Length == 1;
         }
 
         public static async Task<bool?> GetIsVIP(string userId) {
             Logger.Info("Getting is user VIP.");
+
             var broadcaster = await AppCache.Broadcaster.Get();
             if (broadcaster is null) {
+                Logger.Warning("Could not get is user VIP because broadcaster get attempt failed.");
                 return null;
             }
 
             var clientWrapper = await AppCache.CollectorClientWrapper.Get();
             if (clientWrapper is null) {
+                Logger.Warning("Could not get is user VIP because collector client wrapper get attempt failed.");
                 return null;
             }
 
             var client = await clientWrapper.GetClient();
             if (client is null) {
+                Logger.Warning("Could not get is user VIP because client wrapper get client attempt failed.");
                 return null;
             }
 
@@ -53,23 +66,32 @@
                 broadcaster.Id,
                 [userId]
             ));
-            return simpleUsersData is null ? null : ((PaginatedSimpleUsersData)simpleUsersData).Data.Length == 1;
+            if (simpleUsersData is null) {
+                Logger.Warning("Could not get is user VIP because Twitch API get VIPs attempt failed.");
+                return null;
+            }
+
+            return ((PaginatedSimpleUsersData)simpleUsersData).Data.Length == 1;
         }
 
         public static async Task<int?> GetSubTier(string userId) {
-            Logger.Info("Getting is user subscriber.");
+            Logger.Info("Getting user subscription tier.");
+
             var broadcaster = await AppCache.Broadcaster.Get();
             if (broadcaster is null) {
+                Logger.Warning("Could not get user subscription tier because broadcaster get attempt failed.");
                 return null;
             }
 
             var clientWrapper = await AppCache.CollectorClientWrapper.Get();
             if (clientWrapper is null) {
+                Logger.Warning("Could not get user subscription tier because collector client wrapper get attempt failed.");
                 return null;
             }
 
             var client = await clientWrapper.GetClient();
             if (client is null) {
+                Logger.Warning("Could not get user subscription tier because client wrapper get client attempt failed.");
                 return null;
             }
 
@@ -79,12 +101,13 @@
                 [userId]
             ));
             if (potentialSubscriptionsData is null) {
+                Logger.Warning("Could not get user subscription tier because Twitch API get broadcaster subscriptions attempt failed.");
                 return null;
             }
 
             var subscriptionsData = (PaginatedSubscriptionsData)potentialSubscriptionsData;
             return subscriptionsData.Data.Length == 0
-                ? null
+                ? 0
                 : subscriptionsData.Data[0].Tier switch {
                     "1000" => 1,
                     "2000" => 2,

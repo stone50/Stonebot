@@ -26,6 +26,7 @@
                 return PermissionLevel.Mod;
             }
 
+            // TODO: null = fail, 0 = not a sub
             var subTier = await GetSubTier(userId);
             if (subTier is not null) {
                 switch (subTier) {
