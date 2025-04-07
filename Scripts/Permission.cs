@@ -15,20 +15,35 @@
 
     internal static class Permission {
         public static async Task<PermissionLevel?> GetHighest(string userId) {
-            Logger.Info("Getting highest user permission level.");
+            Logger.Info($"Getting highest user permission level. User id: {userId}.");
+
             var broadcaster = await AppCache.Broadcaster.Get();
-            if (broadcaster is not null && broadcaster.Id == userId) {
+            if (broadcaster is null) {
+                Logger.Warning("Could not get highest user permission level because broadcaster get attempt failed.");
+                return null;
+            }
+
+            if (broadcaster.Id == userId) {
                 return PermissionLevel.Broadcaster;
             }
 
             var isMod = await GetIsMod(userId);
-            if (isMod is not null && (bool)isMod) {
+            if (isMod is null) {
+                Logger.Warning("Could not get highest user permission level because get is mod attempt failed.");
+                return null;
+            }
+
+            if ((bool)isMod) {
                 return PermissionLevel.Mod;
             }
 
-            // TODO: null = fail, 0 = not a sub
             var subTier = await GetSubTier(userId);
-            if (subTier is not null) {
+            if (subTier is null) {
+                Logger.Warning("Could not get highest user permission level because get sub tier attempt failed.");
+                return null;
+            }
+
+            if (subTier != 0) {
                 switch (subTier) {
                     case 1:
                         return PermissionLevel.Tier1Sub;
@@ -38,12 +53,17 @@
                         return PermissionLevel.Tier3Sub;
                 }
 
-                Logger.Warning($"Cannot get highest because subscription tier '{subTier}' is not supported.");
+                Logger.Warning($"Could not get highest user permission level because sub tier is not supported. Sub tier: {subTier}.");
                 return null;
             }
 
             var isVIP = await GetIsVIP(userId);
-            return isVIP is not null && (bool)isVIP ? PermissionLevel.VIP : PermissionLevel.Viewer;
+            if (isVIP is null) {
+                Logger.Warning("Could not get highest user permission level because get is VIP attempt failed.");
+                return null;
+            }
+
+            return (bool)isVIP ? PermissionLevel.VIP : PermissionLevel.Viewer;
         }
     }
 }
