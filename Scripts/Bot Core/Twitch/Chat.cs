@@ -9,6 +9,7 @@
         // chatter access token
         public static async Task<HttpResponseMessage?> SendChatMessage(HttpClient client, string broadcasterId, string senderId, string message, string? replyParentMessageId = null) {
             Logger.Info("Sending chat message to Twitch.");
+
             dynamic content = new {
                 broadcaster_id = broadcasterId,
                 sender_id = senderId,
@@ -22,7 +23,7 @@
             try {
                 return await client.PostAsJsonAsync("https://api.twitch.tv/helix/chat/messages", (object)content);
             } catch (Exception e) {
-                Logger.Warning($"Cannot send chat message because client.PostAsJsonAsync failed: {e}.");
+                Logger.Warning($"Could not send chat message to Twitch because client post as json attempt failed: {e}.");
                 return null;
             }
         }
