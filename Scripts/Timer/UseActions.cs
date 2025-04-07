@@ -5,23 +5,32 @@
     using System.Threading.Tasks;
 
     internal static class UseActions {
-        public static async Task Quote() {
+        public static async Task<bool> Quote() {
+            Logger.Info("Proccing quote action.");
+
             var customData = await AppCache.Data.Get();
             if (customData is null) {
-                return;
+                Logger.Warning("Could not proc quote action because data get attempt failed.");
+                return false;
             }
 
             if (customData.Quotes.Count == 0) {
-                return;
+                return true;
             }
 
             var broadcaster = await AppCache.Broadcaster.Get();
             if (broadcaster is null) {
-                return;
+                Logger.Warning("Could not proc quote action because broadcaster get attempt failed.");
+                return false;
             }
 
             var quoteIndex = new Random().Next(customData.Quotes.Count);
-            _ = await Chat.Send($"[{quoteIndex}] \"{customData.Quotes[quoteIndex]}\" -{broadcaster.UserName}");
+            if (!await Chat.Send($"[{quoteIndex}] \"{customData.Quotes[quoteIndex]}\" -{broadcaster.UserName}")) {
+                Logger.Warning("Could not proc quote action because chat send attempt failed.");
+                return false;
+            }
+
+            return true;
         }
     }
 }

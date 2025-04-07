@@ -11,6 +11,7 @@
                 Logger.Warning("Could not use divorce action because chat send attempt failed.");
                 return false;
             }
+
             return true;
         }
 

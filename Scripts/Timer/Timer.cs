@@ -10,9 +10,9 @@
         public bool IsEnabled { get => isEnabled; set => SetIsEnabled(value); }
         public int Interval { get => interval; set => SetInterval(value); }
         public DateTime LastTimeout { get; private set; }
-        public Func<Task> TimeoutAction;
+        public Func<Task<bool>> TimeoutAction;
 
-        public Timer(string keyword, Func<Task> timeoutAction, int interval) {
+        public Timer(string keyword, Func<Task<bool>> timeoutAction, int interval) {
             Keyword = keyword;
             TimeoutAction = timeoutAction;
             LastTimeout = DateTime.Now;
@@ -21,7 +21,8 @@
         }
 
         public void SetIsEnabled(bool isEnabled) {
-            Logger.Info($"Setting is enabled of timer {Keyword}.");
+            Logger.Info($"Setting is enabled of timer {Keyword}. Is enabled: {isEnabled}.");
+
             if (this.isEnabled == isEnabled) {
                 return;
             }
@@ -35,7 +36,8 @@
         }
 
         public void SetInterval(int interval) {
-            Logger.Info($"Setting interval of timer {Keyword}.");
+            Logger.Info($"Setting interval of timer {Keyword}. Interval: {interval}.");
+
             this.interval = interval;
             Util.InvokeDeferred(IntervalChanged, Interval);
         }
@@ -50,7 +52,10 @@
                 }
 
                 LastTimeout = DateTime.Now;
-                await TimeoutAction();
+                if (!await TimeoutAction()) {
+                    Logger.Warning($"Could not proc timer {Keyword} because timeout action attempt failed.");
+                    return;
+                }
             }
         });
     }
