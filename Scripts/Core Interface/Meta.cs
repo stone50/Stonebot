@@ -53,7 +53,7 @@
                 return;
             }
 
-            if (!(bool)isCommandHandled) {
+            if ((bool)isCommandHandled) {
                 return;
             }
 
@@ -63,7 +63,7 @@
                 return;
             }
 
-            if (!(bool)isMessageHandled) {
+            if ((bool)isMessageHandled) {
                 return;
             }
         }
