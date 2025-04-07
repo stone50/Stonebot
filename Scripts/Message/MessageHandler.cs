@@ -14,10 +14,17 @@
             new("stonebot", StonebotRegex(), UseActions.Stonebot)
         ];
 
-        public static async Task<bool> Handle(ChannelChatMessageEvent messageEvent) {
+        public static async Task<bool?> Handle(ChannelChatMessageEvent messageEvent) {
             Logger.Info("Handling message event as message.");
+
             foreach (var message in Messages) {
-                if (await message.Use(messageEvent)) {
+                var isMessageUsed = await message.Use(messageEvent);
+                if (isMessageUsed is null) {
+                    Logger.Warning("Could not handle message event as message because message use attempt failed.");
+                    return null;
+                }
+
+                if ((bool)isMessageUsed) {
                     return true;
                 }
             }

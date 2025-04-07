@@ -4,7 +4,7 @@
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
 
-    internal class Message(string keyword, Regex regex, Func<ChannelChatMessageEvent, Match, Task> useAction) {
+    internal class Message(string keyword, Regex regex, Func<ChannelChatMessageEvent, Task<bool>> useAction) {
         public event EventHandler<PermissionLevel> PermissionLevelChanged = delegate { };
         public event EventHandler<int> UseDelayChanged = delegate { };
         public event EventHandler<bool> IsEnabledChanged = delegate { };
@@ -15,7 +15,7 @@
         public PermissionLevel PermissionLevel { get => permissionLevel; set => SetPermissionLevel(value); }
         public int UseDelay { get => useDelay; set => SetUseDelay(value); }
         public DateTime LastUsed { get; private set; }
-        public Func<ChannelChatMessageEvent, Match, Task> UseAction = useAction;
+        public Func<ChannelChatMessageEvent, Task<bool>> UseAction = useAction;
 
         public bool IsReadyToUse => DateTime.Now > LastUsed.AddMilliseconds(UseDelay);
 
@@ -45,8 +45,12 @@
                 return false;
             }
 
+            if (!await UseAction(messageEvent)) {
+                Logger.Warning($"Could not use message {Keyword} because use action attempt failed.");
+                return false;
+            }
+
             LastUsed = DateTime.Now;
-            await UseAction(messageEvent, match);
             return true;
         }
 

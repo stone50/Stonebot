@@ -3,7 +3,7 @@
     using System;
     using System.Threading.Tasks;
 
-    internal class Command(string keyword, Func<ChannelChatMessageEvent, Task> useAction) {
+    internal class Command(string keyword, Func<ChannelChatMessageEvent, Task<bool>> useAction) {
         public event EventHandler<PermissionLevel> PermissionLevelChanged = delegate { };
         public event EventHandler<int> UseDelayChanged = delegate { };
 
@@ -11,7 +11,7 @@
         public PermissionLevel PermissionLevel { get => permissionLevel; set => SetPermissionLevel(value); }
         public int UseDelay { get => useDelay; set => SetUseDelay(value); }
         public DateTime LastUsed { get; private set; } = DateTime.Now;
-        public Func<ChannelChatMessageEvent, Task> UseAction = useAction;
+        public Func<ChannelChatMessageEvent, Task<bool>> UseAction = useAction;
 
         public bool IsReadyToUse => DateTime.Now > LastUsed.AddMilliseconds(UseDelay);
 
@@ -32,7 +32,11 @@
                 return false;
             }
 
-            await UseAction(messageEvent);
+            if (!await UseAction(messageEvent)) {
+                Logger.Warning($"Could not use command {Keyword} because use action attempt failed.");
+                return null;
+            }
+
             LastUsed = DateTime.Now;
             return true;
         }
@@ -55,7 +59,7 @@
         private int useDelay = 1000;
     }
 
-    internal class TogglableCommand(string keyword, Func<ChannelChatMessageEvent, Task> useAction) : Command(keyword, useAction) {
+    internal class TogglableCommand(string keyword, Func<ChannelChatMessageEvent, Task<bool>> useAction) : Command(keyword, useAction) {
         public event EventHandler<bool> IsEnabledChanged = delegate { };
 
         private bool isEnabled = true;

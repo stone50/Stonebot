@@ -57,7 +57,13 @@
                 return;
             }
 
-            if (await MessageHandler.Handle(messageEvent)) {
+            var isMessageHandled = await MessageHandler.Handle(messageEvent);
+            if (isMessageHandled is null) {
+                Logger.Warning("Could not handle chat message because message handler handle attempt failed.");
+                return;
+            }
+
+            if (!(bool)isMessageHandled) {
                 return;
             }
         }
