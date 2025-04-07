@@ -9,13 +9,14 @@
         // collector access token
         public static async Task<HttpResponseMessage?> GetUsers(HttpClient client, string[]? ids = null, string[]? logins = null) {
             Logger.Info("Getting users from Twitch.");
+
             var idParams = ids is null ? "" : string.Join("&", ids.Select(id => $"id={id}"));
             var loginParams = logins is null ? "" : string.Join("&", logins.Select(logins => $"login={logins}"));
             var queryParams = $"{idParams}{(ids is not null && logins is not null ? "&" : "")}{loginParams}";
             try {
                 return await client.GetAsync($"https://api.twitch.tv/helix/users?{queryParams}");
             } catch (Exception e) {
-                Logger.Warning($"Cannot get users because client.GetAsync failed: {e}.");
+                Logger.Warning($"Could not get users from Twitch because client get attempt failed: {e}. Query params: {queryParams}.");
                 return null;
             }
         }
@@ -24,10 +25,11 @@
         // first must be between 1 and 100 inclusive
         public static async Task<HttpResponseMessage?> GetModerators(HttpClient client, string broadcasterId, string[]? userId = null, string? first = null, string? after = null) {
             Logger.Info("Getting moderators from Twitch.");
+
             var queryParams = $"broadcaster_id={broadcasterId}";
             if (userId is not null) {
                 if (userId.Length > 100) {
-                    Logger.Warning("Cannot get moderators because userId.Length is greater than 100.");
+                    Logger.Warning($"Could not get moderators from Twitch because user id length is greater than 100. User id length: {userId.Length}.");
                     return null;
                 }
 
@@ -39,7 +41,7 @@
             try {
                 return await client.GetAsync($"https://api.twitch.tv/helix/moderation/moderators?{queryParams}");
             } catch (Exception e) {
-                Logger.Warning($"Cannot get moderators because client.GetAsync failed: {e}.");
+                Logger.Warning($"Could not get moderators from Twitch because client get attempt failed: {e}. Query params: {queryParams}.");
                 return null;
             }
         }
@@ -48,10 +50,11 @@
         // first must be between 1 and 100 inclusive
         public static async Task<HttpResponseMessage?> GetVIPs(HttpClient client, string broadcasterId, string[]? userId = null, string? first = null, string? after = null) {
             Logger.Info("Getting VIPs from Twitch.");
+
             var queryParams = $"broadcaster_id={broadcasterId}";
             if (userId is not null) {
                 if (userId.Length > 100) {
-                    Logger.Warning("Cannot get vips because userId.Length is greater than 100.");
+                    Logger.Warning($"Could not get VIPs from Twitch because user id length is greater than 100. User id length: {userId.Length}.");
                     return null;
                 }
 
@@ -63,7 +66,7 @@
             try {
                 return await client.GetAsync($"https://api.twitch.tv/helix/channels/vips?{queryParams}");
             } catch (Exception e) {
-                Logger.Warning($"Cannot get vips because client.GetAsync failed: {e}.");
+                Logger.Warning($"Could not get VIPs from Twitch because client get attempt failed: {e}. Query params: {queryParams}.");
                 return null;
             }
         }
@@ -71,10 +74,11 @@
         // collector access token
         public static async Task<HttpResponseMessage?> GetBroadcasterSubscriptions(HttpClient client, string broadcasterId, string[]? userId = null, string? first = null, string? after = null, string? before = null) {
             Logger.Info("Getting subscriptions through Twitch.");
+
             var queryParams = $"broadcaster_id={broadcasterId}";
             if (userId is not null) {
                 if (userId.Length > 100) {
-                    Logger.Warning("Cannot get subscriptions because userId.Length is greater than 100.");
+                    Logger.Warning($"Could not get subscriptions through Twitch because user id length is greater than 100. User id length: {userId.Length}.");
                     return null;
                 }
 
@@ -87,7 +91,7 @@
             try {
                 return await client.GetAsync($"https://api.twitch.tv/helix/subscriptions?{queryParams}");
             } catch (Exception e) {
-                Logger.Warning($"Cannot get subscriptions because client.GetAsync failed: {e}.");
+                Logger.Warning($"Could not get subscriptions through Twitch because client get attempt failed: {e}. Query params: {queryParams}.");
                 return null;
             }
         }
