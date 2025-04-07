@@ -18,13 +18,13 @@
 
             var config = await AppCache.Config.Get();
             if (config is null) {
-                Logger.Warning("Could not create chatter access token because the config get attempt failed.");
+                Logger.Warning("Could not create chatter access token because config get attempt failed.");
                 return null;
             }
 
             var createdChatter = await Create(config.ChatterClientId, config.ChatterClientSecret, AppCache.StoredChatterRefreshToken, config.ChatterScope, config.TokenExpirationBuffer);
             if (createdChatter is null) {
-                Logger.Warning("Could not create chatter access token because the create attempt failed.");
+                Logger.Warning("Could not create chatter access token because create attempt failed.");
                 return null;
             }
 
@@ -36,13 +36,13 @@
 
             var config = await AppCache.Config.Get();
             if (config is null) {
-                Logger.Warning("Could not create collector access token because the config get attempt failed.");
+                Logger.Warning("Could not create collector access token because config get attempt failed.");
                 return null;
             }
 
             var createdCollector = await Create(config.CollectorClientId, config.CollectorClientSecret, AppCache.StoredCollectorRefreshToken, config.CollectorScope, config.TokenExpirationBuffer);
             if (createdCollector is null) {
-                Logger.Warning("Could not create collector access token because the create attempt failed.");
+                Logger.Warning("Could not create collector access token because create attempt failed.");
                 return null;
             }
 
@@ -66,7 +66,7 @@
 
             var potentialData = await RequestRefresh(ClientId, ClientSecret, RefreshToken);
             if (potentialData is null) {
-                Logger.Warning("Could not refresh access token because the request refresh attempt failed.");
+                Logger.Warning("Could not refresh access token because request refresh attempt failed.");
                 return false;
             }
 
@@ -123,13 +123,13 @@
 
             var config = await AppCache.Config.Get();
             if (config is null) {
-                Logger.Warning("Could not create access token because the config get attempt failed.");
+                Logger.Warning("Could not create access token because config get attempt failed.");
                 return null;
             }
 
             var code = await AuthorizationCode.Create(clientId, scope);
             if (code is null) {
-                Logger.Warning("Could not create access token because the authorization code create attempt failed.");
+                Logger.Warning("Could not create access token because authorization code create attempt failed.");
                 return null;
             }
 
@@ -141,7 +141,7 @@
                  $"http://localhost:{config.AuthorizationPort}"
              ));
             if (potentialData is null) {
-                Logger.Warning("Could not create access token because the Twitch get access token attempt failed.");
+                Logger.Warning("Could not create access token because Twitch get access token attempt failed.");
                 return null;
             }
 
