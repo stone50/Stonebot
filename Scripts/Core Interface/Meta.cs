@@ -39,7 +39,13 @@
                 return;
             }
 
-            if (await CommandHandler.Handle(messageEvent)) {
+            var isCommandHandled = await CommandHandler.Handle(messageEvent);
+            if (isCommandHandled is null) {
+                Logger.Warning("Could not handle chat message because command handler handle attempt failed.");
+                return;
+            }
+
+            if (!(bool)isCommandHandled) {
                 return;
             }
 

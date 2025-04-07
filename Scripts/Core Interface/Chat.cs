@@ -1,4 +1,5 @@
 ﻿namespace Stonebot.Scripts.Core_Interface {
+    using Bot_Core;
     using Bot_Core.App_Cache;
     using Bot_Core.Twitch;
     using System.Threading.Tasks;
@@ -37,13 +38,7 @@
                 return false;
             }
 
-            var sendChatMessageResponse = await TwitchAPI.SendChatMessage(client, broadcaster.Id, bot.Id, message, replyParentMessageId);
-            if (sendChatMessageResponse is null) {
-                Logger.Warning("Could not send chat message because Twitch API send chat message attempt failed.");
-                return false;
-            }
-
-            if (!sendChatMessageResponse.IsSuccessStatusCode) {
+            if (!await Util.GetIsSuccess(TwitchAPI.SendChatMessage(client, broadcaster.Id, bot.Id, message, replyParentMessageId))) {
                 Logger.Warning("Could not send chat message because Twitch API send chat message attempt failed.");
                 return false;
             }

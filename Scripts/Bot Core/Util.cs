@@ -50,5 +50,8 @@
             return successfulString;
         }
         public static async Task<string?> GetSuccessfulString(Task<HttpResponseMessage?> messageTask) => await GetSuccessfulString(await messageTask);
+
+        public static bool GetIsSuccess(HttpResponseMessage? message) => message is not null && message.IsSuccessStatusCode;
+        public static async Task<bool> GetIsSuccess(Task<HttpResponseMessage?> messageTask) => GetIsSuccess(await messageTask);
     }
 }
