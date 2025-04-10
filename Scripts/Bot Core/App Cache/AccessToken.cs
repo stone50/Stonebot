@@ -1,6 +1,7 @@
 ﻿namespace Stonebot.Scripts.Bot_Core.App_Cache {
     using Models;
     using System;
+    using System.Text.Json;
     using System.Threading.Tasks;
     using Twitch;
 
@@ -14,17 +15,18 @@
         public bool IsAboutToExpire => DateTime.Now.AddMilliseconds(ExpirationBuffer) >= ExpirationDate;
 
         public static async Task<AccessToken?> CreateChatter() {
-            Logger.Info("Creating chatter access token.");
+            var logPrefix = $"{nameof(AccessToken)} | {nameof(CreateChatter)}";
+            Logger.Info(logPrefix);
 
             var config = await AppCache.Config.Get();
             if (config is null) {
-                Logger.Warning("Could not create chatter access token because config get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.Config.Get)} result is null.");
                 return null;
             }
 
             var createdChatter = await Create(config.ChatterClientId, config.ChatterClientSecret, AppCache.StoredChatterRefreshToken, config.ChatterScope, config.TokenExpirationBuffer);
             if (createdChatter is null) {
-                Logger.Warning("Could not create chatter access token because create attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(Create)} result is null.");
                 return null;
             }
 
@@ -32,17 +34,18 @@
         }
 
         public static async Task<AccessToken?> CreateCollector() {
-            Logger.Info("Creating collector access token.");
+            var logPrefix = $"{nameof(AccessToken)} | {nameof(CreateCollector)}";
+            Logger.Info(logPrefix);
 
             var config = await AppCache.Config.Get();
             if (config is null) {
-                Logger.Warning("Could not create collector access token because config get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.Config.Get)} result is null.");
                 return null;
             }
 
             var createdCollector = await Create(config.CollectorClientId, config.CollectorClientSecret, AppCache.StoredCollectorRefreshToken, config.CollectorScope, config.TokenExpirationBuffer);
             if (createdCollector is null) {
-                Logger.Warning("Could not create collector access token because create attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(Create)} result is null.");
                 return null;
             }
 
@@ -51,10 +54,15 @@
         }
 
         public async Task<string?> GetString() {
-            Logger.Info("Getting access token string.");
+            var logPrefix = $"{nameof(AccessToken)} | {nameof(GetString)}";
+            Logger.Info(logPrefix);
 
-            if (IsAboutToExpire && !await Refresh()) {
-                Logger.Warning("Could not get access token string because the access token is about to expire and the refresh attempt failed.");
+            if (!IsAboutToExpire) {
+                return accessToken;
+            }
+
+            if (!await Refresh()) {
+                Logger.Warning($"{logPrefix} | {nameof(Refresh)} result is false.");
                 return null;
             }
 
@@ -62,11 +70,12 @@
         }
 
         public async Task<bool> Refresh() {
-            Logger.Info("Refreshing access token.");
+            var logPrefix = $"{nameof(AccessToken)} | {nameof(Refresh)}";
+            Logger.Info(logPrefix);
 
             var potentialData = await RequestRefresh(ClientId, ClientSecret, RefreshToken);
             if (potentialData is null) {
-                Logger.Warning("Could not refresh access token because request refresh attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(RequestRefresh)} result is null.");
                 return false;
             }
 
@@ -78,10 +87,11 @@
         }
 
         public bool SetExpirationBuffer(int newExpirationBuffer) {
-            Logger.Info($"Setting access token expiration buffer. New expiration buffer: {newExpirationBuffer}.");
+            var logPrefix = $"{nameof(AccessToken)} | {nameof(SetExpirationBuffer)}";
+            Logger.Info($"{logPrefix}\n{nameof(newExpirationBuffer)}: {newExpirationBuffer}");
 
             if (newExpirationBuffer < 0) {
-                Logger.Warning($"Could not set access token expiration buffer because the `{nameof(newExpirationBuffer)}` parameter is less than 0.");
+                Logger.Warning($"{logPrefix} | {nameof(newExpirationBuffer)} is < 0.");
                 return false;
             }
 
@@ -92,8 +102,11 @@
         private string accessToken;
 
         private AccessToken(string clientId, string clientSecret, AccessTokenData data, int expirationBuffer) {
+            var logPrefix = $"{nameof(AccessToken)} | Constructor";
+            Logger.Info($"{logPrefix}\n{nameof(clientId)}: {clientId}\n{nameof(clientSecret)}: {clientSecret}\n{nameof(data)}: {JsonSerializer.Serialize(data)}\n{nameof(expirationBuffer)}: {expirationBuffer}");
+
             if (expirationBuffer < 0) {
-                Logger.Error($"Could not construct new access token because the `{nameof(expirationBuffer)}` parameter is less than 0. Expiration buffer: {expirationBuffer}.");
+                Logger.Error($"{logPrefix} | {nameof(expirationBuffer)} is < 0.");
                 throw new ArgumentOutOfRangeException(nameof(expirationBuffer));
             }
 
@@ -106,6 +119,9 @@
         }
 
         private static async Task<AccessToken?> Create(string clientId, string clientSecret, string? storedRefreshToken, string[] scope, int expirationBuffer) {
+            var logPrefix = $"{nameof(AccessToken)} | {nameof(Create)}";
+            Logger.Info($"{logPrefix}\n{nameof(clientId)}: {clientId}\n{nameof(clientSecret)}: {clientSecret}\n{nameof(storedRefreshToken)}: {storedRefreshToken}\n{nameof(scope)}: {JsonSerializer.Serialize(scope)}\n{nameof(expirationBuffer)}: {expirationBuffer}");
+
             if (storedRefreshToken is not null) {
                 var potentialRefreshData = await RequestRefresh(clientId, clientSecret, storedRefreshToken);
                 if (potentialRefreshData is not null) {
@@ -113,7 +129,7 @@
                     try {
                         refreshedAccessToken = new(clientId, clientSecret, (AccessTokenData)potentialRefreshData, expirationBuffer);
                     } catch (Exception e) {
-                        Logger.Warning($"Could not create access token because access token construct attempt failed: {e}.");
+                        Logger.Warning($"{logPrefix} | Constructor threw: {e}.");
                         return null;
                     }
 
@@ -123,13 +139,13 @@
 
             var config = await AppCache.Config.Get();
             if (config is null) {
-                Logger.Warning("Could not create access token because config get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.Config.Get)} result is null.");
                 return null;
             }
 
             var code = await AuthorizationCode.Create(clientId, scope);
             if (code is null) {
-                Logger.Warning("Could not create access token because authorization code create attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AuthorizationCode.Create)} result is null.");
                 return null;
             }
 
@@ -139,9 +155,9 @@
                  clientSecret,
                  code,
                  $"http://localhost:{config.AuthorizationPort}"
-             ));
+            ));
             if (potentialData is null) {
-                Logger.Warning("Could not create access token because Twitch get access token attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(TwitchAPI.GetAccessToken)} was not successful.");
                 return null;
             }
 
@@ -149,22 +165,29 @@
             try {
                 createdAccessToken = new(clientId, clientSecret, (AccessTokenData)potentialData, expirationBuffer);
             } catch (Exception e) {
-                Logger.Warning($"Could not create access token because AccessToken construct attempt failed: {e}.");
+                Logger.Warning($"{logPrefix}| Constructor threw: {e}.");
                 return null;
             }
 
             return createdAccessToken;
         }
 
-        private static async Task<AccessTokenData?> RequestRefresh(
-            string clientId,
-            string clientSecret,
-            string refreshToken
-        ) => await Util.GetMessageAs<AccessTokenData>(TwitchAPI.RefreshAccessToken(
-            new(),
-            clientId,
-            clientSecret,
-            refreshToken
-        ));
+        private static async Task<AccessTokenData?> RequestRefresh(string clientId, string clientSecret, string refreshToken) {
+            var logPrefix = $"{nameof(AccessToken)} | {nameof(RequestRefresh)}";
+            Logger.Info($"{logPrefix}\n{nameof(clientId)}: {clientId}\n{nameof(clientSecret)}: {clientSecret}\n{nameof(refreshToken)}: {refreshToken}");
+
+            var accessTokenData = await Util.GetMessageAs<AccessTokenData>(TwitchAPI.RefreshAccessToken(
+                new(),
+                clientId,
+                clientSecret,
+                refreshToken
+            ));
+            if (accessTokenData is null) {
+                Logger.Warning($"{logPrefix} | {nameof(TwitchAPI.RefreshAccessToken)} was not successful.");
+                return null;
+            }
+
+            return accessTokenData;
+        }
     }
 }
