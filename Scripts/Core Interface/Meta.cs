@@ -28,7 +28,7 @@
             _ = await Chat.Send("logging off...");
             _ = await AppCache.SaveAll();
             _ = await EventSub.EventSub.RemoveBy();
-            var webSocket = await AppCache.WebSocketClient.Get();
+            var webSocket = AppCache.WebSocketClient.Get();
             if (webSocket is not null) {
                 _ = await webSocket.Close();
             }

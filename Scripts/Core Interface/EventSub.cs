@@ -139,7 +139,7 @@
                 return false;
             }
 
-            var webSocketClient = await AppCache.WebSocketClient.Get();
+            var webSocketClient = AppCache.WebSocketClient.Get();
             if (webSocketClient is null) {
                 Logger.Warning("Could not connect to channel chat message event sub because web socket client get attempt failed.");
                 return false;

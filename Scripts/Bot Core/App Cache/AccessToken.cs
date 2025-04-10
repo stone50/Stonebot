@@ -9,7 +9,7 @@
         public readonly string ClientId;
         public readonly string ClientSecret;
         public string RefreshToken { get; private set; }
-        public DateTime ExpirationDate { get; protected set; }
+        public DateTime ExpirationDate { get; private set; }
         public int ExpirationBuffer { get; private set; }
 
         public bool IsAboutToExpire => DateTime.Now.AddMilliseconds(ExpirationBuffer) >= ExpirationDate;

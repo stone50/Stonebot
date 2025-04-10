@@ -16,8 +16,6 @@
         public string CollectorClientSecret { get; set; }
         [JsonPropertyName("collectorScope")]
         public string[] CollectorScope { get; set; }
-        [JsonPropertyName("displayLogLimit")]
-        public int DisplayLogLimit { get; set; }
         [JsonPropertyName("socketKeepaliveBuffer")]
         public int SocketKeepaliveBuffer { get; set; }
         [JsonPropertyName("socketKeepaliveTimeout")]

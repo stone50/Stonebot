@@ -1,8 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://cfh0jtidpx802"]
+[gd_scene load_steps=6 format=3 uid="uid://cfh0jtidpx802"]
 
 [ext_resource type="Texture2D" uid="uid://cn2y0kuko6731" path="res://Icons/Logo.png" id="1_dkp3o"]
 [ext_resource type="PackedScene" uid="uid://bl2g33knt81sa" path="res://Scenes/CommandsTab.tscn" id="2_6t4ov"]
-[ext_resource type="PackedScene" uid="uid://gpeflpyltg7x" path="res://Scenes/LogsTab.tscn" id="2_dq60r"]
 [ext_resource type="PackedScene" uid="uid://dqmco36n8ja68" path="res://Scenes/MessagesTab.tscn" id="3_c41l2"]
 [ext_resource type="PackedScene" uid="uid://bd3165guwtheq" path="res://Scenes/TimersTab.tscn" id="4_3xaqy"]
 
@@ -55,21 +54,16 @@ layout_mode = 2
 size_flags_vertical = 3
 current_tab = 0
 
-[node name="Logs" parent="VBoxContainer/TabContainer" instance=ExtResource("2_dq60r")]
+[node name="Commands" parent="VBoxContainer/TabContainer" instance=ExtResource("2_6t4ov")]
 layout_mode = 2
 metadata/_tab_index = 0
-
-[node name="Commands" parent="VBoxContainer/TabContainer" instance=ExtResource("2_6t4ov")]
-visible = false
-layout_mode = 2
-metadata/_tab_index = 1
 
 [node name="Messages" parent="VBoxContainer/TabContainer" instance=ExtResource("3_c41l2")]
 visible = false
 layout_mode = 2
-metadata/_tab_index = 2
+metadata/_tab_index = 1
 
 [node name="Timers" parent="VBoxContainer/TabContainer" instance=ExtResource("4_3xaqy")]
 visible = false
 layout_mode = 2
-metadata/_tab_index = 3
+metadata/_tab_index = 2

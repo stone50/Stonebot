@@ -10,13 +10,6 @@ namespace Stonebot.Scripts {
             Error
         }
 
-        public struct MessageLoggedArgs {
-            public string LogMessage;
-            public LogType LogType;
-        }
-
-        public static event EventHandler<MessageLoggedArgs> MessageLogged = delegate { };
-
         public static void Debug(string message) => Log(LogType.Debug, message);
         public static void Debug(object obj) => Log(LogType.Debug, obj);
 
@@ -29,14 +22,7 @@ namespace Stonebot.Scripts {
         public static void Error(string message) => Log(LogType.Error, message);
         public static void Error(object obj) => Log(LogType.Error, obj);
 
-        public static void Log(LogType logType, string message) {
-            var logMessage = $"[{DateTime.Now}] {logType.ToString().ToUpper()}: {message}";
-            GD.Print(logMessage);
-            Util.InvokeDeferred(MessageLogged, new() {
-                LogMessage = logMessage,
-                LogType = logType,
-            });
-        }
+        public static void Log(LogType logType, string message) => GD.Print($"[{DateTime.Now}] {logType.ToString().ToUpper()}: {message}");
         public static void Log(LogType logType, object obj) => Log(logType, obj?.ToString() ?? "null");
     }
 }
