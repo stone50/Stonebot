@@ -3,6 +3,7 @@
     using System.Net;
     using System.Net.Sockets;
     using System.Text;
+    using System.Text.Json;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Twitch;
@@ -10,11 +11,12 @@
 
     internal static partial class AuthorizationCode {
         public static async Task<string?> Create(string clientId, string[] scope) {
-            Logger.Info("Creating authorization code.");
+            var logPrefix = $"{nameof(AuthorizationCode)} | {nameof(Create)}";
+            Logger.Info($"{logPrefix}\n{nameof(clientId)}: {clientId}\n{nameof(scope)}: {JsonSerializer.Serialize(scope)}");
 
             var config = await AppCache.Config.Get();
             if (config is null) {
-                Logger.Warning("Could not create authorization code because config get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.Config.Get)} result is null.");
                 return null;
             }
 
@@ -23,14 +25,14 @@
             try {
                 server = new(localhost, config.AuthorizationPort);
             } catch (Exception e) {
-                Logger.Warning($"Could not create authorization code because TcpListener construct attempt failed: {e}. Config authorization port: {config.AuthorizationPort}.");
+                Logger.Warning($"{logPrefix} | {nameof(TcpListener)} Constructor threw: {e}.\n{nameof(localhost)}: {localhost}\n{nameof(config.AuthorizationPort)}: {config.AuthorizationPort}");
                 return null;
             }
 
             try {
                 server.Start();
             } catch (Exception e) {
-                Logger.Warning($"Could not create authorization code because server start attempt failed: {e}.");
+                Logger.Warning($"{logPrefix} | {nameof(server.Start)} threw: {e}.\n{nameof(server)}: {server}");
                 return null;
             }
 
@@ -43,7 +45,7 @@
                 state
             );
             if (authorizationProcess is null) {
-                Logger.Warning("Could not create authorization code because Twitch authorize attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(TwitchAPI.Authorize)} result is null.");
                 return null;
             }
 
@@ -51,11 +53,11 @@
             try {
                 server.Stop();
             } catch (Exception e) {
-                Logger.Warning($"Authorization code server stop attempt failed: {e}.");
+                Logger.Warning($"{logPrefix} | {nameof(server.Stop)} threw: {e}.\n{nameof(server)}: {server}");
             }
 
             if (code is null) {
-                Logger.Warning("Could not create authorization code because get code attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(GetCode)} result is null.");
                 return null;
             }
 
@@ -63,6 +65,8 @@
         }
 
         private static string GetState(int numChars) {
+            Logger.Info($"{nameof(AuthorizationCode)} | {nameof(GetState)}\n{nameof(numChars)}: {numChars}");
+
             var allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-~";
             var state = "";
             for (var i = 0; i < numChars; i++) {
@@ -73,11 +77,14 @@
         }
 
         private static async Task<string?> GetCode(TcpListener server, string state) {
+            var logPrefix = $"{nameof(AuthorizationCode)} | {nameof(GetCode)}";
+            Logger.Info($"{logPrefix} | \n{nameof(server)}: {server}\n{nameof(state)}: {state}");
+
             TcpClient client;
             try {
                 client = await server.AcceptTcpClientAsync();
             } catch (Exception e) {
-                Logger.Warning($"Could not get authorization code because server accept client attempt failed: {e}.");
+                Logger.Warning($"{logPrefix} | {nameof(server.AcceptTcpClientAsync)} threw: {e}.");
                 return null;
             }
 
@@ -85,84 +92,90 @@
                 using var stream = client.GetStream();
                 async Task DoSendBadRequest() {
                     if (!await SendBadRequest(stream)) {
-                        Logger.Warning("Authorization code send bad request attempt failed.");
+                        Logger.Warning($"{logPrefix} | {nameof(SendBadRequest)} result is false.");
                     }
                 }
 
                 var url = await GetUrl(stream);
                 if (url is null) {
                     await DoSendBadRequest();
-                    Logger.Warning("Could not get authorization code because get url attempt failed.");
+                    Logger.Warning($"{logPrefix} | {nameof(GetUrl)} result is null.");
                     return null;
                 }
 
                 if (!GetIsStateValid(url, state)) {
                     await DoSendBadRequest();
-                    Logger.Warning("Could not get authorization code because get is valid state attempt failed.");
+                    Logger.Warning($"{logPrefix} | {nameof(GetIsStateValid)} result is false.");
                     return null;
                 }
 
                 var code = GetCodeFromUrl(url);
                 if (code is null) {
                     await DoSendBadRequest();
-                    Logger.Warning($"Could not get authorization code because get code from url attempt failed. Url: {url}.");
+                    Logger.Warning($"{logPrefix} | {nameof(GetCodeFromUrl)} result is null.");
                     return null;
                 }
 
                 if (!await SendOkRequest(stream)) {
-                    Logger.Warning("Send ok request attempt failed.");
+                    Logger.Warning($"{logPrefix} | {nameof(SendOkRequest)} result is false.");
                 }
 
                 return code;
             } catch (Exception e) {
-                Logger.Warning($"Could not get authorization code because client get stream attempt failed: {e}.");
+                Logger.Warning($"{logPrefix} | {nameof(client.GetStream)} threw: {e}.\n{nameof(client)}: {client}");
                 return null;
             }
         }
 
         private static async Task<string?> GetUrl(NetworkStream stream) {
+            var logPrefix = $"{nameof(AuthorizationCode)} | {nameof(GetUrl)}";
+            Logger.Info($"{logPrefix}\n{nameof(stream)}: {stream}");
+
             var buffer = new byte[1024];
             int numBytesRead;
             try {
                 numBytesRead = await stream.ReadAsync(buffer);
             } catch (Exception e) {
-                Logger.Warning($"Could not authorization code get url because stream read attempt failed: {e}.");
+                Logger.Warning($"{logPrefix} | {nameof(stream.ReadAsync)} threw: {e}.\n{nameof(buffer)}: {JsonSerializer.Serialize(buffer)}");
                 return null;
             }
 
+            var index = 0;
             string message;
             try {
-                message = Encoding.Default.GetString(buffer, 0, numBytesRead);
+                message = Encoding.Default.GetString(buffer, index, numBytesRead);
             } catch (Exception e) {
-                Logger.Warning($"Could not authorization code get url because encoding default get string attempt failed: {e}.");
+                Logger.Warning($"{logPrefix} | {nameof(Encoding.Default.GetString)} threw: {e}.\n{nameof(buffer)}: {JsonSerializer.Serialize(buffer)}\n{nameof(index)}: {index}\n{nameof(numBytesRead)}: {numBytesRead}");
                 return null;
             }
 
-            void LogParsingWarning() => Logger.Warning($"Could not authorization code get url because message could not be parsed. Message: {message}.");
-            var indexOfFirstSpace = message.IndexOf(' ');
+            var spaceChar = ' ';
+            var indexOfFirstSpace = message.IndexOf(spaceChar);
             if (indexOfFirstSpace == -1) {
-                LogParsingWarning();
+                Logger.Warning($"{logPrefix} | {nameof(message.IndexOf)} result is -1.\n{nameof(message)}: {message}\n{nameof(spaceChar)}: {spaceChar}");
                 return null;
             }
 
+            var startIndex = indexOfFirstSpace + 1;
             int indexOfSecondSpace;
             try {
-                indexOfSecondSpace = message.IndexOf(' ', indexOfFirstSpace + 1);
-            } catch {
-                LogParsingWarning();
+                indexOfSecondSpace = message.IndexOf(spaceChar, startIndex);
+            } catch (Exception e) {
+                Logger.Warning($"{logPrefix} | {nameof(message.IndexOf)} threw: {e}.\n{nameof(message)}: {message}\n{nameof(spaceChar)}: {spaceChar}\n{nameof(startIndex)}: {startIndex}");
                 return null;
             }
 
             if (indexOfSecondSpace == -1) {
-                LogParsingWarning();
+                Logger.Warning($"{logPrefix} | {nameof(message.IndexOf)} result is -1.\n{nameof(message)}: {message}\n{nameof(spaceChar)}: {spaceChar}\n{nameof(startIndex)}: {startIndex}");
                 return null;
             }
 
+            var length = indexOfSecondSpace - indexOfFirstSpace;
             string url;
             try {
-                url = message.Substring(indexOfFirstSpace + 1, indexOfSecondSpace - indexOfFirstSpace);
-            } catch {
-                LogParsingWarning();
+                url = message.Substring(startIndex, length);
+            } catch (Exception e) {
+                Logger.Warning($"{logPrefix} | {nameof(message.Substring)} threw: {e}.\n{nameof(message)}: {message}\n{nameof(startIndex)}: {startIndex}\n{nameof(length)}: {length}");
                 return null;
             }
 
@@ -170,33 +183,25 @@
         }
 
         private static bool GetIsStateValid(string url, string state) {
-            var stateRegex = StateRegex();
-            var match = stateRegex.Match(url);
-            void LogMatchWarning() => Logger.Warning($"Could not authorization code get is state valid because state regex match attempt failed. Url: {url}.");
-            if (!match.Success) {
-                LogMatchWarning();
-                return false;
-            }
+            Logger.Info($"{nameof(AuthorizationCode)} | {nameof(GetIsStateValid)}\n{nameof(url)}: {url}\n{nameof(state)}: {state}");
 
-            if (match.Groups.Count != 2) {
-                LogMatchWarning();
-                return false;
-            }
-
-            return match.Groups[1].Value == state;
+            var match = StateRegex().Match(url);
+            return match.Success && match.Groups.Count == 2 && match.Groups[1].Value == state;
         }
 
         private static string? GetCodeFromUrl(string url) {
+            var logPrefix = $"{nameof(AuthorizationCode)} | {nameof(GetCodeFromUrl)}";
+            Logger.Info($"{logPrefix}\n{nameof(url)}: {url}");
+
             var codeRegex = CodeRegex();
             var match = codeRegex.Match(url);
-            void LogMatchWarning() => Logger.Warning($"Could not get authorization code from url because code regex match attempt failed. Url: {url}.");
             if (!match.Success) {
-                LogMatchWarning();
+                Logger.Warning($"{logPrefix} | {nameof(codeRegex.Match)} was unsuccessful.\n{nameof(codeRegex)}: {codeRegex}");
                 return null;
             }
 
             if (match.Groups.Count != 2) {
-                LogMatchWarning();
+                Logger.Warning($"{logPrefix} | {nameof(codeRegex.Match)} was unsuccessful.\n{nameof(codeRegex)}: {codeRegex}");
                 return null;
             }
 
@@ -204,10 +209,14 @@
         }
 
         private static async Task<bool> SendBadRequest(NetworkStream stream) {
+            var logPrefix = $"{nameof(AuthorizationCode)} | {nameof(SendBadRequest)}";
+            Logger.Info($"{logPrefix}\n{nameof(stream)}: {stream}");
+
+            var buffer = Encoding.Default.GetBytes("HTTP/1.1 400 Bad Request\r\n\r\n<html><head><title>Authorization Failed</title></head><body><h1>:(</h1><p>Please check the logs to see why authorization failed.</p></body></html>");
             try {
-                await stream.WriteAsync(Encoding.Default.GetBytes("HTTP/1.1 400 Bad Request\r\n\r\n<html><head><title>Authorization Failed</title></head><body><h1>:(</h1><p>Please check the logs to see why authorization failed.</p></body></html>"));
+                await stream.WriteAsync(buffer);
             } catch (Exception e) {
-                Logger.Warning($"Could not authorization code send bad request because stream write attempt failed: {e}.");
+                Logger.Warning($"{logPrefix} | {nameof(stream.WriteAsync)} threw: {e}.\n{nameof(buffer)}: {JsonSerializer.Serialize(buffer)}");
                 return false;
             }
 
@@ -215,10 +224,14 @@
         }
 
         private static async Task<bool> SendOkRequest(NetworkStream stream) {
+            var logPrefix = $"{nameof(AuthorizationCode)} | {nameof(SendOkRequest)}";
+            Logger.Info($"{logPrefix}\n{nameof(stream)}: {stream}");
+
+            var buffer = Encoding.Default.GetBytes("HTTP/1.1 200 OK\r\n\r\n<html><head><title>Authorization Succeeded</title></head><body><h1>Authorization Success! :)</h1><p>You can close this tab.</p></body></html>");
             try {
-                await stream.WriteAsync(Encoding.Default.GetBytes("HTTP/1.1 200 OK\r\n\r\n<html><head><title>Authorization Succeeded</title></head><body><h1>Authorization Success! :)</h1><p>You can close this tab.</p></body></html>"));
+                await stream.WriteAsync(buffer);
             } catch (Exception e) {
-                Logger.Warning($"Could not authorization code send ok request because stream write attempt failed: {e}.");
+                Logger.Warning($"{logPrefix} | {nameof(stream.WriteAsync)} threw: {e}.\n{nameof(buffer)}: {JsonSerializer.Serialize(buffer)}");
                 return false;
             }
 

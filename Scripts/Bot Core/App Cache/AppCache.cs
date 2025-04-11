@@ -76,10 +76,16 @@
             }
 
             public async Task<bool> Refresh() {
-                Logger.Info($"{nameof(AppCache)} | {nameof(AsyncCacheValue<T>)} | {nameof(Refresh)}");
+                var logPrefix = $"{nameof(AppCache)} | {nameof(AsyncCacheValue<T>)} | {nameof(Refresh)}";
+                Logger.Info(logPrefix);
 
                 value = await getter();
-                return value is not null;
+                if (value is null) {
+                    Logger.Warning($"{logPrefix} | {nameof(getter)} result is null.");
+                    return false;
+                }
+
+                return true;
             }
 
             public T? GetWithoutRefresh() {
