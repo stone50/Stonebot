@@ -15,7 +15,8 @@
         public string YouTubeLink;
 
         public static async Task<CustomData?> Create() {
-            Logger.Info("Creating custom data.");
+            var logPrefix = $"{nameof(CustomData)} | {nameof(Create)}";
+            Logger.Info(logPrefix);
 
             if (!File.Exists(Constants.DataFilePath)) {
                 return new(new() { Quotes = [] });
@@ -25,7 +26,7 @@
             try {
                 dataText = await File.ReadAllTextAsync(Constants.DataFilePath);
             } catch (Exception e) {
-                Logger.Warning($"Could not create custom data because file read all text attempt failed: {e}.");
+                Logger.Warning($"{logPrefix} | {nameof(File.ReadAllTextAsync)} threw: {e}.\n{nameof(Constants.DataFilePath)}: {Constants.DataFilePath}");
                 return null;
             }
 
@@ -33,7 +34,7 @@
             try {
                 dataData = JsonSerializer.Deserialize<CustomDataData>(dataText);
             } catch (Exception e) {
-                Logger.Warning($"Could not create custom data because json serializer deserialize attempt failed: {e}. Data text: {dataText}.");
+                Logger.Warning($"{logPrefix} | {nameof(JsonSerializer.Deserialize)} threw: {e}.\n{nameof(dataText)}: {dataText}");
                 return null;
             }
 
@@ -41,7 +42,7 @@
         }
 
         public CustomDataData ToDataData() {
-            Logger.Info("Getting custom data as custom data data.");
+            Logger.Info($"{nameof(CustomData)} | {nameof(ToDataData)}");
 
             return new() {
                 Quotes = [.. Quotes],
@@ -54,6 +55,8 @@
         }
 
         private CustomData(CustomDataData dataData) {
+            Logger.Info($"{nameof(CustomData)} | Constructor\n{nameof(dataData)}: {JsonSerializer.Serialize(dataData)}");
+
             Quotes = [.. dataData.Quotes];
             FeedCount = dataData.FeedCount;
             FeedRecord = dataData.FeedRecord;

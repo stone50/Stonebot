@@ -41,6 +41,8 @@
         }
 
         private Config(ConfigData data) {
+            Logger.Info($"{nameof(Config)} | Constructor\n{nameof(data)}: {JsonSerializer.Serialize(data)}");
+
             AuthorizationPort = data.AuthorizationPort;
             ChatterClientId = data.ChatterClientId;
             ChatterClientSecret = data.ChatterClientSecret;
