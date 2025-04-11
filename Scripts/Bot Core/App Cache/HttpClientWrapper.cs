@@ -1,4 +1,5 @@
 ﻿namespace Stonebot.Scripts.Bot_Core.App_Cache {
+    using System.Text.Json;
     using System.Threading.Tasks;
     using HttpClient = System.Net.Http.HttpClient;
 
@@ -6,11 +7,12 @@
         public string RefreshToken => accessToken.RefreshToken;
 
         public static async Task<HttpClientWrapper?> CreateChatter() {
-            Logger.Info("Creating chatter http client wrapper.");
+            var logPrefix = $"{nameof(HttpClientWrapper)} | {nameof(CreateChatter)}";
+            Logger.Info(logPrefix);
 
             var token = await AccessToken.CreateChatter();
             if (token is null) {
-                Logger.Warning("Could not create chatter http client wrapper because access token create chatter attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AccessToken.CreateChatter)} result is null.");
                 return null;
             }
 
@@ -18,11 +20,12 @@
         }
 
         public static async Task<HttpClientWrapper?> CreateCollector() {
-            Logger.Info("Creating collector http client wrapper.");
+            var logPrefix = $"{nameof(HttpClientWrapper)} | {nameof(CreateCollector)}";
+            Logger.Info(logPrefix);
 
             var token = await AccessToken.CreateCollector();
             if (token is null) {
-                Logger.Warning("Could not create collector http client wrapper because access token create collector attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AccessToken.CreateCollector)} result is null.");
                 return null;
             }
 
@@ -30,7 +33,8 @@
         }
 
         public async Task<HttpClient?> GetClient() {
-            Logger.Info("Getting http client wrapper client.");
+            var logPrefix = $"{nameof(HttpClientWrapper)} | {nameof(GetClient)}";
+            Logger.Info(logPrefix);
 
             if (cachedClient is not null && !accessToken.IsAboutToExpire) {
                 return cachedClient;
@@ -38,7 +42,7 @@
 
             var accessTokenString = await accessToken.GetString();
             if (accessTokenString is null) {
-                Logger.Warning("Could not get http client wrapper client because access token get string attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(accessToken.GetString)} result is null.");
                 return null;
             }
 
@@ -49,11 +53,12 @@
         }
 
         public async Task<string?> GetAccessTokenString() {
-            Logger.Info("Getting http client wrapper access token string.");
+            var logPrefix = $"{nameof(HttpClientWrapper)} | {nameof(GetAccessTokenString)}";
+            Logger.Info(logPrefix);
 
             var accessTokenString = await accessToken.GetString();
             if (accessTokenString is null) {
-                Logger.Warning("Could not get http client wrapper access token string because access token get string attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(accessToken.GetString)} result is null.");
                 return null;
             }
 
@@ -63,6 +68,10 @@
         private readonly AccessToken accessToken;
         private HttpClient? cachedClient;
 
-        private HttpClientWrapper(AccessToken accessToken) => this.accessToken = accessToken;
+        private HttpClientWrapper(AccessToken accessToken) {
+            Logger.Info($"{nameof(HttpClientWrapper)} | Constructor\n{nameof(accessToken)}: {JsonSerializer.Serialize(accessToken)}");
+
+            this.accessToken = accessToken;
+        }
     }
 }
