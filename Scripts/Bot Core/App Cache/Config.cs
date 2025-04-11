@@ -18,13 +18,14 @@
         public readonly int TokenExpirationBuffer;
 
         public static async Task<Config?> Create() {
-            Logger.Info("Creating config.");
+            var logPrefix = $"{nameof(Config)} | {nameof(Create)}";
+            Logger.Info(logPrefix);
 
             string configText;
             try {
                 configText = await File.ReadAllTextAsync(Constants.ConfigFilePath);
             } catch (Exception e) {
-                Logger.Warning($"Could not create config because file read all text attempt failed: {e}.");
+                Logger.Warning($"{logPrefix} | {nameof(File.ReadAllTextAsync)} threw: {e}.\n{nameof(Constants.ConfigFilePath)}: {Constants.ConfigFilePath}");
                 return null;
             }
 
@@ -32,7 +33,7 @@
             try {
                 data = JsonSerializer.Deserialize<ConfigData>(configText);
             } catch (Exception e) {
-                Logger.Warning($"Could not create config because json serializer deserialize attempt failed: {e}. Config text: {configText}.");
+                Logger.Warning($"{logPrefix} | {nameof(JsonSerializer.Deserialize)} threw: {e}.\n{nameof(configText)}: {configText}");
                 return null;
             }
 
