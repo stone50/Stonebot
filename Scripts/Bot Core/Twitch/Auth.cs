@@ -2,14 +2,16 @@
     using System;
     using System.Diagnostics;
     using System.Net.Http;
+    using System.Text.Json;
     using System.Threading.Tasks;
     using HttpClient = System.Net.Http.HttpClient;
 
     internal static partial class TwitchAPI {
         public static Process? Authorize(string clientId, string redirectUri, string[] scope, bool forceVerify = false, string? state = null) {
-            Logger.Info("Authorizing with Twitch.");
-            var scopeParam = string.Join(" ", scope);
+            var logPrefix = $"{nameof(TwitchAPI)} | {nameof(Authorize)}";
+            Logger.Info($"{logPrefix}\n{nameof(clientId)}: {clientId}\n{nameof(redirectUri)}: {redirectUri}\n{nameof(scope)}: {JsonSerializer.Serialize(scope)}\n{nameof(forceVerify)}: {forceVerify}\n{nameof(state)}: {state}");
 
+            var scopeParam = string.Join(" ", scope);
             var process = new Process();
             process.StartInfo.UseShellExecute = true;
             process.StartInfo.FileName = $"https://id.twitch.tv/oauth2/authorize?client_id={clientId}&force_verify={(forceVerify ? "true" : "false")}&redirect_uri={redirectUri}&response_type=code&scope={scopeParam}";
@@ -18,9 +20,12 @@
             }
 
             try {
-                _ = process.Start();
+                if (!process.Start()) {
+                    Logger.Warning($"{logPrefix} | {nameof(process.Start)} result is false.\n{nameof(process)}: {process}");
+                    return null;
+                }
             } catch (Exception e) {
-                Logger.Warning($"Could not authorize with Twitch because process start attempt failed: {e}.");
+                Logger.Warning($"{logPrefix} | {nameof(process.Start)} threw: {e}.\n{nameof(process)}: {process}");
                 return null;
             }
 
@@ -29,24 +34,30 @@
 
         // no access token
         public static async Task<HttpResponseMessage?> GetAccessToken(HttpClient client, string clientId, string clientSecret, string authorizationCode, string redirectUri) {
-            Logger.Info("Getting access token from Twitch.");
+            var logPrefix = $"{nameof(TwitchAPI)} | {nameof(GetAccessToken)}";
+            Logger.Info($"{logPrefix}\n{nameof(client)}: {client}\n{nameof(clientId)}: {clientId}\n{nameof(clientSecret)}: {clientSecret}\n{nameof(authorizationCode)}: {authorizationCode}\n{nameof(redirectUri)}: {redirectUri}");
 
+            var requestUri = $"https://id.twitch.tv/oauth2/token?client_id={clientId}&client_secret={clientSecret}&code={authorizationCode}&grant_type=authorization_code&redirect_uri={redirectUri}";
+            HttpContent? content = null;
             try {
-                return await client.PostAsync($"https://id.twitch.tv/oauth2/token?client_id={clientId}&client_secret={clientSecret}&code={authorizationCode}&grant_type=authorization_code&redirect_uri={redirectUri}", null);
+                return await client.PostAsync(requestUri, content);
             } catch (Exception e) {
-                Logger.Warning($"Could not get access token from Twitch because client post attempt failed: {e}.");
+                Logger.Warning($"{logPrefix} | {nameof(client.PostAsync)} threw: {e}.\n{nameof(requestUri)}: {requestUri}\n{nameof(content)}: {content}");
                 return null;
             }
         }
 
         // no access token
         public static async Task<HttpResponseMessage?> RefreshAccessToken(HttpClient client, string clientId, string clientSecret, string refreshToken) {
-            Logger.Info("Refreshing access token with Twitch.");
+            var logPrefix = $"{nameof(TwitchAPI)} | {nameof(RefreshAccessToken)}";
+            Logger.Info($"{logPrefix}\n{nameof(client)}: {client}\n{nameof(clientId)}: {clientId}\n{nameof(clientSecret)}: {clientSecret}\n{nameof(refreshToken)}: {refreshToken}");
 
+            var requestUri = $"https://id.twitch.tv/oauth2/token?client_id={clientId}&client_secret={clientSecret}&grant_type=refresh_token&refresh_token={refreshToken}";
+            HttpContent? content = null;
             try {
-                return await client.PostAsync($"https://id.twitch.tv/oauth2/token?client_id={clientId}&client_secret={clientSecret}&grant_type=refresh_token&refresh_token={refreshToken}", null);
+                return await client.PostAsync(requestUri, content);
             } catch (Exception e) {
-                Logger.Warning($"Could not refresh access token with Twitch because client post attempt failed: {e}.");
+                Logger.Warning($"{logPrefix} | {nameof(client.PostAsync)} threw: {e}.\n{nameof(requestUri)}: {requestUri}\n{nameof(content)}: {content}");
                 return null;
             }
         }
