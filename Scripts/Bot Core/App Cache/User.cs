@@ -20,7 +20,7 @@
 
             var createdUser = await Create(clientWrapper);
             if (createdUser is null) {
-                Logger.Warning($"{logPrefix} | {nameof(Create)} result is null.\n{nameof(clientWrapper)}: {JsonSerializer.Serialize(clientWrapper)}");
+                Logger.Warning($"{logPrefix} | {nameof(Create)} result is null.\n{nameof(clientWrapper)}: {clientWrapper.MaskedSerialized}");
                 return null;
             }
 
@@ -39,7 +39,7 @@
 
             var createdUser = await Create(clientWrapper);
             if (createdUser is null) {
-                Logger.Warning($"{logPrefix} | {nameof(Create)} result is null.\n{nameof(clientWrapper)}: {JsonSerializer.Serialize(clientWrapper)}");
+                Logger.Warning($"{logPrefix} | {nameof(Create)} result is null.\n{nameof(clientWrapper)}: {clientWrapper.MaskedSerialized}");
                 return null;
             }
 
@@ -53,7 +53,7 @@
 
         private static async Task<User?> Create(HttpClientWrapper clientWrapper) {
             var logPrefix = $"{nameof(User)} | {nameof(Create)}";
-            Logger.Info($"{logPrefix}\n{nameof(clientWrapper)}: {JsonSerializer.Serialize(clientWrapper)}");
+            Logger.Info($"{logPrefix}\n{nameof(clientWrapper)}: {clientWrapper.MaskedSerialized}");
 
             var client = await clientWrapper.GetClient();
             if (client is null) {
@@ -63,7 +63,7 @@
 
             var potentialUsersData = await Util.GetMessageAs<UsersData>(TwitchAPI.GetUsers(client));
             if (potentialUsersData is null) {
-                Logger.Warning($"{logPrefix} | {nameof(TwitchAPI.GetUsers)} was unsuccessful.\n{nameof(client)}: {JsonSerializer.Serialize(client)}");
+                Logger.Warning($"{logPrefix} | {nameof(TwitchAPI.GetUsers)} was unsuccessful.");
                 return null;
             }
 

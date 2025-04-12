@@ -32,7 +32,7 @@
             try {
                 server.Start();
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(server.Start)} threw: {e}.\n{nameof(server)}: {server}");
+                Logger.Warning($"{logPrefix} | {nameof(server.Start)} threw: {e}.");
                 return null;
             }
 
@@ -53,7 +53,7 @@
             try {
                 server.Stop();
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(server.Stop)} threw: {e}.\n{nameof(server)}: {server}");
+                Logger.Warning($"{logPrefix} | {nameof(server.Stop)} threw: {e}.");
             }
 
             if (code is null) {
@@ -78,7 +78,7 @@
 
         private static async Task<string?> GetCode(TcpListener server, string state) {
             var logPrefix = $"{nameof(AuthorizationCode)} | {nameof(GetCode)}";
-            Logger.Info($"{logPrefix} | \n{nameof(server)}: {server}\n{nameof(state)}: {state}");
+            Logger.Info($"{logPrefix}\n{nameof(state)}: {state}");
 
             TcpClient client;
             try {
@@ -122,14 +122,14 @@
 
                 return code;
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(client.GetStream)} threw: {e}.\n{nameof(client)}: {client}");
+                Logger.Warning($"{logPrefix} | {nameof(client.GetStream)} threw: {e}.");
                 return null;
             }
         }
 
         private static async Task<string?> GetUrl(NetworkStream stream) {
             var logPrefix = $"{nameof(AuthorizationCode)} | {nameof(GetUrl)}";
-            Logger.Info($"{logPrefix}\n{nameof(stream)}: {stream}");
+            Logger.Info(logPrefix);
 
             var buffer = new byte[1024];
             int numBytesRead;
@@ -210,7 +210,7 @@
 
         private static async Task<bool> SendBadRequest(NetworkStream stream) {
             var logPrefix = $"{nameof(AuthorizationCode)} | {nameof(SendBadRequest)}";
-            Logger.Info($"{logPrefix}\n{nameof(stream)}: {stream}");
+            Logger.Info(logPrefix);
 
             var buffer = Encoding.Default.GetBytes("HTTP/1.1 400 Bad Request\r\n\r\n<html><head><title>Authorization Failed</title></head><body><h1>:(</h1><p>Please check the logs to see why authorization failed.</p></body></html>");
             try {
@@ -225,7 +225,7 @@
 
         private static async Task<bool> SendOkRequest(NetworkStream stream) {
             var logPrefix = $"{nameof(AuthorizationCode)} | {nameof(SendOkRequest)}";
-            Logger.Info($"{logPrefix}\n{nameof(stream)}: {stream}");
+            Logger.Info(logPrefix);
 
             var buffer = Encoding.Default.GetBytes("HTTP/1.1 200 OK\r\n\r\n<html><head><title>Authorization Succeeded</title></head><body><h1>Authorization Success! :)</h1><p>You can close this tab.</p></body></html>");
             try {

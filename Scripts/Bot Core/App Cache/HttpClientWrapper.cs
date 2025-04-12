@@ -6,6 +6,10 @@
     internal class HttpClientWrapper {
         public string RefreshToken => accessToken.RefreshToken;
 
+        public string MaskedSerialized => JsonSerializer.Serialize(new {
+            RefreshToken = Scripts.Util.GetMasked(RefreshToken),
+        });
+
         public static async Task<HttpClientWrapper?> CreateChatter() {
             var logPrefix = $"{nameof(HttpClientWrapper)} | {nameof(CreateChatter)}";
             Logger.Info(logPrefix);
@@ -69,7 +73,7 @@
         private HttpClient? cachedClient;
 
         private HttpClientWrapper(AccessToken accessToken) {
-            Logger.Info($"{nameof(HttpClientWrapper)} | Constructor\n{nameof(accessToken)}: {JsonSerializer.Serialize(accessToken)}");
+            Logger.Info($"{nameof(HttpClientWrapper)} | Constructor\n{nameof(accessToken)}: {accessToken.MaskedSerialized}");
 
             this.accessToken = accessToken;
         }

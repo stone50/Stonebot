@@ -17,6 +17,19 @@
         public readonly int SocketKeepaliveTimeout;
         public readonly int TokenExpirationBuffer;
 
+        public string MaskedSerialized => JsonSerializer.Serialize(new {
+            AuthorizationPort,
+            ChatterClientId,
+            ChatterClientSecret = Scripts.Util.GetMasked(ChatterClientSecret),
+            ChatterScope,
+            CollectorClientId,
+            CollectorClientSecret = Scripts.Util.GetMasked(CollectorClientSecret),
+            CollectorScope,
+            SocketKeepaliveBuffer,
+            SocketKeepaliveTimeout,
+            TokenExpirationBuffer,
+        });
+
         public static async Task<Config?> Create() {
             var logPrefix = $"{nameof(Config)} | {nameof(Create)}";
             Logger.Info(logPrefix);
@@ -25,7 +38,7 @@
             try {
                 configText = await File.ReadAllTextAsync(Constants.ConfigFilePath);
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(File.ReadAllTextAsync)} threw: {e}.\n{nameof(Constants.ConfigFilePath)}: {Constants.ConfigFilePath}");
+                Logger.Warning($"{logPrefix} | {nameof(File.ReadAllTextAsync)} threw: {e}.\n{nameof(Constants.ConfigFilePath)}: {Scripts.Util.GetMaskedPath(Constants.ConfigFilePath)}");
                 return null;
             }
 
@@ -33,7 +46,7 @@
             try {
                 data = JsonSerializer.Deserialize<ConfigData>(configText);
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(JsonSerializer.Deserialize)} threw: {e}.\n{nameof(configText)}: {configText}");
+                Logger.Warning($"{logPrefix} | {nameof(JsonSerializer.Deserialize)} threw: {e}.");
                 return null;
             }
 
@@ -41,7 +54,7 @@
         }
 
         private Config(ConfigData data) {
-            Logger.Info($"{nameof(Config)} | Constructor\n{nameof(data)}: {JsonSerializer.Serialize(data)}");
+            Logger.Info($"{nameof(Config)} | Constructor\n{nameof(data)}: {data.MaskedSerialized}");
 
             AuthorizationPort = data.AuthorizationPort;
             ChatterClientId = data.ChatterClientId;

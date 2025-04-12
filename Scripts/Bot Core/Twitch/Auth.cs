@@ -21,11 +21,11 @@
 
             try {
                 if (!process.Start()) {
-                    Logger.Warning($"{logPrefix} | {nameof(process.Start)} result is false.\n{nameof(process)}: {process}");
+                    Logger.Warning($"{logPrefix} | {nameof(process.Start)} result is false.");
                     return null;
                 }
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(process.Start)} threw: {e}.\n{nameof(process)}: {process}");
+                Logger.Warning($"{logPrefix} | {nameof(process.Start)} threw: {e}.");
                 return null;
             }
 
@@ -35,14 +35,14 @@
         // no access token
         public static async Task<HttpResponseMessage?> GetAccessToken(HttpClient client, string clientId, string clientSecret, string authorizationCode, string redirectUri) {
             var logPrefix = $"{nameof(TwitchAPI)} | {nameof(GetAccessToken)}";
-            Logger.Info($"{logPrefix}\n{nameof(client)}: {client}\n{nameof(clientId)}: {clientId}\n{nameof(clientSecret)}: {clientSecret}\n{nameof(authorizationCode)}: {authorizationCode}\n{nameof(redirectUri)}: {redirectUri}");
+            Logger.Info($"{logPrefix}\n{nameof(client)}: {client}\n{nameof(clientId)}: {clientId}\n{nameof(clientSecret)}: {Scripts.Util.GetMasked(clientSecret)}\n{nameof(authorizationCode)}: {authorizationCode}\n{nameof(redirectUri)}: {redirectUri}");
 
             var requestUri = $"https://id.twitch.tv/oauth2/token?client_id={clientId}&client_secret={clientSecret}&code={authorizationCode}&grant_type=authorization_code&redirect_uri={redirectUri}";
             HttpContent? content = null;
             try {
                 return await client.PostAsync(requestUri, content);
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(client.PostAsync)} threw: {e}.\n{nameof(requestUri)}: {requestUri}\n{nameof(content)}: {content}");
+                Logger.Warning($"{logPrefix} | {nameof(client.PostAsync)} threw: {e}.\n{nameof(content)}: {content}");
                 return null;
             }
         }
@@ -50,14 +50,14 @@
         // no access token
         public static async Task<HttpResponseMessage?> RefreshAccessToken(HttpClient client, string clientId, string clientSecret, string refreshToken) {
             var logPrefix = $"{nameof(TwitchAPI)} | {nameof(RefreshAccessToken)}";
-            Logger.Info($"{logPrefix}\n{nameof(client)}: {client}\n{nameof(clientId)}: {clientId}\n{nameof(clientSecret)}: {clientSecret}\n{nameof(refreshToken)}: {refreshToken}");
+            Logger.Info($"{logPrefix}\n{nameof(client)}: {client}\n{nameof(clientId)}: {clientId}\n{nameof(clientSecret)}: {Scripts.Util.GetMasked(clientSecret)}\n{nameof(refreshToken)}: {Scripts.Util.GetMasked(refreshToken)}");
 
             var requestUri = $"https://id.twitch.tv/oauth2/token?client_id={clientId}&client_secret={clientSecret}&grant_type=refresh_token&refresh_token={refreshToken}";
             HttpContent? content = null;
             try {
                 return await client.PostAsync(requestUri, content);
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(client.PostAsync)} threw: {e}.\n{nameof(requestUri)}: {requestUri}\n{nameof(content)}: {content}");
+                Logger.Warning($"{logPrefix} | {nameof(client.PostAsync)} threw: {e}.\n{nameof(content)}: {content}");
                 return null;
             }
         }

@@ -26,7 +26,7 @@
             try {
                 dataText = await File.ReadAllTextAsync(Constants.DataFilePath);
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(File.ReadAllTextAsync)} threw: {e}.\n{nameof(Constants.DataFilePath)}: {Constants.DataFilePath}");
+                Logger.Warning($"{logPrefix} | {nameof(File.ReadAllTextAsync)} threw: {e}.\n{nameof(Constants.DataFilePath)}: {Scripts.Util.GetMaskedPath(Constants.DataFilePath)}");
                 return null;
             }
 

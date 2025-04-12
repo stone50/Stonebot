@@ -72,7 +72,7 @@
         }
 
         public void SetNotificationHandler(string subscriptionType, Func<JsonElement, Task> handler) {
-            Logger.Info($"{nameof(WebSocketClient)} | {nameof(SetNotificationHandler)}\n{nameof(subscriptionType)}: {subscriptionType}\n{nameof(handler)}: {handler}");
+            Logger.Info($"{nameof(WebSocketClient)} | {nameof(SetNotificationHandler)}\n{nameof(subscriptionType)}: {subscriptionType}");
 
             notificationHandlers[subscriptionType] = handler;
         }
@@ -126,7 +126,7 @@
             try {
                 await socket.ConnectAsync(socketUri, connectCancellationTokenSource.Token);
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(socket.ConnectAsync)} threw: {e}.\n{nameof(socketUri)}: {socketUri}\n{nameof(connectCancellationTokenSource.Token)}: {connectCancellationTokenSource.Token}");
+                Logger.Warning($"{logPrefix} | {nameof(socket.ConnectAsync)} threw: {e}.\n{nameof(socketUri)}: {socketUri}");
                 return false;
             }
 
@@ -256,7 +256,7 @@
             try {
                 await socket.CloseAsync(status, statusDescription, cancellationTokenSource.Token);
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(socket.CloseAsync)} threw: {e}.\n{nameof(status)}: {status}\n{nameof(statusDescription)}: {statusDescription}\n{nameof(cancellationTokenSource.Token)}: {cancellationTokenSource.Token}");
+                Logger.Warning($"{logPrefix} | {nameof(socket.CloseAsync)} threw: {e}.\n{nameof(status)}: {status}\n{nameof(statusDescription)}: {statusDescription}");
                 return false;
             }
 
@@ -268,7 +268,7 @@
 
         private async Task<WebSocketRequestResult?> GetRequest(CancellationToken cancellationToken) {
             var logPrefix = $"{nameof(WebSocketClient)} | {nameof(GetRequest)}";
-            Logger.Info($"{logPrefix}\n{nameof(cancellationToken)}: {cancellationToken}");
+            Logger.Info(logPrefix);
 
             var buffer = new byte[65536];
             WebSocketReceiveResult result;

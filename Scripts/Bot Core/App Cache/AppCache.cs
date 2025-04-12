@@ -8,7 +8,7 @@
     internal static class AppCache {
         public class CacheValue<T> where T : class {
             public CacheValue(Func<T?> getter) {
-                Logger.Info($"{nameof(AppCache)} | {nameof(CacheValue<T>)}\n{nameof(getter)}: {getter}");
+                Logger.Info($"{nameof(AppCache)} | {nameof(CacheValue<T>)}");
 
                 this.getter = getter;
             }
@@ -54,7 +54,7 @@
 
         public class AsyncCacheValue<T> where T : class {
             public AsyncCacheValue(Func<Task<T?>> getter) {
-                Logger.Info($"{nameof(AppCache)} | {nameof(AsyncCacheValue<T>)}\n{nameof(getter)}: {getter}");
+                Logger.Info($"{nameof(AppCache)} | {nameof(AsyncCacheValue<T>)}");
 
                 this.getter = getter;
             }
@@ -121,7 +121,7 @@
             try {
                 _ = Directory.CreateDirectory(Constants.AppDataPath);
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(Directory.CreateDirectory)} threw: {e}.\n{nameof(Constants.AppDataPath)}: {Constants.AppDataPath}");
+                Logger.Warning($"{logPrefix} | {nameof(Directory.CreateDirectory)} threw: {e}.\n{nameof(Constants.AppDataPath)}: {Scripts.Util.GetMaskedPath(Constants.AppDataPath)}");
                 return false;
             }
 
@@ -145,14 +145,14 @@
             try {
                 json = await File.ReadAllTextAsync(Constants.CacheFilePath);
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(File.ReadAllTextAsync)} threw: {e}.\n{nameof(Constants.CacheFilePath)}: {Constants.CacheFilePath}");
+                Logger.Warning($"{logPrefix} | {nameof(File.ReadAllTextAsync)} threw: {e}.\n{nameof(Constants.CacheFilePath)}: {Scripts.Util.GetMaskedPath(Constants.CacheFilePath)}");
                 return false;
             }
 
             try {
                 storedData = JsonSerializer.Deserialize<AppCacheData>(json);
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(JsonSerializer.Deserialize)} threw: {e}.\n{nameof(json)}: {json}");
+                Logger.Warning($"{logPrefix} | {nameof(JsonSerializer.Deserialize)} threw: {e}.");
                 return false;
             }
 
@@ -183,7 +183,7 @@
             try {
                 await File.WriteAllTextAsync(Constants.CacheFilePath, serializedData);
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(File.WriteAllTextAsync)} threw: {e}.\n{nameof(Constants.CacheFilePath)}: {Constants.CacheFilePath}\n{nameof(serializedData)}: {serializedData}");
+                Logger.Warning($"{logPrefix} | {nameof(File.WriteAllTextAsync)} threw: {e}.\n{nameof(Constants.CacheFilePath)}: {Scripts.Util.GetMaskedPath(Constants.CacheFilePath)}\n{nameof(data)}: {data.MaskedSerialized}");
                 return false;
             }
 
@@ -205,7 +205,7 @@
             try {
                 await File.WriteAllTextAsync(Constants.DataFilePath, serializedDataData);
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(File.WriteAllTextAsync)} threw: {e}.\n{nameof(Constants.DataFilePath)}: {Constants.DataFilePath}\n{nameof(serializedDataData)}: {serializedDataData}");
+                Logger.Warning($"{logPrefix} | {nameof(File.WriteAllTextAsync)} threw: {e}.\n{nameof(Constants.DataFilePath)}: {Scripts.Util.GetMaskedPath(Constants.DataFilePath)}\n{nameof(serializedDataData)}: {serializedDataData}");
                 return false;
             }
 

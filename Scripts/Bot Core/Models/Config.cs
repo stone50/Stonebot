@@ -1,5 +1,7 @@
 ﻿namespace Stonebot.Scripts.Bot_Core.Models {
+    using System.Text.Json;
     using System.Text.Json.Serialization;
+    using Util = Scripts.Util;
 
     internal struct ConfigData {
         [JsonPropertyName("authorizationPort")]
@@ -22,5 +24,18 @@
         public int SocketKeepaliveTimeout { get; set; }
         [JsonPropertyName("tokenExpirationBuffer")]
         public int TokenExpirationBuffer { get; set; }
+
+        public readonly string MaskedSerialized => JsonSerializer.Serialize(new {
+            AuthorizationPort,
+            ChatterClientId,
+            ChatterClientSecret = Util.GetMasked(ChatterClientSecret),
+            ChatterScope,
+            CollectorClientId,
+            CollectorClientSecret = Util.GetMasked(CollectorClientSecret),
+            CollectorScope,
+            SocketKeepaliveBuffer,
+            SocketKeepaliveTimeout,
+            TokenExpirationBuffer,
+        });
     }
 }
