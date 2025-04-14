@@ -1,71 +1,36 @@
 ﻿namespace Stonebot.Scripts.Core_Interface {
     using Bot_Core.App_Cache;
-    using Bot_Core.Models.EventSub;
-    using Command;
-    using Message;
     using System.Threading.Tasks;
 
     internal static class Meta {
         public static async void Startup() {
-            Logger.Info("Starting up.");
+            var logPrefix = $"{nameof(Meta)} | {nameof(Startup)}";
+            Logger.Info(logPrefix);
 
             if (!await AppCache.Init()) {
-                Logger.Warning("Could not start up because app cache init attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.Init)} result is false.");
                 return;
             }
 
-            _ = await EventSub.EventSub.ConnectChannelChatMessage(HandleChatMessage);
+            _ = await EventSub.EventSub.ConnectChannelChatMessage();
             _ = await Chat.Send("MercyWing1 :) MercyWing2");
         }
 
         public static async Task Shutdown() {
-            Logger.Info("Shutting down.");
+            Logger.Info($"{nameof(Meta)} | {nameof(Shutdown)}");
 
             if (AppCache.CollectorClientWrapper.GetWithoutRefresh() is null || AppCache.ChatterClientWrapper.GetWithoutRefresh() is null) {
                 return;
             }
 
-            _ = await Chat.Send("logging off...");
-            _ = await AppCache.SaveAll();
             _ = await EventSub.EventSub.RemoveBy();
             var webSocket = AppCache.WebSocketClient.Get();
             if (webSocket is not null) {
                 _ = await webSocket.Close();
             }
-        }
 
-        private static async Task HandleChatMessage(ChannelChatMessageEvent messageEvent) {
-            Logger.Info("Handling chat message.");
-
-            var bot = await AppCache.Bot.Get();
-            if (bot is null) {
-                Logger.Warning("Could not handle chat message because bot get attempt failed.");
-                return;
-            }
-
-            if (messageEvent.ChatterUserId == bot.Id) {
-                return;
-            }
-
-            var isCommandHandled = await CommandHandler.Handle(messageEvent);
-            if (isCommandHandled is null) {
-                Logger.Warning("Could not handle chat message because command handler handle attempt failed.");
-                return;
-            }
-
-            if ((bool)isCommandHandled) {
-                return;
-            }
-
-            var isMessageHandled = await MessageHandler.Handle(messageEvent);
-            if (isMessageHandled is null) {
-                Logger.Warning("Could not handle chat message because message handler handle attempt failed.");
-                return;
-            }
-
-            if ((bool)isMessageHandled) {
-                return;
-            }
+            _ = await AppCache.SaveAll();
+            _ = await Chat.Send("logging off...");
         }
     }
 }

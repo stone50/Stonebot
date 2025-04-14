@@ -3,6 +3,8 @@
     using Bot_Core.App_Cache;
     using Bot_Core.Models.EventSub;
     using Bot_Core.Twitch;
+    using Command;
+    using Message;
     using System;
     using System.Text.Json;
     using System.Threading.Tasks;
@@ -122,7 +124,7 @@
             return true;
         }
 
-        public static async Task<bool> ConnectChannelChatMessage(Func<ChannelChatMessageEvent, Task> handler) {
+        public static async Task<bool> ConnectChannelChatMessage() {
             var logPrefix = $"{nameof(EventSub)} | {nameof(ConnectChannelChatMessage)}";
             Logger.Info(logPrefix);
 
@@ -178,11 +180,11 @@
                 return false;
             }
 
-            webSocketClient.SetNotificationHandler("channel.chat.message", GetChannelChatMessageNotificationHandler(handler));
+            webSocketClient.SetNotificationHandler("channel.chat.message", ChannelChatMessageNotificationHandler);
             return true;
         }
 
-        private static Func<JsonElement, Task> GetChannelChatMessageNotificationHandler(Func<ChannelChatMessageEvent, Task> handler) => async (eventElement) => {
+        private static async Task ChannelChatMessageNotificationHandler(JsonElement eventElement) {
             var logPrefix = $"{nameof(EventSub)} | ChannelChatMessageNotificationHandler";
             Logger.Info($"{logPrefix}\n{nameof(eventElement)}: {eventElement}");
 
@@ -194,7 +196,35 @@
                 return;
             }
 
-            await handler(eventStruct);
-        };
+            var bot = await AppCache.Bot.Get();
+            if (bot is null) {
+                Logger.Warning("Could not handle chat message because bot get attempt failed.");
+                return;
+            }
+
+            if (eventStruct.ChatterUserId == bot.Id) {
+                return;
+            }
+
+            var isCommandHandled = await CommandHandler.Handle(eventStruct);
+            if (isCommandHandled is null) {
+                Logger.Warning("Could not handle chat message because command handler handle attempt failed.");
+                return;
+            }
+
+            if ((bool)isCommandHandled) {
+                return;
+            }
+
+            var isMessageHandled = await MessageHandler.Handle(eventStruct);
+            if (isMessageHandled is null) {
+                Logger.Warning("Could not handle chat message because message handler handle attempt failed.");
+                return;
+            }
+
+            if ((bool)isMessageHandled) {
+                return;
+            }
+        }
     }
 }
