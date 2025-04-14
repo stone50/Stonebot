@@ -25,6 +25,8 @@
 
         public WebSocketState State => socket.State;
 
+        public WebSocketClient() => Logger.Info($"{nameof(WebSocketClient)} | Constructor");
+
         public async Task<bool> Connect() {
             var logPrefix = $"{nameof(WebSocketClient)} | {nameof(Connect)}";
             Logger.Info(logPrefix);

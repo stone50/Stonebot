@@ -47,6 +47,8 @@
         }
 
         private User(UserData data) {
+            Logger.Info($"{nameof(User)} | Constructor\n{data}: {JsonSerializer.Serialize(data)}");
+
             Id = data.Id;
             UserName = data.DisplayName;
         }
