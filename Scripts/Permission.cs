@@ -15,11 +15,12 @@
 
     internal static class Permission {
         public static async Task<PermissionLevel?> GetHighest(string userId) {
-            Logger.Info($"Getting highest user permission level. User id: {userId}.");
+            var logPrefix = $"{nameof(Permission)} | {nameof(GetHighest)}";
+            Logger.Info($"{logPrefix}\n{nameof(userId)}: {userId}");
 
             var broadcaster = await AppCache.Broadcaster.Get();
             if (broadcaster is null) {
-                Logger.Warning("Could not get highest user permission level because broadcaster get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.Broadcaster.Get)} result is null.");
                 return null;
             }
 
@@ -29,7 +30,7 @@
 
             var isMod = await GetIsMod(userId);
             if (isMod is null) {
-                Logger.Warning("Could not get highest user permission level because get is mod attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(GetIsMod)} result is null.");
                 return null;
             }
 
@@ -39,7 +40,7 @@
 
             var subTier = await GetSubTier(userId);
             if (subTier is null) {
-                Logger.Warning("Could not get highest user permission level because get sub tier attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(GetSubTier)} result is null.");
                 return null;
             }
 
@@ -53,13 +54,13 @@
                         return PermissionLevel.Tier3Sub;
                 }
 
-                Logger.Warning($"Could not get highest user permission level because sub tier is not supported. Sub tier: {subTier}.");
+                Logger.Warning($"{logPrefix} | {nameof(subTier)} not supported.\n{nameof(subTier)}: {subTier}");
                 return null;
             }
 
             var isVIP = await GetIsVIP(userId);
             if (isVIP is null) {
-                Logger.Warning("Could not get highest user permission level because get is VIP attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(GetIsVIP)} result is null.");
                 return null;
             }
 
