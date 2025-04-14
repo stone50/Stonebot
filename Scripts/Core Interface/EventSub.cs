@@ -10,11 +10,12 @@
     internal static class EventSub {
         // only up to 1 of status, type, and userId should be specified
         public static async Task<EventSubsData?> Get(string? status = null, string? type = null, string? userId = null) {
-            Logger.Info("Getting event subs.");
+            var logPrefix = $"{nameof(EventSub)} | {nameof(Get)}";
+            Logger.Info($"{logPrefix}\n{nameof(status)}: {status}\n{nameof(type)}: {type}\n{nameof(userId)}: {userId}");
 
             var clientWrapper = await AppCache.CollectorClientWrapper.Get();
             if (clientWrapper is null) {
-                Logger.Warning("Could not get event subs because collector client wrapper get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.CollectorClientWrapper.Get)} result is null.");
                 return null;
             }
 
@@ -23,13 +24,13 @@
             while (true) {
                 var client = await clientWrapper.GetClient();
                 if (client is null) {
-                    Logger.Warning("Could not get event subs because client wrapper get client attempt failed.");
+                    Logger.Warning($"{logPrefix} | {nameof(clientWrapper.GetClient)} result is null.");
                     return null;
                 }
 
                 var potentialData = await Util.GetMessageAs<EventSubsData>(TwitchAPI.GetEventSubs(client, status, type, userId, cursor));
                 if (potentialData is null) {
-                    Logger.Warning("Could not get event subs because Twitch API get event subs attempt failed.");
+                    Logger.Warning($"{logPrefix} | {nameof(TwitchAPI.GetEventSubs)} was unsuccessful.\n{nameof(cursor)}: {cursor}");
                     return null;
                 }
 
@@ -54,16 +55,17 @@
 
         // only up to 1 of status, type, and userId should be specified
         public static async Task<bool> RemoveBy(string? status = null, string? type = null, string? userId = null) {
-            Logger.Info("Removing event subs by filters.");
+            var logPrefix = $"{nameof(EventSub)} | {nameof(RemoveBy)}";
+            Logger.Info($"{logPrefix}\n{nameof(status)}: {status}\n{nameof(type)}: {type}\n{nameof(userId)}: {userId}");
 
             var potentialData = await Get(status, type, userId);
             if (potentialData is null) {
-                Logger.Warning("Could not remove event subs by filters because get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(Get)} result is null.");
                 return false;
             }
 
             if (!await Remove(((EventSubsData)potentialData).Data)) {
-                Logger.Warning("Could not remove event subs by filters because remove attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(Remove)} result is false.");
                 return false;
             }
 
@@ -71,23 +73,24 @@
         }
 
         public static async Task<bool> Remove(EventSubData[] eventSubs) {
-            Logger.Info("Removing event subs.");
+            var logPrefix = $"{nameof(EventSub)} | {nameof(Remove)}";
+            Logger.Info($"{logPrefix}\n{nameof(eventSubs)}: {JsonSerializer.Serialize(eventSubs)}");
 
             var clientWrapper = await AppCache.CollectorClientWrapper.Get();
             if (clientWrapper is null) {
-                Logger.Warning("Could not remove event subs because collector client wrapper get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.CollectorClientWrapper.Get)} result is null.");
                 return false;
             }
 
             foreach (var eventSub in eventSubs) {
                 var client = await clientWrapper.GetClient();
                 if (client is null) {
-                    Logger.Warning("Could not remove event subs because client wrapper get client attempt failed.");
+                    Logger.Warning($"{logPrefix} | {nameof(clientWrapper.GetClient)} result is null.");
                     return false;
                 }
 
                 if (!await Util.GetIsSuccess(TwitchAPI.DeleteEventSub(client, eventSub.Id))) {
-                    Logger.Warning("Could not remove event subs because Twitch API delete event sub attempt failed.");
+                    Logger.Warning($"{logPrefix} | {nameof(TwitchAPI.DeleteEventSub)} was unsuccessful.");
                     return false;
                 }
             }
@@ -96,22 +99,23 @@
         }
 
         public static async Task<bool> Add(EventSubData eventSub) {
-            Logger.Info("Adding event sub.");
+            var logPrefix = $"{nameof(EventSub)} | {nameof(Add)}";
+            Logger.Info($"{logPrefix}\n{nameof(eventSub)}: {JsonSerializer.Serialize(eventSub)}");
 
             var clientWrapper = await AppCache.CollectorClientWrapper.Get();
             if (clientWrapper is null) {
-                Logger.Warning("Could not add event sub because collector client wrapper get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.CollectorClientWrapper.Get)} result is null.");
                 return false;
             }
 
             var client = await clientWrapper.GetClient();
             if (client is null) {
-                Logger.Warning("Could not add event sub because client wrapper get client attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(clientWrapper.GetClient)} result is null.");
                 return false;
             }
 
             if (!await Util.GetIsSuccess(TwitchAPI.AddEventSub(client, eventSub))) {
-                Logger.Warning("Could not add event sub because Twitch API add event sub attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(TwitchAPI.AddEventSub)} was unsuccessful.");
                 return false;
             }
 
@@ -119,47 +123,48 @@
         }
 
         public static async Task<bool> ConnectChannelChatMessage(Func<ChannelChatMessageEvent, Task> handler) {
-            Logger.Info("Connecting to channel chat message event sub.");
+            var logPrefix = $"{nameof(EventSub)} | {nameof(ConnectChannelChatMessage)}";
+            Logger.Info(logPrefix);
 
             var config = await AppCache.Config.Get();
             if (config is null) {
-                Logger.Warning("Could not connect to channel chat message event sub because config get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.Config.Get)} result is null.");
                 return false;
             }
 
             var broadcaster = await AppCache.Broadcaster.Get();
             if (broadcaster is null) {
-                Logger.Warning("Could not connect to channel chat message event sub because broadcaster get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.Broadcaster.Get)} result is null.");
                 return false;
             }
 
             var bot = await AppCache.Bot.Get();
             if (bot is null) {
-                Logger.Warning("Could not connect to channel chat message event sub because bot get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.Bot.Get)} result is null.");
                 return false;
             }
 
             var webSocketClient = AppCache.WebSocketClient.Get();
             if (webSocketClient is null) {
-                Logger.Warning("Could not connect to channel chat message event sub because web socket client get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.WebSocketClient.Get)} result is null.");
                 return false;
             }
 
             var sessionId = await webSocketClient.GetId();
             if (sessionId is null) {
-                Logger.Warning("Could not connect to channel chat message event sub because web socket client get id attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(webSocketClient.GetId)} result is null.");
                 return false;
             }
 
             var clientWrapper = await AppCache.ChatterClientWrapper.Get();
             if (clientWrapper is null) {
-                Logger.Warning("Could not connect to channel chat message event sub because chatter client wrapper get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.ChatterClientWrapper.Get)} result is null.");
                 return false;
             }
 
             var client = await clientWrapper.GetClient();
             if (client is null) {
-                Logger.Warning("Could not connect to channel chat message event sub because client wrapper get client attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(clientWrapper.GetClient)} result is null.");
                 return false;
             }
 
@@ -169,22 +174,27 @@
                 bot.Id,
                 sessionId
             ))) {
-                Logger.Warning("Could not connect to channel chat message event sub because Twitch API subscribe to channel chat message attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(TwitchAPI.SubscribeToChannelChatMessage)} was unsuccessful.");
                 return false;
             }
 
-            webSocketClient.SetNotificationHandler("channel.chat.message", async (eventElement) => {
-                ChannelChatMessageEvent eventStruct;
-                try {
-                    eventStruct = JsonSerializer.Deserialize<ChannelChatMessageEvent>(eventElement);
-                } catch (Exception e) {
-                    Logger.Warning($"Could not handle channel chat message event because json serializer deserialize attempt failed: {e}.");
-                    return;
-                }
-
-                await handler(eventStruct);
-            });
+            webSocketClient.SetNotificationHandler("channel.chat.message", GetChannelChatMessageNotificationHandler(handler));
             return true;
         }
+
+        private static Func<JsonElement, Task> GetChannelChatMessageNotificationHandler(Func<ChannelChatMessageEvent, Task> handler) => async (eventElement) => {
+            var logPrefix = $"{nameof(EventSub)} | ChannelChatMessageNotificationHandler";
+            Logger.Info($"{logPrefix}\n{nameof(eventElement)}: {eventElement}");
+
+            ChannelChatMessageEvent eventStruct;
+            try {
+                eventStruct = JsonSerializer.Deserialize<ChannelChatMessageEvent>(eventElement);
+            } catch (Exception e) {
+                Logger.Warning($"{logPrefix} | {nameof(JsonSerializer.Deserialize)} threw: {e}.");
+                return;
+            }
+
+            await handler(eventStruct);
+        };
     }
 }
