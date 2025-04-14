@@ -12,7 +12,7 @@
     internal static partial class AuthorizationCode {
         public static async Task<string?> Create(string clientId, string[] scope) {
             var logPrefix = $"{nameof(AuthorizationCode)} | {nameof(Create)}";
-            Logger.Info($"{logPrefix}\n{nameof(clientId)}: {clientId}\n{nameof(scope)}: {JsonSerializer.Serialize(scope)}");
+            Logger.Info($"{logPrefix}\n{nameof(clientId)}: {Scripts.Util.GetMasked(clientId)}\n{nameof(scope)}: {JsonSerializer.Serialize(scope)}");
 
             var config = await AppCache.Config.Get();
             if (config is null) {
