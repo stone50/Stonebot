@@ -13,6 +13,8 @@
         public Func<Task<bool>> TimeoutAction;
 
         public Timer(string keyword, Func<Task<bool>> timeoutAction, int interval) {
+            Logger.Info($"{nameof(Timer)} | Constructor\n{nameof(keyword)}: {keyword}\n{nameof(interval)}: {interval}");
+
             Keyword = keyword;
             TimeoutAction = timeoutAction;
             LastTimeout = DateTime.Now;
@@ -21,7 +23,7 @@
         }
 
         public void SetIsEnabled(bool isEnabled) {
-            Logger.Info($"Setting is enabled of timer {Keyword}. Is enabled: {isEnabled}.");
+            Logger.Info($"{nameof(Timer)} | {nameof(SetIsEnabled)}\n{nameof(isEnabled)}: {isEnabled}");
 
             if (this.isEnabled == isEnabled) {
                 return;
@@ -36,7 +38,7 @@
         }
 
         public void SetInterval(int interval) {
-            Logger.Info($"Setting interval of timer {Keyword}. Interval: {interval}.");
+            Logger.Info($"{nameof(Timer)} | {nameof(SetInterval)}\n{nameof(interval)}: {interval}");
 
             this.interval = interval;
             Util.InvokeDeferred(IntervalChanged, Interval);
@@ -45,18 +47,22 @@
         private bool isEnabled = true;
         private int interval;
 
-        private void Start() => Task.Run(async () => {
-            while (IsEnabled) {
-                if (DateTime.Now < LastTimeout.AddSeconds(Interval)) {
-                    continue;
-                }
+        private void Start() {
+            Logger.Info($"{nameof(Timer)} | {nameof(Start)}");
 
-                LastTimeout = DateTime.Now;
-                if (!await TimeoutAction()) {
-                    Logger.Warning($"Could not proc timer {Keyword} because timeout action attempt failed.");
-                    return;
+            _ = Task.Run(async () => {
+                while (IsEnabled) {
+                    if (DateTime.Now < LastTimeout.AddSeconds(Interval)) {
+                        continue;
+                    }
+
+                    LastTimeout = DateTime.Now;
+                    if (!await TimeoutAction()) {
+                        Logger.Warning($"{nameof(Timer)} | ProcLoop | {nameof(TimeoutAction)} result is false.");
+                        return;
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 }
