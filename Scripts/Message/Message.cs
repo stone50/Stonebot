@@ -1,26 +1,36 @@
 ﻿namespace Stonebot.Scripts.Message {
     using Bot_Core.Models.EventSub;
     using System;
+    using System.Text.Json;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
 
-    internal class Message(string keyword, Regex regex, Func<ChannelChatMessageEvent, Task<bool>> useAction) {
+    internal class Message {
         public event EventHandler<PermissionLevel> PermissionLevelChanged = delegate { };
         public event EventHandler<int> UseDelayChanged = delegate { };
         public event EventHandler<bool> IsEnabledChanged = delegate { };
 
-        public string Keyword { get; private set; } = keyword;
-        public Regex Regex = regex;
+        public string Keyword { get; private set; }
+        public Regex Regex;
         public bool IsEnabled { get => isEnabled; set => SetIsEnabled(value); }
         public PermissionLevel PermissionLevel { get => permissionLevel; set => SetPermissionLevel(value); }
         public int UseDelay { get => useDelay; set => SetUseDelay(value); }
         public DateTime LastUsed { get; private set; }
-        public Func<ChannelChatMessageEvent, Task<bool>> UseAction = useAction;
+        public Func<ChannelChatMessageEvent, Task<bool>> UseAction;
 
         public bool IsReadyToUse => DateTime.Now > LastUsed.AddMilliseconds(UseDelay);
 
+        public Message(string keyword, Regex regex, Func<ChannelChatMessageEvent, Task<bool>> useAction) {
+            Logger.Info($"{nameof(Message)} | Constructor\n{nameof(keyword)}: {keyword}\n{nameof(regex)}: {regex}");
+
+            Keyword = keyword;
+            Regex = regex;
+            UseAction = useAction;
+        }
+
         public async Task<bool?> Use(ChannelChatMessageEvent messageEvent) {
-            Logger.Info($"Using message {Keyword}.");
+            var logPrefix = $"{nameof(Message)} | {nameof(Use)}";
+            Logger.Info($"{logPrefix}\n{nameof(messageEvent)}: {JsonSerializer.Serialize(messageEvent)}");
 
             if (!IsEnabled) {
                 return false;
@@ -37,7 +47,7 @@
 
             var userPermissionLevel = await Permission.GetHighest(messageEvent.ChatterUserId);
             if (userPermissionLevel is null) {
-                Logger.Warning($"Could not use message {Keyword} because permission get highest attempt failed. Message event chatter user id: {messageEvent.ChatterUserId}.");
+                Logger.Warning($"{logPrefix} | {nameof(Permission.GetHighest)} result is null.");
                 return null;
             }
 
@@ -46,7 +56,7 @@
             }
 
             if (!await UseAction(messageEvent)) {
-                Logger.Warning($"Could not use message {Keyword} because use action attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(UseAction)} result is false.");
                 return false;
             }
 
@@ -55,21 +65,21 @@
         }
 
         public void SetIsEnabled(bool isEnabled) {
-            Logger.Info($"Setting is enabled for message {Keyword}. Is enabled: {isEnabled}.");
+            Logger.Info($"{nameof(Message)} | {nameof(SetIsEnabled)}\n{nameof(isEnabled)}: {isEnabled}");
 
             this.isEnabled = isEnabled;
             Util.InvokeDeferred(IsEnabledChanged, IsEnabled);
         }
 
         public void SetPermissionLevel(PermissionLevel permissionLevel) {
-            Logger.Info($"Setting permission level for message {Keyword}. Permission level: {permissionLevel}.");
+            Logger.Info($"{nameof(Message)} | {nameof(SetPermissionLevel)}\n{nameof(permissionLevel)}: {permissionLevel}");
 
             this.permissionLevel = permissionLevel;
             Util.InvokeDeferred(PermissionLevelChanged, PermissionLevel);
         }
 
         public void SetUseDelay(int useDelay) {
-            Logger.Info($"Setting use delay for message {Keyword}. Use delay: {useDelay}.");
+            Logger.Info($"{nameof(Message)} | {nameof(SetUseDelay)}\n{nameof(useDelay)}: {useDelay}");
 
             this.useDelay = useDelay;
             Util.InvokeDeferred(UseDelayChanged, UseDelay);
