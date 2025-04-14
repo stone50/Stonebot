@@ -1,6 +1,7 @@
 ﻿namespace Stonebot.Scripts.Command {
     using Bot_Core.Models.EventSub;
     using System.Linq;
+    using System.Text.Json;
     using System.Threading.Tasks;
 
     internal static class CommandHandler {
@@ -25,7 +26,8 @@
         ];
 
         public static async Task<bool?> Handle(ChannelChatMessageEvent messageEvent) {
-            Logger.Info("Handling message event as command.");
+            var logPrefix = $"{nameof(CommandHandler)} | {nameof(Handle)}";
+            Logger.Info($"{logPrefix}\n{nameof(messageEvent)}: {JsonSerializer.Serialize(messageEvent)}");
 
             var commandString = messageEvent.Message.Text.Trim();
             if (!commandString.StartsWith('!')) {
@@ -41,7 +43,7 @@
 
             var useResult = await command.Use(messageEvent);
             if (useResult is null) {
-                Logger.Warning("Could not handle message event as command because command use attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(command.Use)} result is null.");
                 return null;
             }
 
