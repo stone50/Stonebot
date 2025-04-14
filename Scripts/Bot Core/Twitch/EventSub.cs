@@ -11,7 +11,7 @@
         // only up to 1 of status, type, and userId should be specified
         public static async Task<HttpResponseMessage?> GetEventSubs(HttpClient client, string? status = null, string? type = null, string? userId = null, string? after = null) {
             var logPrefix = $"{nameof(TwitchAPI)} | {nameof(GetEventSubs)}";
-            Logger.Info($"{logPrefix}/n{nameof(status)}: {status}/n{nameof(type)}: {type}/n{nameof(userId)}: {userId}/n{nameof(after)}: {after}");
+            Logger.Info($"{logPrefix}\n{nameof(status)}: {status}\n{nameof(type)}: {type}\n{nameof(userId)}: {userId}\n{nameof(after)}: {after}");
 
             var queryParams = "";
             if (status is not null) {
@@ -41,7 +41,7 @@
         // collector access token
         public static async Task<HttpResponseMessage?> DeleteEventSub(HttpClient client, string id) {
             var logPrefix = $"{nameof(TwitchAPI)} | {nameof(DeleteEventSub)}";
-            Logger.Info($"{logPrefix}/n{nameof(id)}: {id}");
+            Logger.Info($"{logPrefix}\n{nameof(id)}: {id}");
 
             try {
                 return await client.DeleteAsync($"https://api.twitch.tv/helix/eventsub/subscriptions?id={id}");
@@ -54,7 +54,7 @@
         // collector access token
         public static async Task<HttpResponseMessage?> AddEventSub<T>(HttpClient client, T content) {
             var logPrefix = $"{nameof(TwitchAPI)} | {nameof(AddEventSub)}";
-            Logger.Info($"{logPrefix}/n{nameof(content)}: {JsonSerializer.Serialize(content)}");
+            Logger.Info($"{logPrefix}\n{nameof(content)}: {JsonSerializer.Serialize(content)}");
 
             try {
                 return await client.PostAsJsonAsync("https://api.twitch.tv/helix/eventsub/subscriptions", content);
@@ -67,7 +67,7 @@
         // collector access token
         public static async Task<HttpResponseMessage?> SubscribeToChannelChatMessage(HttpClient client, string broadcasterUserId, string userId, string sessionId) {
             var logPrefix = $"{nameof(TwitchAPI)} | {nameof(SubscribeToChannelChatMessage)}";
-            Logger.Info($"{logPrefix}/n{nameof(broadcasterUserId)}: {broadcasterUserId}/n{nameof(userId)}: {userId}");
+            Logger.Info($"{logPrefix}\n{nameof(broadcasterUserId)}: {broadcasterUserId}\n{nameof(userId)}: {userId}");
 
             var content = new {
                 type = "channel.chat.message",
