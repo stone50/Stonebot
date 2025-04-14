@@ -51,14 +51,14 @@
         }
 
         public void SetPermissionLevel(PermissionLevel permissionLevel) {
-            Logger.Info($"{nameof(Command)} | {SetPermissionLevel}\n{permissionLevel}: {permissionLevel}");
+            Logger.Info($"{nameof(Command)} | {nameof(SetPermissionLevel)}\n{nameof(permissionLevel)}: {permissionLevel}");
 
             this.permissionLevel = permissionLevel;
             Util.InvokeDeferred(PermissionLevelChanged, PermissionLevel);
         }
 
         public void SetUseDelay(int useDelay) {
-            Logger.Info($"{nameof(Command)} | {SetUseDelay}\n{useDelay}: {useDelay}");
+            Logger.Info($"{nameof(Command)} | {nameof(SetUseDelay)}\n{nameof(useDelay)}: {useDelay}");
 
             this.useDelay = useDelay;
             Util.InvokeDeferred(UseDelayChanged, UseDelay);
