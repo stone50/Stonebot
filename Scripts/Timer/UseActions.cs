@@ -6,11 +6,12 @@
 
     internal static class UseActions {
         public static async Task<bool> Quote() {
-            Logger.Info("Proccing quote action.");
+            var logPrefix = $"{nameof(UseActions)} | {nameof(Quote)}";
+            Logger.Info(logPrefix);
 
             var customData = await AppCache.Data.Get();
             if (customData is null) {
-                Logger.Warning("Could not proc quote action because data get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.Data.Get)} result is null.");
                 return false;
             }
 
@@ -20,13 +21,13 @@
 
             var broadcaster = await AppCache.Broadcaster.Get();
             if (broadcaster is null) {
-                Logger.Warning("Could not proc quote action because broadcaster get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.Broadcaster.Get)} result is null.");
                 return false;
             }
 
             var quoteIndex = new Random().Next(customData.Quotes.Count);
             if (!await Chat.Send($"[{quoteIndex}] \"{customData.Quotes[quoteIndex]}\" -{broadcaster.UserName}")) {
-                Logger.Warning("Could not proc quote action because chat send attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(Chat.Send)} result is false.");
                 return false;
             }
 
