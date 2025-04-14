@@ -19,6 +19,5 @@
 
         [Export]
         private Container CommandsContainer = null!;
-
     }
 }
