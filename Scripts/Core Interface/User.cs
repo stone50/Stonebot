@@ -7,23 +7,24 @@
 
     internal static class User {
         public static async Task<bool?> GetIsMod(string userId) {
-            Logger.Info("Getting is user mod.");
+            var logPrefix = $"{nameof(User)} | {nameof(GetIsMod)}";
+            Logger.Info($"{logPrefix}\n{nameof(userId)}: {userId}");
 
             var broadcaster = await AppCache.Broadcaster.Get();
             if (broadcaster is null) {
-                Logger.Warning("Could not get is user mod because broadcaster get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.Broadcaster.Get)} result is null.");
                 return null;
             }
 
             var clientWrapper = await AppCache.CollectorClientWrapper.Get();
             if (clientWrapper is null) {
-                Logger.Warning("Could not get is user mod because collector client wrapper get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.CollectorClientWrapper.Get)} result is null.");
                 return null;
             }
 
             var client = await clientWrapper.GetClient();
             if (client is null) {
-                Logger.Warning("Could not get is user mod because client wrapper get client attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(clientWrapper.GetClient)} result is null.");
                 return null;
             }
 
@@ -33,7 +34,7 @@
                 [userId]
             ));
             if (simpleUsersData is null) {
-                Logger.Warning("Could not get is user mod because Twitch API get moderators attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(TwitchAPI.GetModerators)} was unsuccessful.");
                 return null;
             }
 
@@ -41,23 +42,24 @@
         }
 
         public static async Task<bool?> GetIsVIP(string userId) {
-            Logger.Info("Getting is user VIP.");
+            var logPrefix = $"{nameof(User)} | {nameof(GetIsVIP)}";
+            Logger.Info($"{logPrefix}\n{nameof(userId)}: {userId}");
 
             var broadcaster = await AppCache.Broadcaster.Get();
             if (broadcaster is null) {
-                Logger.Warning("Could not get is user VIP because broadcaster get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.Broadcaster.Get)} result is null.");
                 return null;
             }
 
             var clientWrapper = await AppCache.CollectorClientWrapper.Get();
             if (clientWrapper is null) {
-                Logger.Warning("Could not get is user VIP because collector client wrapper get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.CollectorClientWrapper.Get)} result is null.");
                 return null;
             }
 
             var client = await clientWrapper.GetClient();
             if (client is null) {
-                Logger.Warning("Could not get is user VIP because client wrapper get client attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(clientWrapper.GetClient)} result is null.");
                 return null;
             }
 
@@ -67,7 +69,7 @@
                 [userId]
             ));
             if (simpleUsersData is null) {
-                Logger.Warning("Could not get is user VIP because Twitch API get VIPs attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(TwitchAPI.GetVIPs)} was unsuccessful.");
                 return null;
             }
 
@@ -75,23 +77,24 @@
         }
 
         public static async Task<int?> GetSubTier(string userId) {
-            Logger.Info("Getting user subscription tier.");
+            var logPrefix = $"{nameof(User)} | {nameof(GetSubTier)}";
+            Logger.Info($"{logPrefix}\n{nameof(userId)}: {userId}");
 
             var broadcaster = await AppCache.Broadcaster.Get();
             if (broadcaster is null) {
-                Logger.Warning("Could not get user subscription tier because broadcaster get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.Broadcaster.Get)} result is null.");
                 return null;
             }
 
             var clientWrapper = await AppCache.CollectorClientWrapper.Get();
             if (clientWrapper is null) {
-                Logger.Warning("Could not get user subscription tier because collector client wrapper get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.CollectorClientWrapper.Get)} result is null.");
                 return null;
             }
 
             var client = await clientWrapper.GetClient();
             if (client is null) {
-                Logger.Warning("Could not get user subscription tier because client wrapper get client attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(clientWrapper.GetClient)} result is null.");
                 return null;
             }
 
@@ -101,7 +104,7 @@
                 [userId]
             ));
             if (potentialSubscriptionsData is null) {
-                Logger.Warning("Could not get user subscription tier because Twitch API get broadcaster subscriptions attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(TwitchAPI.GetBroadcasterSubscriptions)} was unsuccessful.");
                 return null;
             }
 
