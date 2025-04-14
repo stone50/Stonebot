@@ -4,15 +4,17 @@
     using Core_Interface;
     using Message;
     using System;
+    using System.Text.Json;
     using System.Threading.Tasks;
     using Timer;
 
     internal static class UseActions {
         public static async Task<bool> Commands(ChannelChatMessageEvent messageEvent) {
-            Logger.Info("Using commands action.");
+            var logPrefix = $"{nameof(UseActions)} | {nameof(Commands)}";
+            Logger.Info($"{logPrefix}\n{nameof(messageEvent)}: {JsonSerializer.Serialize(messageEvent)}");
 
             if (!await Chat.Send($"{messageEvent.ChatterUserName} https://github.com/stone50/Stone-Bot/wiki/Commands")) {
-                Logger.Warning("Could not use command action because chat send attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(Chat.Send)} result is false.");
                 return false;
             }
 
@@ -20,7 +22,7 @@
         }
 
         public static async Task<bool> EnableCommand(ChannelChatMessageEvent messageEvent) {
-            Logger.Info("Using enable command action.");
+            Logger.Info($"{nameof(UseActions)} | {nameof(EnableCommand)}\n{nameof(messageEvent)}: {JsonSerializer.Serialize(messageEvent)}");
 
             await Task.Yield();
             var messageParams = messageEvent.Message.Text.Split(' ');
@@ -38,7 +40,7 @@
         }
 
         public static async Task<bool> DisableCommand(ChannelChatMessageEvent messageEvent) {
-            Logger.Info("Using disable command action");
+            Logger.Info($"{nameof(UseActions)} | {nameof(DisableCommand)}\n{nameof(messageEvent)}: {JsonSerializer.Serialize(messageEvent)}");
 
             await Task.Yield();
             var messageParams = messageEvent.Message.Text.Split(' ');
@@ -56,7 +58,7 @@
         }
 
         public static async Task<bool> EnableMessage(ChannelChatMessageEvent messageEvent) {
-            Logger.Info("Using enable message action.");
+            Logger.Info($"{nameof(UseActions)} | {nameof(EnableMessage)}\n{nameof(messageEvent)}: {JsonSerializer.Serialize(messageEvent)}");
 
             await Task.Yield();
             var messageParams = messageEvent.Message.Text.Split(' ');
@@ -74,7 +76,7 @@
         }
 
         public static async Task<bool> DisableMessage(ChannelChatMessageEvent messageEvent) {
-            Logger.Info("Using disable message action.");
+            Logger.Info($"{nameof(UseActions)} | {nameof(DisableMessage)}\n{nameof(messageEvent)}: {JsonSerializer.Serialize(messageEvent)}");
 
             await Task.Yield();
             var messageParams = messageEvent.Message.Text.Split(' ');
@@ -92,7 +94,7 @@
         }
 
         public static async Task<bool> EnableTimer(ChannelChatMessageEvent messageEvent) {
-            Logger.Info("Using enable timer action.");
+            Logger.Info($"{nameof(UseActions)} | {nameof(EnableTimer)}\n{nameof(messageEvent)}: {JsonSerializer.Serialize(messageEvent)}");
 
             await Task.Yield();
             var messageParams = messageEvent.Message.Text.Split(' ');
@@ -110,7 +112,7 @@
         }
 
         public static async Task<bool> DisableTimer(ChannelChatMessageEvent messageEvent) {
-            Logger.Info("Using disable timer action.");
+            Logger.Info($"{nameof(UseActions)} | {nameof(DisableTimer)}\n{nameof(messageEvent)}: {JsonSerializer.Serialize(messageEvent)}");
 
             await Task.Yield();
             var messageParams = messageEvent.Message.Text.Split(' ');
@@ -128,17 +130,18 @@
         }
 
         public static async Task<bool> Quote(ChannelChatMessageEvent messageEvent) {
-            Logger.Info("Using quote action.");
+            var logPrefix = $"{nameof(UseActions)} | {nameof(Quote)}";
+            Logger.Info($"{logPrefix}\n{messageEvent}: {JsonSerializer.Serialize(messageEvent)}");
 
             var customData = await AppCache.Data.Get();
             if (customData is null) {
-                Logger.Warning("Could not use quote action because data get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.Data.Get)} result is null.");
                 return false;
             }
 
             var broadcaster = await AppCache.Broadcaster.Get();
             if (broadcaster is null) {
-                Logger.Warning("Could not use quote action because broadcaster get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.Broadcaster.Get)} result is null.");
                 return false;
             }
 
@@ -156,7 +159,7 @@
             }
 
             if (!await Chat.Send($"[{quoteIndex}] \"{customData.Quotes[quoteIndex]}\" -{broadcaster.UserName}")) {
-                Logger.Warning("Could not use quote action because chat send attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(Chat.Send)} result is false.");
                 return false;
             }
 
@@ -164,11 +167,12 @@
         }
 
         public static async Task<bool> AddQuote(ChannelChatMessageEvent messageEvent) {
-            Logger.Info("Using add quote action.");
+            var logPrefix = $"{nameof(UseActions)} | {nameof(AddQuote)}";
+            Logger.Info($"{logPrefix}\n{nameof(messageEvent)}: {JsonSerializer.Serialize(messageEvent)}");
 
             var customData = await AppCache.Data.Get();
             if (customData is null) {
-                Logger.Warning("Could not use add quote action because data get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.Data.Get)} result is null.");
                 return false;
             }
 
@@ -183,11 +187,12 @@
         }
 
         public static async Task<bool> DeleteQuote(ChannelChatMessageEvent messageEvent) {
-            Logger.Info("Using delete quote action.");
+            var logPrefix = $"{nameof(UseActions)} | {nameof(DeleteQuote)}";
+            Logger.Info($"{logPrefix}\n{nameof(messageEvent)}: {JsonSerializer.Serialize(messageEvent)}");
 
             var customData = await AppCache.Data.Get();
             if (customData is null) {
-                Logger.Warning("Could not use delete quote action because data get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.Data.Get)} result is null.");
                 return false;
             }
 
@@ -209,11 +214,12 @@
         }
 
         public static async Task<bool> EditQuote(ChannelChatMessageEvent messageEvent) {
-            Logger.Info("Using edit quote action.");
+            var logPrefix = $"{nameof(UseActions)} | {nameof(EditQuote)}";
+            Logger.Info($"{logPrefix}\n{nameof(messageEvent)}: {JsonSerializer.Serialize(messageEvent)}");
 
             var customData = await AppCache.Data.Get();
             if (customData is null) {
-                Logger.Warning("Could not use edit quote action because data get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.Data.Get)} result is null.");
                 return false;
             }
 
@@ -242,17 +248,18 @@
         }
 
         public static async Task<bool> Feed(ChannelChatMessageEvent messageEvent) {
-            Logger.Info("Using feed action.");
+            var logPrefix = $"{nameof(UseActions)} | {nameof(Feed)}";
+            Logger.Info($"{logPrefix}\n{nameof(messageEvent)}: {JsonSerializer.Serialize(messageEvent)}");
 
             var customData = await AppCache.Data.Get();
             if (customData is null) {
-                Logger.Warning("Could not use feed action because data get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.Data.Get)} result is null.");
                 return false;
             }
 
             var feedCommand = CommandHandler.GetCommand("feed");
             if (feedCommand is null) {
-                Logger.Warning("Could not use feed action because command handler get command attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(CommandHandler.GetCommand)} result is null.");
                 return false;
             }
 
@@ -260,7 +267,7 @@
             if (new Random().Next(Math.Min((int)(secondsSinceLastUse * 2d), 100)) == 0) {
                 customData.FeedCount = 0;
                 if (!await Chat.Send($"popCat BARF2 BARF3 {messageEvent.ChatterUserName}, you fed the cat too many crayons!")) {
-                    Logger.Warning("Could not use feed action because chat send attempt failed.");
+                    Logger.Warning($"{logPrefix} | {nameof(Chat.Send)} result is false.");
                     return false;
                 }
 
@@ -274,7 +281,7 @@
             }
 
             if (!await Chat.Send($"popCat Crayon The cat has been fed {customData.FeedCount} time{(customData.FeedCount > 1 ? "s" : "")} in a row.")) {
-                Logger.Warning("Could not use feed action because chat send attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(Chat.Send)} result is false.");
                 return false;
             }
 
@@ -282,16 +289,17 @@
         }
 
         public static async Task<bool> FeedRecord(ChannelChatMessageEvent __) {
-            Logger.Info("Using feed record action.");
+            var logPrefix = $"{nameof(UseActions)} | {nameof(Feed)}";
+            Logger.Info(logPrefix);
 
             var customData = await AppCache.Data.Get();
             if (customData is null) {
-                Logger.Warning("Could not use feed record action because data get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.Data.Get)} result is null.");
                 return false;
             }
 
             if (!await Chat.Send($"The record is {customData.FeedRecord}, last fed by {customData.FeedRecordHolder}.")) {
-                Logger.Warning("Could not use feed record action because chat send attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(Chat.Send)} result is false.");
                 return false;
             }
 
@@ -299,11 +307,12 @@
         }
 
         public static async Task<bool> Hug(ChannelChatMessageEvent messageEvent) {
-            Logger.Info("Using hug action.");
+            var logPrefix = $"{nameof(UseActions)} | {nameof(Hug)}";
+            Logger.Info($"{logPrefix}\n{nameof(messageEvent)}: {JsonSerializer.Serialize(messageEvent)}");
 
             if (new Random().Next(10) == 0) {
                 if (!await Chat.Send($"pedroJAM {messageEvent.ChatterUserName} pedroJAM")) {
-                    Logger.Warning("Could not use hug action because chat send attempt failed.");
+                    Logger.Warning($"{logPrefix} | {nameof(Chat.Send)} result is false.");
                     return false;
                 }
 
@@ -311,7 +320,7 @@
             }
 
             if (!await Chat.Send($"catKISS {messageEvent.ChatterUserName} catKISS")) {
-                Logger.Warning("Could not use hug action because chat send attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(Chat.Send)} result is false.");
                 return false;
             }
 
@@ -319,10 +328,11 @@
         }
 
         public static async Task<bool> Lurk(ChannelChatMessageEvent messageEvent) {
-            Logger.Info("Using lurk action.");
+            var logPrefix = $"{nameof(UseActions)} | {nameof(Lurk)}";
+            Logger.Info($"{logPrefix}\n{nameof(messageEvent)}: {JsonSerializer.Serialize(messageEvent)}");
 
             if (!await Chat.Send($"{messageEvent.ChatterUserName}, thank you for your presence!")) {
-                Logger.Warning("Could not use lurk action because chat send attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(Chat.Send)} result is false.");
                 return false;
             }
 
@@ -330,16 +340,17 @@
         }
 
         public static async Task<bool> Discord(ChannelChatMessageEvent messageEvent) {
-            Logger.Info("Using discord action.");
+            var logPrefix = $"{nameof(UseActions)} | {nameof(Discord)}";
+            Logger.Info($"{logPrefix}\n{nameof(messageEvent)}: {JsonSerializer.Serialize(messageEvent)}");
 
             var customData = await AppCache.Data.Get();
             if (customData is null) {
-                Logger.Warning("Could not use discord action because data get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.Data.Get)} result is null.");
                 return false;
             }
 
             if (!await Chat.Send($"{messageEvent.ChatterUserName} {customData.DiscordInvite}")) {
-                Logger.Warning("Could not use discord action because chat send attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(Chat.Send)} result is false.");
                 return false;
             }
 
@@ -347,16 +358,17 @@
         }
 
         public static async Task<bool> YouTube(ChannelChatMessageEvent messageEvent) {
-            Logger.Info("Using youtube action.");
+            var logPrefix = $"{nameof(UseActions)} | {nameof(YouTube)}";
+            Logger.Info($"{logPrefix}\n{nameof(messageEvent)}: {JsonSerializer.Serialize(messageEvent)}");
 
             var customData = await AppCache.Data.Get();
             if (customData is null) {
-                Logger.Warning("Could not use youtube action because data get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.Data.Get)} result is null.");
                 return false;
             }
 
             if (!await Chat.Send($"{messageEvent.ChatterUserName} {customData.YouTubeLink}")) {
-                Logger.Warning("Could not use youtube action because chat send attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(Chat.Send)} result is false.");
                 return false;
             }
 
