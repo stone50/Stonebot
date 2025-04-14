@@ -2,6 +2,7 @@
     using System;
     using System.Net.Http;
     using System.Net.Http.Json;
+    using System.Text.Json;
     using System.Threading.Tasks;
     using HttpClient = System.Net.Http.HttpClient;
 
@@ -9,7 +10,8 @@
         // collector access token
         // only up to 1 of status, type, and userId should be specified
         public static async Task<HttpResponseMessage?> GetEventSubs(HttpClient client, string? status = null, string? type = null, string? userId = null, string? after = null) {
-            Logger.Info("Getting event subs from Twitch.");
+            var logPrefix = $"{nameof(TwitchAPI)} | {nameof(GetEventSubs)}";
+            Logger.Info($"{logPrefix}/n{nameof(status)}: {status}/n{nameof(type)}: {type}/n{nameof(userId)}: {userId}/n{nameof(after)}: {after}");
 
             var queryParams = "";
             if (status is not null) {
@@ -31,38 +33,41 @@
             try {
                 return await client.GetAsync($"https://api.twitch.tv/helix/eventsub/subscriptions?{queryParams}");
             } catch (Exception e) {
-                Logger.Warning($"Could not get event subs from Twitch because client get attempt failed: {e}. Query params: {queryParams}.");
+                Logger.Warning($"{logPrefix} | {nameof(client.GetAsync)} threw: {e}.");
                 return null;
             }
         }
 
         // collector access token
         public static async Task<HttpResponseMessage?> DeleteEventSub(HttpClient client, string id) {
-            Logger.Info($"Deleting event sub from Twitch. Id: {id}.");
+            var logPrefix = $"{nameof(TwitchAPI)} | {nameof(DeleteEventSub)}";
+            Logger.Info($"{logPrefix}/n{nameof(id)}: {id}");
 
             try {
                 return await client.DeleteAsync($"https://api.twitch.tv/helix/eventsub/subscriptions?id={id}");
             } catch (Exception e) {
-                Logger.Warning($"Could not delete event sub from Twitch because client delete attempt failed: {e}. Id: {id}.");
+                Logger.Warning($"{logPrefix} | {nameof(client.DeleteAsync)} threw: {e}.");
                 return null;
             }
         }
 
         // collector access token
         public static async Task<HttpResponseMessage?> AddEventSub<T>(HttpClient client, T content) {
-            Logger.Info("Adding event sub to Twitch.");
+            var logPrefix = $"{nameof(TwitchAPI)} | {nameof(AddEventSub)}";
+            Logger.Info($"{logPrefix}/n{nameof(content)}: {JsonSerializer.Serialize(content)}");
 
             try {
                 return await client.PostAsJsonAsync("https://api.twitch.tv/helix/eventsub/subscriptions", content);
             } catch (Exception e) {
-                Logger.Warning($"Could not add event sub to Twitch because client post as json attempt failed: {e}.");
+                Logger.Warning($"{logPrefix} | PostAsJsonAsync threw: {e}.");
                 return null;
             }
         }
 
         // collector access token
         public static async Task<HttpResponseMessage?> SubscribeToChannelChatMessage(HttpClient client, string broadcasterUserId, string userId, string sessionId) {
-            Logger.Info("Subscribing to channel chat message event sub on Twitch.");
+            var logPrefix = $"{nameof(TwitchAPI)} | {nameof(SubscribeToChannelChatMessage)}";
+            Logger.Info($"{logPrefix}/n{nameof(broadcasterUserId)}: {broadcasterUserId}/n{nameof(userId)}: {userId}");
 
             var content = new {
                 type = "channel.chat.message",
@@ -78,7 +83,7 @@
             };
             var response = await AddEventSub(client, content);
             if (response is null) {
-                Logger.Warning("Could not subscribe to channel chat message event sub on Twitch because add event sub attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AddEventSub)} result is null.");
                 return null;
             }
 
