@@ -1,24 +1,26 @@
 ﻿namespace Stonebot.Scripts.Bot_Core {
     using System;
+    using System.IO;
     using System.Net.Http;
     using System.Text.Json;
     using System.Threading.Tasks;
 
     internal static class Util {
         public static async Task<T?> GetMessageAs<T>(HttpResponseMessage? message) where T : struct {
-            Logger.Info($"Getting http response message as {typeof(T).FullName}.");
+            var logPrefix = $"{nameof(Util)} | {nameof(GetMessageAs)}";
+            Logger.Info(logPrefix);
 
-            var successfulString = await GetSuccessfulString(message);
-            if (successfulString is null) {
-                Logger.Warning($"Could not get http response message as {typeof(T).FullName} because get successful string attempt failed.");
+            var stream = await GetStream(message);
+            if (stream is null) {
+                Logger.Warning($"{logPrefix} | {nameof(GetStream)} result is null.");
                 return null;
             }
 
             T messageAsT;
             try {
-                messageAsT = JsonSerializer.Deserialize<T>(successfulString);
+                messageAsT = await JsonSerializer.DeserializeAsync<T>(stream);
             } catch (Exception e) {
-                Logger.Warning($"Could not get http message as {typeof(T).FullName} because json serializer deserialize attempt failed: {e}. Successful string: {successfulString}.");
+                Logger.Warning($"{logPrefix} | {nameof(JsonSerializer.DeserializeAsync)} threw: {e}");
                 return null;
             }
 
@@ -26,30 +28,28 @@
         }
         public static async Task<T?> GetMessageAs<T>(Task<HttpResponseMessage?> messageTask) where T : struct => await GetMessageAs<T>(await messageTask);
 
-        public static async Task<string?> GetSuccessfulString(HttpResponseMessage? message) {
-            Logger.Info("Getting successful string from http response message.");
+        public static async Task<Stream?> GetStream(HttpResponseMessage? message) {
+            var logPrefix = $"{nameof(Util)} | {nameof(GetStream)}";
+            Logger.Info(logPrefix);
 
             if (message is null) {
-                Logger.Warning("Could not get successful string from http response message because message is null.");
+                Logger.Warning($"{logPrefix} | {nameof(message)} is null.");
                 return null;
             }
 
             if (!message.IsSuccessStatusCode) {
-                Logger.Warning($"Could not get successful string from http response message because message is success status code is false.");
+                Logger.Warning($"{logPrefix} | {nameof(message.IsSuccessStatusCode)} is false.");
                 return null;
             }
 
-            string successfulString;
             try {
-                successfulString = await message.Content.ReadAsStringAsync();
+                return await message.Content.ReadAsStreamAsync();
             } catch (Exception e) {
-                Logger.Warning($"Could not get successful string from http response message because message content read as string attempt failed: {e}.");
+                Logger.Warning($"{logPrefix} | {nameof(message.Content.ReadAsStreamAsync)} threw: {e}.");
                 return null;
             }
-
-            return successfulString;
         }
-        public static async Task<string?> GetSuccessfulString(Task<HttpResponseMessage?> messageTask) => await GetSuccessfulString(await messageTask);
+        public static async Task<Stream?> GetStream(Task<HttpResponseMessage?> messageTask) => await GetStream(await messageTask);
 
         public static bool GetIsSuccess(HttpResponseMessage? message) => message is not null && message.IsSuccessStatusCode;
         public static async Task<bool> GetIsSuccess(Task<HttpResponseMessage?> messageTask) => GetIsSuccess(await messageTask);
