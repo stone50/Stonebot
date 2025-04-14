@@ -1,6 +1,7 @@
 ﻿namespace Stonebot.Scripts.Message {
     using Bot_Core.Models.EventSub;
     using System.Linq;
+    using System.Text.Json;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
 
@@ -15,12 +16,13 @@
         ];
 
         public static async Task<bool?> Handle(ChannelChatMessageEvent messageEvent) {
-            Logger.Info("Handling message event as message.");
+            var logPrefix = $"{nameof(MessageHandler)} | {nameof(Handle)}";
+            Logger.Info($"{logPrefix}\n{nameof(messageEvent)}: {JsonSerializer.Serialize(messageEvent)}");
 
             foreach (var message in Messages) {
                 var isMessageUsed = await message.Use(messageEvent);
                 if (isMessageUsed is null) {
-                    Logger.Warning("Could not handle message event as message because message use attempt failed.");
+                    Logger.Warning($"{logPrefix} | {nameof(message.Use)} result is null.");
                     return null;
                 }
 
