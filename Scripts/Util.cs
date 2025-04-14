@@ -11,6 +11,5 @@ namespace Stonebot.Scripts {
         public static string GetMasked(string? value) => value is null ? "null" : value.Length <= 4 ? "xxxx" : $"...{value[^4..]}";
 
         public static string GetMaskedPath(string path) => path.Replace(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile).Replace('\\', '/'), "~");
-
     }
 }

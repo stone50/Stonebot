@@ -1,4 +1,5 @@
 ﻿namespace Stonebot.Scripts.UI {
+    using Core_Interface;
     using Godot;
     using Message;
     using System;
@@ -11,7 +12,7 @@
             MainButton.Pressed += OnMainButtonPressed;
 
             PermissionLevelMenuButton.Text = Message.PermissionLevel.ToString();
-            foreach (var permissionLevel in Enum.GetValues<PermissionLevel>()) {
+            foreach (var permissionLevel in Enum.GetValues<User.PermissionLevel>()) {
                 PermissionLevelMenuButton.GetPopup().AddItem(permissionLevel.ToString(), (int)permissionLevel);
             }
 
@@ -59,11 +60,11 @@
 
         private void OnPermissionLevelMenuButtonToggled(bool toggledOn) => PermissionLevelMenuButton.Icon = toggledOn ? Resources.DropDownOpenIcon : Resources.DropDownClosedIcon;
 
-        private void OnPermissionLevelMenuButtonPopupIdPressed(long id) => Message.PermissionLevel = (PermissionLevel)id;
+        private void OnPermissionLevelMenuButtonPopupIdPressed(long id) => Message.PermissionLevel = (User.PermissionLevel)id;
 
         private void OnUseDelaySpinBoxValueChanged(double value) => Message.UseDelay = (int)value;
 
-        private void OnPermissionLevelChanged(object? _, PermissionLevel permissionLevel) => Util.CallDeferred(() => PermissionLevelMenuButton.Text = permissionLevel.ToString());
+        private void OnPermissionLevelChanged(object? _, User.PermissionLevel permissionLevel) => Util.CallDeferred(() => PermissionLevelMenuButton.Text = permissionLevel.ToString());
 
         private void OnUseDelayChanged(object? _, int useDelay) => Util.CallDeferred(() => UseDelaySpinBox.Value = useDelay);
 

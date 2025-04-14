@@ -1,5 +1,6 @@
 ﻿namespace Stonebot.Scripts.Command {
     using Bot_Core.Models.EventSub;
+    using Core_Interface;
     using System.Linq;
     using System.Text.Json;
     using System.Threading.Tasks;
@@ -7,16 +8,16 @@
     internal static class CommandHandler {
         public static Command[] Commands = [
             new TogglableCommand("commands", UseActions.Commands),
-            new("enablecommand", UseActions.EnableCommand) { PermissionLevel = PermissionLevel.Mod },
-            new("disablecommand", UseActions.DisableCommand) { PermissionLevel = PermissionLevel.Mod },
-            new("enablemessage", UseActions.EnableMessage) { PermissionLevel = PermissionLevel.Mod },
-            new("disablemessage", UseActions.DisableMessage) { PermissionLevel = PermissionLevel.Mod },
-            new("enabletimer", UseActions.EnableTimer) { PermissionLevel = PermissionLevel.Mod },
-            new("disabletimer", UseActions.DisableTimer) { PermissionLevel = PermissionLevel.Mod },
+            new("enablecommand", UseActions.EnableCommand) { PermissionLevel = User.PermissionLevel.Mod },
+            new("disablecommand", UseActions.DisableCommand) { PermissionLevel = User.PermissionLevel.Mod },
+            new("enablemessage", UseActions.EnableMessage) { PermissionLevel = User.PermissionLevel.Mod },
+            new("disablemessage", UseActions.DisableMessage) { PermissionLevel = User.PermissionLevel.Mod },
+            new("enabletimer", UseActions.EnableTimer) { PermissionLevel = User.PermissionLevel.Mod },
+            new("disabletimer", UseActions.DisableTimer) { PermissionLevel = User.PermissionLevel.Mod },
             new TogglableCommand("quote", UseActions.Quote),
-            new TogglableCommand("addquote", UseActions.AddQuote) { PermissionLevel = PermissionLevel.Mod } ,
-            new TogglableCommand("deletequote", UseActions.DeleteQuote) { PermissionLevel = PermissionLevel.Mod },
-            new TogglableCommand("editquote", UseActions.EditQuote) { PermissionLevel = PermissionLevel.Mod } ,
+            new TogglableCommand("addquote", UseActions.AddQuote) { PermissionLevel = User.PermissionLevel.Mod } ,
+            new TogglableCommand("deletequote", UseActions.DeleteQuote) { PermissionLevel = User.PermissionLevel.Mod },
+            new TogglableCommand("editquote", UseActions.EditQuote) { PermissionLevel = User.PermissionLevel.Mod } ,
             new TogglableCommand("feed", UseActions.Feed),
             new TogglableCommand("feedrecord", UseActions.FeedRecord),
             new TogglableCommand("hug", UseActions.Hug),

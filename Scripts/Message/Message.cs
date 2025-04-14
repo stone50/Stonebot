@@ -1,19 +1,20 @@
 ﻿namespace Stonebot.Scripts.Message {
     using Bot_Core.Models.EventSub;
+    using Core_Interface;
     using System;
     using System.Text.Json;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
 
     internal class Message {
-        public event EventHandler<PermissionLevel> PermissionLevelChanged = delegate { };
+        public event EventHandler<User.PermissionLevel> PermissionLevelChanged = delegate { };
         public event EventHandler<int> UseDelayChanged = delegate { };
         public event EventHandler<bool> IsEnabledChanged = delegate { };
 
         public string Keyword { get; private set; }
         public Regex Regex;
         public bool IsEnabled { get => isEnabled; set => SetIsEnabled(value); }
-        public PermissionLevel PermissionLevel { get => permissionLevel; set => SetPermissionLevel(value); }
+        public User.PermissionLevel PermissionLevel { get => permissionLevel; set => SetPermissionLevel(value); }
         public int UseDelay { get => useDelay; set => SetUseDelay(value); }
         public DateTime LastUsed { get; private set; }
         public Func<ChannelChatMessageEvent, Task<bool>> UseAction;
@@ -45,9 +46,9 @@
                 return false;
             }
 
-            var userPermissionLevel = await Permission.GetHighest(messageEvent.ChatterUserId);
+            var userPermissionLevel = await User.GetHighestPermissionLevel(messageEvent.ChatterUserId);
             if (userPermissionLevel is null) {
-                Logger.Warning($"{logPrefix} | {nameof(Permission.GetHighest)} result is null.");
+                Logger.Warning($"{logPrefix} | {nameof(User.GetHighestPermissionLevel)} result is null.");
                 return null;
             }
 
@@ -71,7 +72,7 @@
             Util.InvokeDeferred(IsEnabledChanged, IsEnabled);
         }
 
-        public void SetPermissionLevel(PermissionLevel permissionLevel) {
+        public void SetPermissionLevel(User.PermissionLevel permissionLevel) {
             Logger.Info($"{nameof(Message)} | {nameof(SetPermissionLevel)}\n{nameof(permissionLevel)}: {permissionLevel}");
 
             this.permissionLevel = permissionLevel;
@@ -86,7 +87,7 @@
         }
 
         private bool isEnabled = true;
-        private PermissionLevel permissionLevel = PermissionLevel.Viewer;
+        private User.PermissionLevel permissionLevel = User.PermissionLevel.Viewer;
         public int useDelay = 1000;
     }
 }
