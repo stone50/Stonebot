@@ -6,40 +6,41 @@
 
     internal static class Chat {
         public static async Task<bool> Send(string message, string? replyParentMessageId = null) {
-            Logger.Info("Sending a chat message.");
+            var logPrefix = $"{nameof(Chat)} | {nameof(Send)}";
+            Logger.Info($"{logPrefix}\n{nameof(message)}: {message}\n{nameof(replyParentMessageId)}: {replyParentMessageId}");
 
             var config = await AppCache.Config.Get();
             if (config is null) {
-                Logger.Warning("Could not send chat message because config get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.Config.Get)} result is null.");
                 return false;
             }
 
             var broadcaster = await AppCache.Broadcaster.Get();
             if (broadcaster is null) {
-                Logger.Warning("Could not send chat message because broadcaster get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.Broadcaster.Get)} result is null.");
                 return false;
             }
 
             var bot = await AppCache.Bot.Get();
             if (bot is null) {
-                Logger.Warning("Could not send chat message because bot get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.Bot.Get)} result is null.");
                 return false;
             }
 
             var clientWrapper = await AppCache.ChatterClientWrapper.Get();
             if (clientWrapper is null) {
-                Logger.Warning("Could not send chat message because chatter client wrapper get attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(AppCache.ChatterClientWrapper.Get)} result is null.");
                 return false;
             }
 
             var client = await clientWrapper.GetClient();
             if (client is null) {
-                Logger.Warning("Could not send chat message because client wrapper get client attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(clientWrapper.GetClient)} result is null.");
                 return false;
             }
 
             if (!await Util.GetIsSuccess(TwitchAPI.SendChatMessage(client, broadcaster.Id, bot.Id, message, replyParentMessageId))) {
-                Logger.Warning("Could not send chat message because Twitch API send chat message attempt failed.");
+                Logger.Warning($"{logPrefix} | {nameof(TwitchAPI.SendChatMessage)} was unsuccessful.");
                 return false;
             }
 
