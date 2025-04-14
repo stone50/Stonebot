@@ -25,7 +25,7 @@
             try {
                 server = new(localhost, config.AuthorizationPort);
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(TcpListener)} Constructor threw: {e}.\n{nameof(localhost)}: {localhost}\n{nameof(config.AuthorizationPort)}: {config.AuthorizationPort}");
+                Logger.Warning($"{logPrefix} | {nameof(TcpListener)} Constructor threw: {e}.");
                 return null;
             }
 
@@ -78,7 +78,7 @@
 
         private static async Task<string?> GetCode(TcpListener server, string state) {
             var logPrefix = $"{nameof(AuthorizationCode)} | {nameof(GetCode)}";
-            Logger.Info($"{logPrefix}\n{nameof(state)}: {state}");
+            Logger.Info($"{logPrefix}\n{nameof(state)}: {Scripts.Util.GetMasked(state)}");
 
             TcpClient client;
             try {
@@ -136,7 +136,7 @@
             try {
                 numBytesRead = await stream.ReadAsync(buffer);
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(stream.ReadAsync)} threw: {e}.\n{nameof(buffer)}: {JsonSerializer.Serialize(buffer)}");
+                Logger.Warning($"{logPrefix} | {nameof(stream.ReadAsync)} threw: {e}.");
                 return null;
             }
 
@@ -145,28 +145,27 @@
             try {
                 message = Encoding.Default.GetString(buffer, index, numBytesRead);
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(Encoding.Default.GetString)} threw: {e}.\n{nameof(buffer)}: {JsonSerializer.Serialize(buffer)}\n{nameof(index)}: {index}\n{nameof(numBytesRead)}: {numBytesRead}");
+                Logger.Warning($"{logPrefix} | {nameof(Encoding.Default.GetString)} threw: {e}.\n{nameof(index)}: {index}\n{nameof(numBytesRead)}: {numBytesRead}");
                 return null;
             }
 
-            var spaceChar = ' ';
-            var indexOfFirstSpace = message.IndexOf(spaceChar);
+            var indexOfFirstSpace = message.IndexOf(' ');
             if (indexOfFirstSpace == -1) {
-                Logger.Warning($"{logPrefix} | {nameof(message.IndexOf)} result is -1.\n{nameof(message)}: {message}\n{nameof(spaceChar)}: {spaceChar}");
+                Logger.Warning($"{logPrefix} | {nameof(message.IndexOf)} result is -1.\n{nameof(message)}: {message}");
                 return null;
             }
 
             var startIndex = indexOfFirstSpace + 1;
             int indexOfSecondSpace;
             try {
-                indexOfSecondSpace = message.IndexOf(spaceChar, startIndex);
+                indexOfSecondSpace = message.IndexOf(' ', startIndex);
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(message.IndexOf)} threw: {e}.\n{nameof(message)}: {message}\n{nameof(spaceChar)}: {spaceChar}\n{nameof(startIndex)}: {startIndex}");
+                Logger.Warning($"{logPrefix} | {nameof(message.IndexOf)} threw: {e}.\n{nameof(message)}: {message}\n{nameof(startIndex)}: {startIndex}");
                 return null;
             }
 
             if (indexOfSecondSpace == -1) {
-                Logger.Warning($"{logPrefix} | {nameof(message.IndexOf)} result is -1.\n{nameof(message)}: {message}\n{nameof(spaceChar)}: {spaceChar}\n{nameof(startIndex)}: {startIndex}");
+                Logger.Warning($"{logPrefix} | {nameof(message.IndexOf)} result is -1.\n{nameof(message)}: {message}\n{nameof(startIndex)}: {startIndex}");
                 return null;
             }
 
@@ -183,7 +182,7 @@
         }
 
         private static bool GetIsStateValid(string url, string state) {
-            Logger.Info($"{nameof(AuthorizationCode)} | {nameof(GetIsStateValid)}\n{nameof(url)}: {url}\n{nameof(state)}: {state}");
+            Logger.Info($"{nameof(AuthorizationCode)} | {nameof(GetIsStateValid)}\n{nameof(state)}: {Scripts.Util.GetMasked(state)}");
 
             var match = StateRegex().Match(url);
             return match.Success && match.Groups.Count == 2 && match.Groups[1].Value == state;
@@ -191,7 +190,7 @@
 
         private static string? GetCodeFromUrl(string url) {
             var logPrefix = $"{nameof(AuthorizationCode)} | {nameof(GetCodeFromUrl)}";
-            Logger.Info($"{logPrefix}\n{nameof(url)}: {url}");
+            Logger.Info(logPrefix);
 
             var codeRegex = CodeRegex();
             var match = codeRegex.Match(url);
@@ -212,11 +211,10 @@
             var logPrefix = $"{nameof(AuthorizationCode)} | {nameof(SendBadRequest)}";
             Logger.Info(logPrefix);
 
-            var buffer = Encoding.Default.GetBytes("HTTP/1.1 400 Bad Request\r\n\r\n<html><head><title>Authorization Failed</title></head><body><h1>:(</h1><p>Please check the logs to see why authorization failed.</p></body></html>");
             try {
-                await stream.WriteAsync(buffer);
+                await stream.WriteAsync(Encoding.Default.GetBytes("HTTP/1.1 400 Bad Request\r\n\r\n<html><head><title>Authorization Failed</title></head><body><h1>:(</h1><p>Please check the logs to see why authorization failed.</p></body></html>"));
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(stream.WriteAsync)} threw: {e}.\n{nameof(buffer)}: {JsonSerializer.Serialize(buffer)}");
+                Logger.Warning($"{logPrefix} | {nameof(stream.WriteAsync)} threw: {e}.");
                 return false;
             }
 
@@ -227,11 +225,10 @@
             var logPrefix = $"{nameof(AuthorizationCode)} | {nameof(SendOkRequest)}";
             Logger.Info(logPrefix);
 
-            var buffer = Encoding.Default.GetBytes("HTTP/1.1 200 OK\r\n\r\n<html><head><title>Authorization Succeeded</title></head><body><h1>Authorization Success! :)</h1><p>You can close this tab.</p></body></html>");
             try {
-                await stream.WriteAsync(buffer);
+                await stream.WriteAsync(Encoding.Default.GetBytes("HTTP/1.1 200 OK\r\n\r\n<html><head><title>Authorization Succeeded</title></head><body><h1>Authorization Success! :)</h1><p>You can close this tab.</p></body></html>"));
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(stream.WriteAsync)} threw: {e}.\n{nameof(buffer)}: {JsonSerializer.Serialize(buffer)}");
+                Logger.Warning($"{logPrefix} | {nameof(stream.WriteAsync)} threw: {e}.");
                 return false;
             }
 

@@ -100,7 +100,7 @@
 
         private async Task<bool> ConnectTo(string uri) {
             var logPrefix = $"{nameof(WebSocketClient)} | {nameof(ConnectTo)}";
-            Logger.Info($"{logPrefix}\n{nameof(uri)}: {uri}");
+            Logger.Info(logPrefix);
 
             if (socket.State != WebSocketState.None) {
                 Logger.Warning($"{logPrefix} | {nameof(socket.State)} is not {WebSocketState.None}");
@@ -126,7 +126,7 @@
             try {
                 await socket.ConnectAsync(socketUri, connectCancellationTokenSource.Token);
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(socket.ConnectAsync)} threw: {e}.\n{nameof(socketUri)}: {socketUri}");
+                Logger.Warning($"{logPrefix} | {nameof(socket.ConnectAsync)} threw: {e}.");
                 return false;
             }
 
@@ -275,7 +275,7 @@
             try {
                 result = await socket.ReceiveAsync(buffer, cancellationToken);
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(socket.ReceiveAsync)} threw: {e}.\n{nameof(buffer)}: {JsonSerializer.Serialize(buffer)}");
+                Logger.Warning($"{logPrefix} | {nameof(socket.ReceiveAsync)} threw: {e}.");
                 return null;
             }
 
@@ -288,7 +288,7 @@
             try {
                 message = Encoding.Default.GetString(buffer, index, result.Count);
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(Encoding.Default.GetString)} threw: {e}.\n{nameof(buffer)}: {JsonSerializer.Serialize(buffer)}\n{nameof(index)}: {index}\n{nameof(result.Count)}: {result.Count}");
+                Logger.Warning($"{logPrefix} | {nameof(Encoding.Default.GetString)} threw: {e}.\n{nameof(index)}: {index}\n{nameof(result.Count)}: {result.Count}");
                 return null;
             }
 

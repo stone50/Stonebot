@@ -15,7 +15,7 @@
         public bool IsAboutToExpire => DateTime.Now.AddMilliseconds(ExpirationBuffer) >= ExpirationDate;
 
         public string MaskedSerialized => JsonSerializer.Serialize(new {
-            ClientId,
+            ClientId = Scripts.Util.GetMasked(ClientId),
             ClientSecret = Scripts.Util.GetMasked(ClientSecret),
             RefreshToken = Scripts.Util.GetMasked(RefreshToken),
             ExpirationDate,
@@ -112,7 +112,7 @@
 
         private AccessToken(string clientId, string clientSecret, AccessTokenData data, int expirationBuffer) {
             var logPrefix = $"{nameof(AccessToken)} | Constructor";
-            Logger.Info($"{logPrefix}\n{nameof(clientId)}: {clientId}\n{nameof(clientSecret)}: {Scripts.Util.GetMasked(clientSecret)}\n{nameof(data)}: {data.MaskedSerialized}\n{nameof(expirationBuffer)}: {expirationBuffer}");
+            Logger.Info($"{logPrefix}\n{nameof(clientId)}: {Scripts.Util.GetMasked(clientId)}\n{nameof(clientSecret)}: {Scripts.Util.GetMasked(clientSecret)}\n{nameof(data)}: {data.MaskedSerialized}\n{nameof(expirationBuffer)}: {expirationBuffer}");
 
             if (expirationBuffer < 0) {
                 Logger.Error($"{logPrefix} | {nameof(expirationBuffer)} is < 0.");
@@ -129,7 +129,7 @@
 
         private static async Task<AccessToken?> Create(string clientId, string clientSecret, string? storedRefreshToken, string[] scope, int expirationBuffer) {
             var logPrefix = $"{nameof(AccessToken)} | {nameof(Create)}";
-            Logger.Info($"{logPrefix}\n{nameof(clientId)}: {clientId}\n{nameof(clientSecret)}: {Scripts.Util.GetMasked(clientSecret)}\n{nameof(storedRefreshToken)}: {Scripts.Util.GetMasked(storedRefreshToken)}\n{nameof(scope)}: {JsonSerializer.Serialize(scope)}\n{nameof(expirationBuffer)}: {expirationBuffer}");
+            Logger.Info($"{logPrefix}\n{nameof(clientId)}: {Scripts.Util.GetMasked(clientId)}\n{nameof(clientSecret)}: {Scripts.Util.GetMasked(clientSecret)}\n{nameof(storedRefreshToken)}: {Scripts.Util.GetMasked(storedRefreshToken)}\n{nameof(scope)}: {JsonSerializer.Serialize(scope)}\n{nameof(expirationBuffer)}: {expirationBuffer}");
 
             if (storedRefreshToken is not null) {
                 var potentialRefreshData = await RequestRefresh(clientId, clientSecret, storedRefreshToken);
@@ -183,7 +183,7 @@
 
         private static async Task<AccessTokenData?> RequestRefresh(string clientId, string clientSecret, string refreshToken) {
             var logPrefix = $"{nameof(AccessToken)} | {nameof(RequestRefresh)}";
-            Logger.Info($"{logPrefix}\n{nameof(clientId)}: {clientId}\n{nameof(clientSecret)}: {Scripts.Util.GetMasked(clientSecret)}\n{nameof(refreshToken)}: {Scripts.Util.GetMasked(refreshToken)}");
+            Logger.Info($"{logPrefix}\n{nameof(clientId)}: {Scripts.Util.GetMasked(clientId)}\n{nameof(clientSecret)}: {Scripts.Util.GetMasked(clientSecret)}\n{nameof(refreshToken)}: {Scripts.Util.GetMasked(refreshToken)}");
 
             var accessTokenData = await Util.GetMessageAs<AccessTokenData>(TwitchAPI.RefreshAccessToken(
                 new(),

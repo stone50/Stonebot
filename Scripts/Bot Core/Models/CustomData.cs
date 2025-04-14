@@ -1,4 +1,5 @@
 ﻿namespace Stonebot.Scripts.Bot_Core.Models {
+    using System.Text.Json;
     using System.Text.Json.Serialization;
 
     internal struct CustomDataData {
@@ -14,5 +15,14 @@
         public string DiscordInvite { get; set; }
         [JsonPropertyName("youTubeLink")]
         public string YouTubeLink { get; set; }
+
+        public readonly string MaskedSerialized => JsonSerializer.Serialize(new {
+            Quotes,
+            FeedCount,
+            FeedRecord,
+            FeedRecordHolder,
+            DiscordInvite,
+            YouTubeLink
+        });
     }
 }

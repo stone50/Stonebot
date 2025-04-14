@@ -26,11 +26,11 @@
         public int TokenExpirationBuffer { get; set; }
 
         public readonly string MaskedSerialized => JsonSerializer.Serialize(new {
-            AuthorizationPort,
-            ChatterClientId,
+            AuthorizationPort = Util.GetMasked(AuthorizationPort.ToString()),
+            ChatterClientId = Util.GetMasked(ChatterClientId),
             ChatterClientSecret = Util.GetMasked(ChatterClientSecret),
             ChatterScope,
-            CollectorClientId,
+            CollectorClientId = Util.GetMasked(CollectorClientId),
             CollectorClientSecret = Util.GetMasked(CollectorClientSecret),
             CollectorScope,
             SocketKeepaliveBuffer,

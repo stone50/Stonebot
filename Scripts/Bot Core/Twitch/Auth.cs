@@ -9,7 +9,7 @@
     internal static partial class TwitchAPI {
         public static Process? Authorize(string clientId, string redirectUri, string[] scope, bool forceVerify = false, string? state = null) {
             var logPrefix = $"{nameof(TwitchAPI)} | {nameof(Authorize)}";
-            Logger.Info($"{logPrefix}\n{nameof(clientId)}: {clientId}\n{nameof(redirectUri)}: {redirectUri}\n{nameof(scope)}: {JsonSerializer.Serialize(scope)}\n{nameof(forceVerify)}: {forceVerify}\n{nameof(state)}: {state}");
+            Logger.Info($"{logPrefix}\n{nameof(clientId)}: {Scripts.Util.GetMasked(clientId)}\n{nameof(scope)}: {JsonSerializer.Serialize(scope)}\n{nameof(forceVerify)}: {forceVerify}\n{nameof(state)}: {Scripts.Util.GetMasked(state)}");
 
             var scopeParam = string.Join(" ", scope);
             var process = new Process();
@@ -35,14 +35,12 @@
         // no access token
         public static async Task<HttpResponseMessage?> GetAccessToken(HttpClient client, string clientId, string clientSecret, string authorizationCode, string redirectUri) {
             var logPrefix = $"{nameof(TwitchAPI)} | {nameof(GetAccessToken)}";
-            Logger.Info($"{logPrefix}\n{nameof(client)}: {client}\n{nameof(clientId)}: {clientId}\n{nameof(clientSecret)}: {Scripts.Util.GetMasked(clientSecret)}\n{nameof(authorizationCode)}: {authorizationCode}\n{nameof(redirectUri)}: {redirectUri}");
+            Logger.Info($"{logPrefix}\n{nameof(clientId)}: {Scripts.Util.GetMasked(clientId)}\n{nameof(clientSecret)}: {Scripts.Util.GetMasked(clientSecret)}\n{nameof(authorizationCode)}: {Scripts.Util.GetMasked(authorizationCode)}");
 
-            var requestUri = $"https://id.twitch.tv/oauth2/token?client_id={clientId}&client_secret={clientSecret}&code={authorizationCode}&grant_type=authorization_code&redirect_uri={redirectUri}";
-            HttpContent? content = null;
             try {
-                return await client.PostAsync(requestUri, content);
+                return await client.PostAsync($"https://id.twitch.tv/oauth2/token?client_id={clientId}&client_secret={clientSecret}&code={authorizationCode}&grant_type=authorization_code&redirect_uri={redirectUri}", null);
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(client.PostAsync)} threw: {e}.\n{nameof(content)}: {content}");
+                Logger.Warning($"{logPrefix} | {nameof(client.PostAsync)} threw: {e}.");
                 return null;
             }
         }
@@ -50,14 +48,12 @@
         // no access token
         public static async Task<HttpResponseMessage?> RefreshAccessToken(HttpClient client, string clientId, string clientSecret, string refreshToken) {
             var logPrefix = $"{nameof(TwitchAPI)} | {nameof(RefreshAccessToken)}";
-            Logger.Info($"{logPrefix}\n{nameof(client)}: {client}\n{nameof(clientId)}: {clientId}\n{nameof(clientSecret)}: {Scripts.Util.GetMasked(clientSecret)}\n{nameof(refreshToken)}: {Scripts.Util.GetMasked(refreshToken)}");
+            Logger.Info($"{logPrefix}\n{nameof(clientId)}: {Scripts.Util.GetMasked(clientId)}\n{nameof(clientSecret)}: {Scripts.Util.GetMasked(clientSecret)}\n{nameof(refreshToken)}: {Scripts.Util.GetMasked(refreshToken)}");
 
-            var requestUri = $"https://id.twitch.tv/oauth2/token?client_id={clientId}&client_secret={clientSecret}&grant_type=refresh_token&refresh_token={refreshToken}";
-            HttpContent? content = null;
             try {
-                return await client.PostAsync(requestUri, content);
+                return await client.PostAsync($"https://id.twitch.tv/oauth2/token?client_id={clientId}&client_secret={clientSecret}&grant_type=refresh_token&refresh_token={refreshToken}", null);
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(client.PostAsync)} threw: {e}.\n{nameof(content)}: {content}");
+                Logger.Warning($"{logPrefix} | {nameof(client.PostAsync)} threw: {e}.");
                 return null;
             }
         }

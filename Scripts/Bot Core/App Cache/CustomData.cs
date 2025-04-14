@@ -14,6 +14,24 @@
         public string DiscordInvite;
         public string YouTubeLink;
 
+        public CustomDataData DataData => new() {
+            Quotes = [.. Quotes],
+            FeedCount = FeedCount,
+            FeedRecord = FeedRecord,
+            FeedRecordHolder = FeedRecordHolder,
+            DiscordInvite = DiscordInvite,
+            YouTubeLink = YouTubeLink
+        };
+
+        public string MaskedSerialized => JsonSerializer.Serialize(new {
+            Quotes,
+            FeedCount,
+            FeedRecord,
+            FeedRecordHolder,
+            DiscordInvite,
+            YouTubeLink
+        });
+
         public static async Task<CustomData?> Create() {
             var logPrefix = $"{nameof(CustomData)} | {nameof(Create)}";
             Logger.Info(logPrefix);
@@ -34,28 +52,15 @@
             try {
                 dataData = JsonSerializer.Deserialize<CustomDataData>(dataText);
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(JsonSerializer.Deserialize)} threw: {e}.\n{nameof(dataText)}: {dataText}");
+                Logger.Warning($"{logPrefix} | {nameof(JsonSerializer.Deserialize)} threw: {e}.");
                 return null;
             }
 
             return new(dataData);
         }
 
-        public CustomDataData ToDataData() {
-            Logger.Info($"{nameof(CustomData)} | {nameof(ToDataData)}");
-
-            return new() {
-                Quotes = [.. Quotes],
-                FeedCount = FeedCount,
-                FeedRecord = FeedRecord,
-                FeedRecordHolder = FeedRecordHolder,
-                DiscordInvite = DiscordInvite,
-                YouTubeLink = YouTubeLink
-            };
-        }
-
         private CustomData(CustomDataData dataData) {
-            Logger.Info($"{nameof(CustomData)} | Constructor\n{nameof(dataData)}: {JsonSerializer.Serialize(dataData)}");
+            Logger.Info($"{nameof(CustomData)} | Constructor\n{nameof(dataData)}: {dataData.MaskedSerialized}");
 
             Quotes = [.. dataData.Quotes];
             FeedCount = dataData.FeedCount;

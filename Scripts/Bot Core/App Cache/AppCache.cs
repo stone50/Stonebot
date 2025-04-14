@@ -201,11 +201,11 @@
                 return false;
             }
 
-            var serializedDataData = JsonSerializer.Serialize(data.ToDataData());
+            var serializedDataData = JsonSerializer.Serialize(data.DataData);
             try {
                 await File.WriteAllTextAsync(Constants.DataFilePath, serializedDataData);
             } catch (Exception e) {
-                Logger.Warning($"{logPrefix} | {nameof(File.WriteAllTextAsync)} threw: {e}.\n{nameof(Constants.DataFilePath)}: {Scripts.Util.GetMaskedPath(Constants.DataFilePath)}\n{nameof(serializedDataData)}: {serializedDataData}");
+                Logger.Warning($"{logPrefix} | {nameof(File.WriteAllTextAsync)} threw: {e}.\n{nameof(Constants.DataFilePath)}: {Scripts.Util.GetMaskedPath(Constants.DataFilePath)}\n{nameof(data)}: {data.MaskedSerialized}");
                 return false;
             }
 

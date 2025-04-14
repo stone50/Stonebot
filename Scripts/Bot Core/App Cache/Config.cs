@@ -18,7 +18,7 @@
         public readonly int TokenExpirationBuffer;
 
         public string MaskedSerialized => JsonSerializer.Serialize(new {
-            AuthorizationPort,
+            AuthorizationPort = Scripts.Util.GetMasked(AuthorizationPort.ToString()),
             ChatterClientId,
             ChatterClientSecret = Scripts.Util.GetMasked(ChatterClientSecret),
             ChatterScope,
