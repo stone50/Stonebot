@@ -1,19 +1,25 @@
-﻿Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stonebot", "Stonebot.csproj", "{CC2632A0-FED5-4F70-918B-26DE4F24DB75}"
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stonebot", "Stonebot.csproj", "{175651F5-548C-4CAB-8EC9-C7781555B2B3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-	Debug|Any CPU = Debug|Any CPU
-	ExportDebug|Any CPU = ExportDebug|Any CPU
-	ExportRelease|Any CPU = ExportRelease|Any CPU
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{CC2632A0-FED5-4F70-918B-26DE4F24DB75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CC2632A0-FED5-4F70-918B-26DE4F24DB75}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CC2632A0-FED5-4F70-918B-26DE4F24DB75}.ExportDebug|Any CPU.ActiveCfg = ExportDebug|Any CPU
-		{CC2632A0-FED5-4F70-918B-26DE4F24DB75}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
-		{CC2632A0-FED5-4F70-918B-26DE4F24DB75}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
-		{CC2632A0-FED5-4F70-918B-26DE4F24DB75}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
+		{175651F5-548C-4CAB-8EC9-C7781555B2B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{175651F5-548C-4CAB-8EC9-C7781555B2B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{175651F5-548C-4CAB-8EC9-C7781555B2B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{175651F5-548C-4CAB-8EC9-C7781555B2B3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {83B78C58-ED46-43AD-AF73-7697E7ED1C61}
 	EndGlobalSection
 EndGlobal
