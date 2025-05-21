@@ -3,7 +3,7 @@
     using System.Text.Json.Serialization;
 
     [JsonSerializable(typeof(AccessTokenData))]
-    [JsonSerializable(typeof(AddEventSubContent))]
+    [JsonSerializable(typeof(AddChannelChatMessageEventSubContent))]
     [JsonSerializable(typeof(CacheData))]
     [JsonSerializable(typeof(ConfigData))]
     [JsonSerializable(typeof(EventSubKeepaliveMessage))]

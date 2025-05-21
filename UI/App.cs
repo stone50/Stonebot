@@ -2,6 +2,7 @@
     using Avalonia;
     using Avalonia.Controls.ApplicationLifetimes;
     using System.Threading;
+    using Twitch;
 
     internal class App : Application {
         public override void Initialize() { }
@@ -49,6 +50,8 @@
 
         private static async Task<int> ShutdownAsync() {
             try {
+                await WebSocketClient.CloseAsync(CancellationToken.None).ConfigureAwait(false);
+                await EventSub.DeleteEventSubsAsync(CancellationToken.None).ConfigureAwait(false);
                 await Cache.SaveAsync(CancellationToken.None).ConfigureAwait(false);
             } catch (Exception e) {
                 Logger.Warn(e);

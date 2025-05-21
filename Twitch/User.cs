@@ -1,6 +1,5 @@
 ﻿namespace Stonebot.Twitch {
     using Models;
-    using System;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -12,11 +11,7 @@
         }
 
         public static async Task<bool> GetIsModeratorAsync(string userId, CancellationToken cancellationToken) {
-            if (Cache.BroadcasterAuthorizationData is null) {
-                throw new Exception("Broadcaster is not authorized.");
-            }
-
-            var client = await Cache.BroadcasterAuthorizationData.AccessToken.GetHttpClientAsync(cancellationToken).ConfigureAwait(false);
+            var client = await Cache.BroadcasterAuthorizationData!.AccessToken.GetHttpClientAsync(cancellationToken).ConfigureAwait(false);
             var url = Utils.GetUrl("https://api.twitch.tv/helix/moderation/moderators", new() {
                 { "broadcaster_id",  Cache.BroadcasterAuthorizationData.UserId },
                 { "user_id",  userId },
@@ -26,11 +21,7 @@
         }
 
         public static async Task<bool> GetIsVIPAsync(string userId, CancellationToken cancellationToken) {
-            if (Cache.BroadcasterAuthorizationData is null) {
-                throw new Exception("Broadcaster is not authorized.");
-            }
-
-            var client = await Cache.BroadcasterAuthorizationData.AccessToken.GetHttpClientAsync(cancellationToken).ConfigureAwait(false);
+            var client = await Cache.BroadcasterAuthorizationData!.AccessToken.GetHttpClientAsync(cancellationToken).ConfigureAwait(false);
             var url = Utils.GetUrl("https://api.twitch.tv/helix/channels/vips", new() {
                 { "broadcaster_id",  Cache.BroadcasterAuthorizationData.UserId },
                 { "user_id",  userId },
@@ -41,11 +32,7 @@
         }
 
         public static async Task<int> GetSubscriptionTeir(string userId, CancellationToken cancellationToken) {
-            if (Cache.BroadcasterAuthorizationData is null) {
-                throw new Exception("Broadcaster is not authorized.");
-            }
-
-            var client = await Cache.BroadcasterAuthorizationData.AccessToken.GetHttpClientAsync(cancellationToken).ConfigureAwait(false);
+            var client = await Cache.BroadcasterAuthorizationData!.AccessToken.GetHttpClientAsync(cancellationToken).ConfigureAwait(false);
             var url = Utils.GetUrl("https://api.twitch.tv/helix/subscriptions", new() {
                 { "broadcaster_id",  Cache.BroadcasterAuthorizationData.UserId },
                 { "user_id",  userId },

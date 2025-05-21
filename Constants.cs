@@ -16,6 +16,7 @@
         public static readonly string CacheFilePath = new(Path.Join(AppDataPath, "cache.json"));
         public static readonly string DataFilePath = new(Path.Join(AppDataPath, "data.json"));
 
-        public static readonly string AllowedStateChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-~";
+        public const string AllowedStateChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-~";
+        public const int WebSocketClientCloseOnCancelTimeoutSeconds = 10;
     }
 }

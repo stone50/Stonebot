@@ -8,13 +8,20 @@
         public string SessionId { get; set; }
     }
 
-    internal struct AddEventSubContent {
+    internal struct AddChannelChatMessageEventSubCondition {
+        [JsonPropertyName("broadcaster_user_id")]
+        public string BroadcasterId { get; set; }
+        [JsonPropertyName("user_id")]
+        public string UserId { get; set; }
+    }
+
+    internal struct AddChannelChatMessageEventSubContent {
         [JsonPropertyName("type")]
         public string Type { get; set; }
         [JsonPropertyName("version")]
         public string Version { get; set; }
         [JsonPropertyName("condition")]
-        public object Condition { get; set; }
+        public AddChannelChatMessageEventSubCondition Condition { get; set; }
         [JsonPropertyName("transport")]
         public AddEventSubTransport Transport { get; set; }
     }

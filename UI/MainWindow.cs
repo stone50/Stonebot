@@ -15,11 +15,9 @@
             Width = 1000;
             Height = 800;
 
-            ConnectButton = new Button {
-                Content = "Connect",
+            ConnectButton = new ConnectButton {
                 FontFamily = MainTheme.RobotoFont,
                 FontSize = 18,
-                Background = MainTheme.SuccessBrush1,
                 Foreground = MainTheme.NeutralBrush1,
                 HorizontalContentAlignment = HorizontalAlignment.Center,
                 VerticalContentAlignment = VerticalAlignment.Center,
