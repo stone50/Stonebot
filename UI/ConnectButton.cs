@@ -51,7 +51,7 @@
                     cancellationTokenSource = new CancellationTokenSource();
                     try {
                         if (await WebSocketClient.TryConnectAsync(cancellationTokenSource.Token)) {
-                            _ = await EventSub.SubscribeToChannelChatMessageAsync(cancellationTokenSource.Token);
+                            await EventSub.SubscribeToChannelChatMessageAsync(cancellationTokenSource.Token);
                             State = ConnectState.Connected;
                         } else {
                             State = ConnectState.Disconnected;

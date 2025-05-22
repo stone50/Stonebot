@@ -42,7 +42,7 @@
             RefreshToken = new(accessTokenData.RefreshToken);
         }
 
-        public async Task<HttpClient> GetHttpClientAsync(CancellationToken cancellationToken) {
+        public async ValueTask<HttpClient> GetHttpClientAsync(CancellationToken cancellationToken) {
             if (!ShouldRefresh) {
                 if (cachedClient is not null) {
                     return cachedClient;

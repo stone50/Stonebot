@@ -31,7 +31,7 @@
             return usersData.Data.Length != 0;
         }
 
-        public static async Task<int> GetSubscriptionTeir(string userId, CancellationToken cancellationToken) {
+        public static async Task<int> GetSubscriptionTier(string userId, CancellationToken cancellationToken) {
             var client = await Cache.BroadcasterAuthorizationData!.AccessToken.GetHttpClientAsync(cancellationToken).ConfigureAwait(false);
             var url = Utils.GetUrl("https://api.twitch.tv/helix/subscriptions", new() {
                 { "broadcaster_id",  Cache.BroadcasterAuthorizationData.UserId },

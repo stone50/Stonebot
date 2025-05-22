@@ -127,7 +127,7 @@
         private static async Task<string?> GetRequestAsync(ClientWebSocket socket, CancellationToken cancellationToken) {
             var buffer = new byte[65536];
             var result = await socket.ReceiveAsync(buffer, cancellationToken).ConfigureAwait(false);
-            return result.CloseStatus is not null ? null : Encoding.UTF8.GetString(buffer, 0, result.Count);
+            return result.MessageType == WebSocketMessageType.Close ? null : Encoding.UTF8.GetString(buffer, 0, result.Count);
         }
 
         private static async void FireClose(WebSocketCloseStatus status, string? statusDescription, bool isUnexpectedClose) {
