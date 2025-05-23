@@ -11,6 +11,7 @@
             Error
         }
 
+        [Conditional("DEBUG")]
         public static void Debug(params object?[] messages) => Log(LogType.Debug, messages);
 
         public static void Info(params object?[] messages) => Log(LogType.Info, messages);
