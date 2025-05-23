@@ -1,5 +1,5 @@
 ﻿namespace Stonebot {
-    using Models;
+    using Models.Data;
     using System.Text.Json;
 
     internal static class Config {

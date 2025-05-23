@@ -1,4 +1,4 @@
-﻿namespace Stonebot.Models {
+﻿namespace Stonebot.Models.EventSubMessages {
     using System.Text.Json.Serialization;
 
     internal struct EventSubReconnectMessage {

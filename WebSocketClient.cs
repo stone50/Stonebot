@@ -1,5 +1,5 @@
 ﻿namespace Stonebot {
-    using Models;
+    using Models.EventSubMessages;
     using System;
     using System.Net.WebSockets;
     using System.Text;
@@ -92,22 +92,22 @@
                         return;
                     }
 
-                    if (TryParseRequest(request, JsonContext.Default.EventSubKeepaliveMessage, out var keepaliveData) && keepaliveData.Metadata.MessageType == "session_keepalive") {
+                    if (TryParseRequest(request, JsonContext.Default.EventSubKeepaliveMessage, out var keepaliveMessage) && keepaliveMessage.Metadata.MessageType == "session_keepalive") {
                         continue;
                     }
 
-                    if (TryParseRequest(request, JsonContext.Default.EventSubNotificationMessage, out var notificationData) && notificationData.Metadata.MessageType == "notification") {
-                        HandleNotification(notificationData);
+                    if (TryParseRequest(request, JsonContext.Default.EventSubNotificationMessage, out var notificationMessage) && notificationMessage.Metadata.MessageType == "notification") {
+                        ChatMessageHandler.HandleChatMessage(notificationMessage.Payload.Event);
                         continue;
                     }
 
-                    if (TryParseRequest(request, JsonContext.Default.EventSubReconnectMessage, out var reconnectData) && reconnectData.Metadata.MessageType == "session_reconnect") {
-                        HandleReconnectAsync(reconnectData, cancellationToken);
+                    if (TryParseRequest(request, JsonContext.Default.EventSubReconnectMessage, out var reconnectMessage) && reconnectMessage.Metadata.MessageType == "session_reconnect") {
+                        HandleReconnectAsync(reconnectMessage, cancellationToken);
                         continue;
                     }
 
-                    if (TryParseRequest(request, JsonContext.Default.EventSubRevocationMessage, out var revocationData) && revocationData.Metadata.MessageType == "revocation") {
-                        await HandleRevocationAsync(revocationData, cancellationToken).ConfigureAwait(false);
+                    if (TryParseRequest(request, JsonContext.Default.EventSubRevocationMessage, out var revocationMessage) && revocationMessage.Metadata.MessageType == "revocation") {
+                        await HandleRevocationAsync(revocationMessage, cancellationToken).ConfigureAwait(false);
                         continue;
                     }
 
@@ -149,8 +149,6 @@
 
             return true;
         }
-
-        private static void HandleNotification(EventSubNotificationMessage message) => _ = message.Payload.Subscription.Type;// TODO
 
         private static async void HandleReconnectAsync(EventSubReconnectMessage message, CancellationToken cancellationToken) {
             var newSocket = new ClientWebSocket();

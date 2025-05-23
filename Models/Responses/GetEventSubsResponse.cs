@@ -1,9 +1,9 @@
-﻿namespace Stonebot.Models {
+﻿namespace Stonebot.Models.Responses {
     using System.Text.Json.Serialization;
 
-    internal struct EventSubs {
+    internal struct GetEventSubsResponse {
         [JsonPropertyName("data")]
-        public EventSubsDataPoint[] Data { get; set; }
+        public GetEventSubsResponseDataPoint[] Data { get; set; }
         [JsonPropertyName("total")]
         public int Total { get; set; }
         [JsonPropertyName("total_cost")]
@@ -11,10 +11,10 @@
         [JsonPropertyName("max_total_cost")]
         public int MaxTotalCost { get; set; }
         [JsonPropertyName("pagination")]
-        public EventSubsPagination Pagination { get; set; }
+        public GetEventSubsResponsePagination Pagination { get; set; }
     }
 
-    internal struct EventSubsDataPoint {
+    internal struct GetEventSubsResponseDataPoint {
         [JsonPropertyName("id")]
         public string Id { get; set; }
         [JsonPropertyName("status")]
@@ -24,16 +24,23 @@
         [JsonPropertyName("version")]
         public string Version { get; set; }
         [JsonPropertyName("condition")]
-        public ChannelChatMessageEventSubCondition Condition { get; set; }
+        public GetEventSubsResponseDataPointCondition Condition { get; set; }
         [JsonPropertyName("created_at")]
         public string CreatedAt { get; set; }
         [JsonPropertyName("transport")]
-        public EventSubsDataPointTransport Transport { get; set; }
+        public GetEventSubsResponseDataPointTransport Transport { get; set; }
         [JsonPropertyName("cost")]
         public int Cost { get; set; }
     }
 
-    internal struct EventSubsDataPointTransport {
+    internal struct GetEventSubsResponseDataPointCondition {
+        [JsonPropertyName("broadcaster_user_id")]
+        public string BroadcasterId { get; set; }
+        [JsonPropertyName("user_id")]
+        public string UserId { get; set; }
+    }
+
+    internal struct GetEventSubsResponseDataPointTransport {
         [JsonPropertyName("method")]
         public string Method { get; set; }
         [JsonPropertyName("session_id")]
@@ -44,7 +51,7 @@
         public string DisconnectedAt { get; set; }
     }
 
-    internal struct EventSubsPagination {
+    internal struct GetEventSubsResponsePagination {
         [JsonPropertyName("cursor")]
         public string Cursor { get; set; }
     }

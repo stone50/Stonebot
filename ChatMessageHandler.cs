@@ -1,9 +1,8 @@
 ﻿namespace Stonebot {
-    using Models;
+    using Models.EventSubMessages;
 
     internal static class ChatMessageHandler {
-        public static void HandleChatMessage(EventSubNotificationMessage message) {
-
-        }
+        // TODO
+        public static void HandleChatMessage(EventSubNotificationMessagePayloadEvent channelChatMessageEvent) => Logger.Debug(channelChatMessageEvent.ChatterLogin, channelChatMessageEvent.Message.Text);
     }
 }

@@ -1,5 +1,5 @@
 ﻿namespace Stonebot {
-    using Models;
+    using Models.Data;
     using System;
     using System.Threading;
     using System.Threading.Tasks;

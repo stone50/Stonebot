@@ -1,4 +1,4 @@
-﻿namespace Stonebot.Models {
+﻿namespace Stonebot.Models.Data {
     using System.Text.Json.Serialization;
 
     internal struct AccessTokenData {

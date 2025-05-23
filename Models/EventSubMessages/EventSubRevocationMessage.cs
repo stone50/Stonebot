@@ -1,4 +1,4 @@
-﻿namespace Stonebot.Models {
+﻿namespace Stonebot.Models.EventSubMessages {
     using System.Text.Json.Serialization;
 
     internal struct EventSubRevocationMessage {
@@ -38,11 +38,18 @@
         [JsonPropertyName("cost")]
         public int Cost { get; set; }
         [JsonPropertyName("condition")]
-        public ChannelChatMessageEventSubCondition Condition { get; set; }
+        public EventSubRevocationMessagePayloadSubscriptionCondition Condition { get; set; }
         [JsonPropertyName("transport")]
         public EventSubRevocationMessagePayloadSubscriptionTransport Transport { get; set; }
         [JsonPropertyName("created_at")]
         public string CreatedAt { get; set; }
+    }
+
+    internal struct EventSubRevocationMessagePayloadSubscriptionCondition {
+        [JsonPropertyName("broadcaster_user_id")]
+        public string BroadcasterId { get; set; }
+        [JsonPropertyName("user_id")]
+        public string UserId { get; set; }
     }
 
     internal struct EventSubRevocationMessagePayloadSubscriptionTransport {

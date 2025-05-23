@@ -1,5 +1,8 @@
 ﻿namespace Stonebot {
     using Models;
+    using Models.Data;
+    using Models.EventSubMessages;
+    using Models.Responses;
     using System.Text.Json.Serialization;
 
     [JsonSerializable(typeof(AccessTokenData))]
@@ -10,8 +13,11 @@
     [JsonSerializable(typeof(EventSubNotificationMessage))]
     [JsonSerializable(typeof(EventSubReconnectMessage))]
     [JsonSerializable(typeof(EventSubRevocationMessage))]
-    [JsonSerializable(typeof(EventSubs))]
     [JsonSerializable(typeof(EventSubWelcomeMessage))]
-    [JsonSerializable(typeof(UsersData))]
+    [JsonSerializable(typeof(GetEventSubsResponse))]
+    [JsonSerializable(typeof(GetModeratorsResponse))]
+    [JsonSerializable(typeof(GetSubscriptionResponse))]
+    [JsonSerializable(typeof(GetUsersResponse))]
+    [JsonSerializable(typeof(GetVIPsResponse))]
     internal partial class JsonContext : JsonSerializerContext { }
 }

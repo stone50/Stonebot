@@ -13,7 +13,7 @@
 
         public static async Task DeleteEventSubsAsync(CancellationToken cancellationToken) {
             var client = await Cache.ChatterAuthorizationData!.AccessToken.GetHttpClientAsync(cancellationToken).ConfigureAwait(false);
-            var eventSubs = await Utils.SendGetRequestAsync(client, "https://api.twitch.tv/helix/eventsub/subscriptions", JsonContext.Default.EventSubs, cancellationToken).ConfigureAwait(false);
+            var eventSubs = await Utils.SendGetRequestAsync(client, "https://api.twitch.tv/helix/eventsub/subscriptions", JsonContext.Default.GetEventSubsResponse, cancellationToken).ConfigureAwait(false);
             foreach (var eventSub in eventSubs.Data) {
                 await DeleteEventSubAsync(eventSub.Id, cancellationToken);
             }

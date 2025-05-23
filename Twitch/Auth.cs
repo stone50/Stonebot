@@ -1,5 +1,5 @@
 ﻿namespace Stonebot.Twitch {
-    using Models;
+    using Models.Data;
     using System;
     using System.Diagnostics;
     using System.Net;
