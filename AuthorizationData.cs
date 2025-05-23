@@ -1,5 +1,5 @@
 ﻿namespace Stonebot {
-    internal class AuthorizationData : IDisposable {
+    internal class AuthorizationData {
         public readonly string UserId;
         public readonly string UserLogin;
         public readonly AccessToken AccessToken;
@@ -13,8 +13,6 @@
             var accessToken = await AccessToken.CreateAsync(clientId, clientSecret, scopes, cancellationToken).ConfigureAwait(false);
             return await CreateAsync(accessToken, cancellationToken).ConfigureAwait(false);
         }
-
-        public void Dispose() => AccessToken.Dispose();
 
         private AuthorizationData(string userId, string userLogin, AccessToken accessToken) {
             UserId = userId;

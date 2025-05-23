@@ -5,17 +5,15 @@
     using Avalonia.Media.Imaging;
     using Avalonia.Platform;
 
-    public class MainWindow : Window {
-        public Button ConnectButton;
-        public Button BroadcasterButton;
-        public Button ChatterButton;
+    internal class MainWindow : Window {
+
 
         public MainWindow() {
             Title = "Stonebot";
             Width = 1000;
             Height = 800;
 
-            ConnectButton = new ConnectButton {
+            connectButton = new() {
                 FontFamily = MainTheme.RobotoFont,
                 FontSize = 18,
                 Foreground = MainTheme.NeutralBrush1,
@@ -26,8 +24,9 @@
                 Padding = new(15, 5, 15, 8),
                 MaxHeight = 50f,
             };
-            BroadcasterButton = GetUserButton();
-            ChatterButton = GetUserButton();
+
+            broadcasterButton = GetUserButton();
+            chatterButton = GetUserButton();
             var users = new Grid {
                 RowDefinitions = [
                     new(GridLength.Star),
@@ -42,9 +41,9 @@
                 VerticalAlignment = VerticalAlignment.Center,
                 Children = {
                     GetUserLabel("Broadcaster :"),
-                    BroadcasterButton,
+                    broadcasterButton,
                     GetUserLabel("Chatter :"),
-                    ChatterButton,
+                    chatterButton,
                 },
                 Margin = new(10),
             };
@@ -62,7 +61,7 @@
                 ],
                 Children = {
                     GetLogo(),
-                    ConnectButton,
+                    connectButton,
                     users,
                 },
                 MinHeight = 150d,
@@ -86,15 +85,18 @@
         }
 
         public void UpdateUsers() {
-            BroadcasterButton.Content = Cache.BroadcasterAuthorizationData is null ? "Click to Authorize" : Cache.BroadcasterAuthorizationData.UserLogin;
-            ChatterButton.Content = Cache.ChatterAuthorizationData is null ? "Click to Authorize" : Cache.ChatterAuthorizationData.UserLogin;
+            broadcasterButton.Content = Cache.BroadcasterAuthorizationData is null ? "Click to Authorize" : Cache.BroadcasterAuthorizationData.UserLogin;
+            chatterButton.Content = Cache.ChatterAuthorizationData is null ? "Click to Authorize" : Cache.ChatterAuthorizationData.UserLogin;
         }
 
-        private static Button GetUserButton() => new() {
+        private readonly ConnectButton connectButton;
+        private readonly SButton broadcasterButton;
+        private readonly SButton chatterButton;
+
+        private static SButton GetUserButton() => new(MainTheme.InfoBrush3, MainTheme.InfoBrush1, MainTheme.InfoBrush2) {
             Content = ". . .",
             FontFamily = MainTheme.RobotoFont,
             FontSize = 16,
-            Background = MainTheme.InfoBrush3,
             Foreground = MainTheme.NeutralBrush1,
             HorizontalContentAlignment = HorizontalAlignment.Left,
             VerticalContentAlignment = VerticalAlignment.Center,

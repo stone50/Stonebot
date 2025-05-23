@@ -1,35 +1,15 @@
 ﻿namespace Stonebot.UI {
-    using Avalonia.Controls;
-    using Avalonia.Interactivity;
     using Avalonia.Threading;
     using System;
     using Twitch;
 
-    internal class ConnectButton : Button {
-        public ConnectButton() {
+    internal class ConnectButton : SButtonBase {
+        public ConnectButton() : base() {
             WebSocketClient.ClosedUnexpectedly += OnWebSocketClientClosedUnexpectedly;
             SetState(ConnectState.Disconnected);
-            Click += OnUserClick;
         }
 
-        private enum ConnectState {
-            Connected,
-            Disconnected,
-            Connecting,
-            Disconnecting,
-        }
-
-        private ConnectState State { get => state; set => SetState(value); }
-        private ConnectState state;
-        private CancellationTokenSource? cancellationTokenSource;
-
-        private void OnWebSocketClientClosedUnexpectedly(object? sender, EventArgs args) => Dispatcher.UIThread.Invoke(() => {
-            cancellationTokenSource?.Cancel();
-            SetState(ConnectState.Disconnected);
-            cancellationTokenSource = null;
-        });
-
-        private async void OnUserClick(object? sender, RoutedEventArgs args) {
+        protected override async void OnClick() {
             switch (State) {
                 case ConnectState.Connected:
                     State = ConnectState.Disconnecting;
@@ -65,17 +45,36 @@
 
                     break;
                 case ConnectState.Connecting:
-                    cancellationTokenSource?.Cancel();
+                    await cancellationTokenSource!.CancelAsync();
                     State = ConnectState.Disconnected;
                     cancellationTokenSource = null;
                     break;
                 case ConnectState.Disconnecting:
-                    cancellationTokenSource?.Cancel();
+                    await cancellationTokenSource!.CancelAsync();
                     State = ConnectState.Connected;
                     cancellationTokenSource = null;
                     break;
             }
+
+            base.OnClick();
         }
+
+        private enum ConnectState {
+            Connected,
+            Disconnected,
+            Connecting,
+            Disconnecting,
+        }
+
+        private ConnectState State { get => state; set => SetState(value); }
+        private ConnectState state;
+        private CancellationTokenSource? cancellationTokenSource;
+
+        private void OnWebSocketClientClosedUnexpectedly(object? sender, EventArgs args) => Dispatcher.UIThread.Invoke(() => {
+            cancellationTokenSource?.Cancel();
+            SetState(ConnectState.Disconnected);
+            cancellationTokenSource = null;
+        });
 
         private void SetState(ConnectState newState) {
             if (newState == State) {
@@ -84,24 +83,34 @@
 
             switch (newState) {
                 case ConnectState.Connected:
-                    Content = "Connected";
-                    Background = MainTheme.SuccessBrush1;
+                    Content = "Disconnect";
                     break;
                 case ConnectState.Disconnected:
                     Content = "Connect";
-                    Background = MainTheme.DangerBrush1;
                     break;
                 case ConnectState.Connecting:
                     Content = "Cancel";
-                    Background = MainTheme.DangerBrush1;
                     break;
                 case ConnectState.Disconnecting:
                     Content = "Cancel";
-                    Background = MainTheme.SuccessBrush1;
                     break;
             }
 
             state = newState;
+            UpdateBackground();
         }
+
+        protected override void UpdateBackground() => Background =
+            State == ConnectState.Disconnected
+                ? IsPressed
+                    ? MainTheme.SuccessBrush3
+                : IsPointerOver
+                    ? MainTheme.SuccessBrush1
+                    : MainTheme.SuccessBrush2
+            : IsPressed
+                ? MainTheme.DangerBrush3
+            : IsPointerOver
+                ? MainTheme.DangerBrush1
+                : MainTheme.DangerBrush2;
     }
 }

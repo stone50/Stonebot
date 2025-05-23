@@ -51,7 +51,7 @@
             cancellationTokenSource = null;
             if (socket is not null) {
                 if (socket.State == WebSocketState.Open) {
-                    await socket.CloseAsync(status, statusDescription, cancellationToken);
+                    await socket.CloseAsync(status, statusDescription, cancellationToken).ConfigureAwait(false);
                 }
 
                 socket = null;

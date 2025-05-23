@@ -53,12 +53,6 @@
 
         public static async Task ShutdownAsync() {
             await flushingTaskCancellationTokenSource.CancelAsync().ConfigureAwait(false);
-            if (flushingTask is not null) {
-                await flushingTask.ConfigureAwait(false);
-                flushingTask.Dispose();
-            }
-
-            flushingTaskCancellationTokenSource.Dispose();
             FlushQueue();
         }
 

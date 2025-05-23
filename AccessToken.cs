@@ -5,7 +5,7 @@
     using System.Threading.Tasks;
     using Twitch;
 
-    internal sealed class AccessToken : IDisposable {
+    internal sealed class AccessToken {
         public readonly string ClientId;
         public readonly string ClientSecret;
         public string[] Scopes { get; private set; }
@@ -66,8 +66,6 @@
 
             return cachedClient;
         }
-
-        public void Dispose() => cachedClient?.Dispose();
 
         private string rawValue;
         private HttpClient? cachedClient;

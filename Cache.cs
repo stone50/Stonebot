@@ -39,15 +39,9 @@
             ChatterAuthorizationData = await AuthorizationData.CreateAsync(Config.ChatterClientId, Config.ChatterClientSecret, Config.ChatterScopes, cancellationToken).ConfigureAwait(false);
         }
 
-        public static void ClearBroadcasterAuthorizationData() {
-            BroadcasterAuthorizationData?.Dispose();
-            BroadcasterAuthorizationData = null;
-        }
+        public static void ClearBroadcasterAuthorizationData() => BroadcasterAuthorizationData = null;
 
-        public static void ClearChatterAuthorizationData() {
-            ChatterAuthorizationData?.Dispose();
-            ChatterAuthorizationData = null;
-        }
+        public static void ClearChatterAuthorizationData() => ChatterAuthorizationData = null;
 
         public static void ClearAll() {
             ClearBroadcasterAuthorizationData();
