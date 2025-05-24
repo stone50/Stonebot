@@ -7,38 +7,37 @@
     using System.Security.Cryptography;
     using System.Text;
     using System.Text.RegularExpressions;
-    using System.Threading.Tasks;
 
     internal static partial class Auth {
-        public static Task<AccessTokenData> RefreshAccessTokenAsync(string clientId, string clientSecret, string refreshToken, CancellationToken cancellationToken) => PostForAccessTokenDataAsync(new() {
+        public static AccessTokenData RefreshAccessToken(string clientId, string clientSecret, string refreshToken, CancellationToken cancellationToken) => PostForAccessTokenData(new() {
             { "client_id", clientId },
             { "client_secret", clientSecret },
             { "grant_type", "refresh_token" },
             { "refresh_token",  refreshToken },
         }, cancellationToken);
 
-        public static async Task<AccessTokenData> GetAccessTokenAsync(string clientId, string clientSecret, string[] scopes, CancellationToken cancellationToken) => await PostForAccessTokenDataAsync(new() {
+        public static AccessTokenData GetAccessToken(string clientId, string clientSecret, string[] scopes, CancellationToken cancellationToken) => PostForAccessTokenData(new() {
             { "client_id", clientId },
             { "client_secret", clientSecret },
-            { "code", await GetAuthorizationCodeAsync(clientId, scopes, cancellationToken).ConfigureAwait(false) },
+            { "code",  GetAuthorizationCode(clientId, scopes) },
             { "grant_type", "authorization_code" },
             { "redirect_uri", $"http://localhost:{Config.AuthorizationPort}" },
-        }, cancellationToken).ConfigureAwait(false);
+        }, cancellationToken);
 
         private static readonly Regex codeRegex = CodeRegex();
 
-        private static Task<AccessTokenData> PostForAccessTokenDataAsync(Dictionary<string, string> queryParams, CancellationToken cancellationToken) {
+        private static AccessTokenData PostForAccessTokenData(Dictionary<string, string> queryParams, CancellationToken cancellationToken) {
             var url = Utils.GetUrl("https://id.twitch.tv/oauth2/token", queryParams);
-            return Utils.SendPostRequestAsync(Cache.DefaultClient, url, JsonContext.Default.AccessTokenData, cancellationToken);
+            return Utils.SendPostRequest(Cache.DefaultClient, url, JsonContext.Default.AccessTokenData, cancellationToken);
         }
 
-        private static async Task<string> GetAuthorizationCodeAsync(string clientId, string[] scopes, CancellationToken cancellationToken) {
+        private static string GetAuthorizationCode(string clientId, string[] scopes) {
             var server = new TcpListener(IPAddress.Loopback, Config.AuthorizationPort);
             server.Start();
             try {
                 var state = GetState();
                 StartAuthorizationProcess(clientId, scopes, state);
-                return await GetAuthorizationCodeFromServerAsync(server, state, cancellationToken);
+                return GetAuthorizationCodeFromServer(server, state);
             } finally {
                 server.Stop();
             }
@@ -68,35 +67,35 @@
             }
         }
 
-        private static async Task<string> GetAuthorizationCodeFromServerAsync(TcpListener server, string state, CancellationToken cancellationToken) {
-            using var client = await server.AcceptTcpClientAsync(cancellationToken).ConfigureAwait(false);
+        private static string GetAuthorizationCodeFromServer(TcpListener server, string state) {
+            using var client = server.AcceptTcpClient();
             var stream = client.GetStream();
             try {
-                var message = await GetMessageFromNetworkStreamAsync(stream, cancellationToken).ConfigureAwait(false);
+                var message = GetMessageFromNetworkStream(stream);
                 if (!message.Contains($"state={state}")) {
                     throw new Exception("Response did not contain the correct state.");
                 }
 
                 var authorizationCode = codeRegex.Match(message).Groups["code"].Value;
-                await SendMessageToNetworkStreamAsync(stream, "HTTP/1.1 200 OK<html><head><title>Authorization Succeeded</title></head><body><h1>Authorization Success!</h1><p>You can close this tab.</p></body></html>", cancellationToken).ConfigureAwait(false);
+                WriteToStream(stream, "HTTP/1.1 200 OK<html><head><title>Authorization Succeeded</title></head><body><h1>Authorization Success!</h1><p>You can close this tab.</p></body></html>");
                 return authorizationCode;
             } catch (OperationCanceledException) {
                 throw;
             } catch (Exception e) {
-                await SendMessageToNetworkStreamAsync(stream, $"HTTP/1.1 400 Bad Request<html><head><title>Authorization Failed</title></head><body><h1>:(</h1><p>{e.Message}</p><p>See logs for more details.</p></body></html>", cancellationToken).ConfigureAwait(false);
+                WriteToStream(stream, $"HTTP/1.1 400 Bad Request<html><head><title>Authorization Failed</title></head><body><h1>:(</h1><p>{e.Message}</p><p>See logs for more details.</p></body></html>");
                 throw;
             } finally {
-                await stream.DisposeAsync().ConfigureAwait(false);
+                stream.Dispose();
             }
         }
 
-        private static async Task<string> GetMessageFromNetworkStreamAsync(NetworkStream stream, CancellationToken cancellationToken) {
+        private static string GetMessageFromNetworkStream(NetworkStream stream) {
             var buffer = new byte[1024];
-            var numCharsRead = await stream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
+            var numCharsRead = stream.Read(buffer);
             return Encoding.UTF8.GetString(buffer, 0, numCharsRead);
         }
 
-        private static ValueTask SendMessageToNetworkStreamAsync(NetworkStream stream, string message, CancellationToken cancellationToken) => stream.WriteAsync(Encoding.UTF8.GetBytes(message), cancellationToken);
+        private static void WriteToStream(NetworkStream stream, string message) => stream.Write(Encoding.UTF8.GetBytes(message));
 
         [GeneratedRegex(@"[?&]code=(?<code>[^&\s]+)")]
         private static partial Regex CodeRegex();

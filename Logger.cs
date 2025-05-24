@@ -23,16 +23,10 @@
         public static void Log(LogType logType, params object?[] messages) => logQueue.Enqueue($"[{GetFormattedDateTime()}] {logType.ToString().ToUpper()}: {string.Join(" | ", messages)}");
 
         public static void Init() {
-            try {
-                _ = Directory.CreateDirectory(Constants.LogsPath);
-                filePath = Path.Join(Constants.LogsPath, $"{GetFormattedDateTime()}.txt");
-                File.Create(filePath).Close();
-            } catch (Exception e) {
-                Warn(e);
-            }
-
-            flushingTask = new Task(FlushingTaskAction, flushingTaskCancellationTokenSource.Token);
-            flushingTask.Start();
+            _ = Directory.CreateDirectory(Constants.LogsPath);
+            filePath = Path.Join(Constants.LogsPath, $"{GetFormattedDateTime()}.txt");
+            File.Create(filePath).Close();
+            flushingTask = Task.Run(FlushingTaskAction, CancellationToken.None);
         }
 
         public static void DeleteExcessFiles() {
@@ -51,8 +45,9 @@
             }
         }
 
-        public static async Task ShutdownAsync() {
-            await flushingTaskCancellationTokenSource.CancelAsync().ConfigureAwait(false);
+        public static void Shutdown() {
+            flushingTaskCancellationTokenSource.Cancel();
+            flushingTask?.GetAwaiter().GetResult();
             FlushQueue();
         }
 

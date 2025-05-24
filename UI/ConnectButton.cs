@@ -1,7 +1,6 @@
 ﻿namespace Stonebot.UI {
     using Avalonia.Threading;
     using System;
-    using Twitch;
 
     internal class ConnectButton : SButtonBase {
         public ConnectButton() : base() {
@@ -9,50 +8,17 @@
             SetState(ConnectState.Disconnected);
         }
 
-        protected override async void OnClick() {
+        protected override void OnClick() {
             switch (State) {
                 case ConnectState.Connected:
                     State = ConnectState.Disconnecting;
-                    cancellationTokenSource = new CancellationTokenSource();
-                    try {
-                        await WebSocketClient.CloseAsync(cancellationTokenSource.Token);
-                        State = ConnectState.Disconnected;
-                        await EventSub.DeleteEventSubsAsync(cancellationTokenSource.Token);
-                    } catch (OperationCanceledException) {
-                        State = ConnectState.Connected;
-                    } catch (Exception e) {
-                        State = ConnectState.Connected;
-                        Logger.Error(e);
-                    }
-
+                    var disconnectCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(Constants.WebSocketClientDisconnectTimeoutSeconds));
+                    FireDisconnect(disconnectCancellationTokenSource.Token);
                     break;
                 case ConnectState.Disconnected:
                     State = ConnectState.Connecting;
-                    cancellationTokenSource = new CancellationTokenSource();
-                    try {
-                        if (await WebSocketClient.TryConnectAsync(cancellationTokenSource.Token)) {
-                            await EventSub.SubscribeToChannelChatMessageAsync(cancellationTokenSource.Token);
-                            State = ConnectState.Connected;
-                        } else {
-                            State = ConnectState.Disconnected;
-                        }
-                    } catch (OperationCanceledException) {
-                        State = ConnectState.Disconnected;
-                    } catch (Exception e) {
-                        State = ConnectState.Disconnected;
-                        Logger.Error(e);
-                    }
-
-                    break;
-                case ConnectState.Connecting:
-                    await cancellationTokenSource!.CancelAsync();
-                    State = ConnectState.Disconnected;
-                    cancellationTokenSource = null;
-                    break;
-                case ConnectState.Disconnecting:
-                    await cancellationTokenSource!.CancelAsync();
-                    State = ConnectState.Connected;
-                    cancellationTokenSource = null;
+                    var connectCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(Constants.WebSocketClientConnectTimeoutSeconds));
+                    FireConnect(connectCancellationTokenSource.Token);
                     break;
             }
 
@@ -68,20 +34,48 @@
 
         private ConnectState State { get => state; set => SetState(value); }
         private ConnectState state;
-        private CancellationTokenSource? cancellationTokenSource;
 
-        private void OnWebSocketClientClosedUnexpectedly(object? sender, EventArgs args) => Dispatcher.UIThread.Invoke(() => {
-            cancellationTokenSource?.Cancel();
-            SetState(ConnectState.Disconnected);
-            cancellationTokenSource = null;
-        });
+        private void FireConnect(CancellationToken cancellationToken) => Task.Run(() => {
+            try {
+                try {
+                    WebSocketClient.Connect(cancellationToken);
+                    _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Connected);
+                } catch (OperationCanceledException) {
+                    _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Disconnected);
+                } catch (Exception e) {
+                    _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Disconnected);
+                    Logger.Error(e);
+                }
+            } catch (Exception e) {
+                Logger.Error(e);
+            }
+        }, cancellationToken);
+
+        private void FireDisconnect(CancellationToken cancellationToken) => Task.Run(() => {
+            try {
+                try {
+                    WebSocketClient.Close(cancellationToken);
+                    _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Disconnected);
+                } catch (OperationCanceledException) {
+                    _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Connected);
+                } catch (Exception e) {
+                    _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Connected);
+                    Logger.Error(e);
+                }
+            } catch (Exception e) {
+                Logger.Error(e);
+            }
+        }, cancellationToken);
+
+        private void OnWebSocketClientClosedUnexpectedly(object? sender, EventArgs args) => Dispatcher.UIThread.Invoke(() => SetState(ConnectState.Disconnected));
 
         private void SetState(ConnectState newState) {
             if (newState == State) {
                 return;
             }
 
-            switch (newState) {
+            state = newState;
+            switch (State) {
                 case ConnectState.Connected:
                     Content = "Disconnect";
                     break;
@@ -89,14 +83,13 @@
                     Content = "Connect";
                     break;
                 case ConnectState.Connecting:
-                    Content = "Cancel";
+                    Content = "Connecting...";
                     break;
                 case ConnectState.Disconnecting:
-                    Content = "Cancel";
+                    Content = "Disconnecting...";
                     break;
             }
 
-            state = newState;
             UpdateBackground();
         }
 

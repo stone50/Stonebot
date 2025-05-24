@@ -7,7 +7,6 @@
 
     internal class MainWindow : Window {
 
-
         public MainWindow() {
             Title = "Stonebot";
             Width = 1000;

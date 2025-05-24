@@ -7,53 +7,50 @@
         public static AuthorizationData? BroadcasterAuthorizationData { get; private set; }
         public static AuthorizationData? ChatterAuthorizationData { get; private set; }
 
-        public static async Task InitAsync(CancellationToken cancellationToken) {
+        public static void Init(CancellationToken cancellationToken) {
             if (!File.Exists(Constants.CacheFilePath)) {
                 return;
             }
 
-            try {
-                var cacheFileContents = await File.ReadAllTextAsync(Constants.CacheFilePath, cancellationToken).ConfigureAwait(false);
-                var cacheData = JsonSerializer.Deserialize(cacheFileContents, JsonContext.Default.CacheData);
-                if (cacheData.BroadcasterRefreshToken is not null) {
-                    BroadcasterAuthorizationData = await AuthorizationData.CreateAsync(Config.BroadcasterClientId, Config.BroadcasterClientSecret, cacheData.BroadcasterRefreshToken, cancellationToken).ConfigureAwait(false);
-                }
+            var cacheFileContents = File.ReadAllText(Constants.CacheFilePath);
+            var cacheData = JsonSerializer.Deserialize(cacheFileContents, JsonContext.Default.CacheData);
+            if (cacheData.BroadcasterRefreshToken is not null) {
+                BroadcasterAuthorizationData = AuthorizationData.Create(Config.BroadcasterClientId, Config.BroadcasterClientSecret, cacheData.BroadcasterRefreshToken, cancellationToken);
+            }
 
-                if (cacheData.ChatterRefreshToken is not null) {
-                    ChatterAuthorizationData = await AuthorizationData.CreateAsync(Config.ChatterClientId, Config.ChatterClientSecret, cacheData.ChatterRefreshToken, cancellationToken).ConfigureAwait(false);
-                }
-            } catch (OperationCanceledException) {
-                return;
-            } catch (Exception e) {
-                Logger.Warn(e);
+            if (cacheData.ChatterRefreshToken is not null) {
+                ChatterAuthorizationData = AuthorizationData.Create(Config.ChatterClientId, Config.ChatterClientSecret, cacheData.ChatterRefreshToken, cancellationToken);
             }
         }
 
-        public static async Task CreateBroadcasterAuthorizationDataAsync(CancellationToken cancellationToken) {
+        // for future use
+        public static void CreateBroadcasterAuthorizationData(CancellationToken cancellationToken) {
             ClearBroadcasterAuthorizationData();
-            BroadcasterAuthorizationData = await AuthorizationData.CreateAsync(Config.BroadcasterClientId, Config.BroadcasterClientSecret, Config.BroadcasterScopes, cancellationToken).ConfigureAwait(false);
+            BroadcasterAuthorizationData = AuthorizationData.Create(Config.BroadcasterClientId, Config.BroadcasterClientSecret, Config.BroadcasterScopes, cancellationToken);
         }
 
-        public static async Task CreateChatterAccessTokenAsync(CancellationToken cancellationToken) {
+        // for future use
+        public static void CreateChatterAccessToken(CancellationToken cancellationToken) {
             ClearChatterAuthorizationData();
-            ChatterAuthorizationData = await AuthorizationData.CreateAsync(Config.ChatterClientId, Config.ChatterClientSecret, Config.ChatterScopes, cancellationToken).ConfigureAwait(false);
+            ChatterAuthorizationData = AuthorizationData.Create(Config.ChatterClientId, Config.ChatterClientSecret, Config.ChatterScopes, cancellationToken);
         }
 
-        public static void ClearBroadcasterAuthorizationData() => BroadcasterAuthorizationData = null;
-
-        public static void ClearChatterAuthorizationData() => ChatterAuthorizationData = null;
-
-        public static void ClearAll() {
-            ClearBroadcasterAuthorizationData();
-            ClearChatterAuthorizationData();
+        public static void ClearBroadcasterAuthorizationData() {
+            BroadcasterAuthorizationData?.Dispose();
+            BroadcasterAuthorizationData = null;
         }
 
-        public static Task SaveAsync(CancellationToken cancellationToken) {
+        public static void ClearChatterAuthorizationData() {
+            ChatterAuthorizationData?.Dispose();
+            ChatterAuthorizationData = null;
+        }
+
+        public static void Save() {
             var contents = JsonSerializer.Serialize(new CacheData() {
                 BroadcasterRefreshToken = BroadcasterAuthorizationData?.AccessToken.RefreshToken,
                 ChatterRefreshToken = ChatterAuthorizationData?.AccessToken.RefreshToken,
             }, JsonContext.Default.CacheData);
-            return File.WriteAllTextAsync(Constants.CacheFilePath, contents, cancellationToken);
+            File.WriteAllText(Constants.CacheFilePath, contents);
         }
     }
 }

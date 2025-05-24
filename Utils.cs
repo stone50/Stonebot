@@ -19,37 +19,36 @@
             return uriBuilder.Uri.AbsoluteUri;
         }
 
-        public static async Task<T> SendGetRequestAsync<T>(HttpClient client, string url, JsonTypeInfo<T> jsonTypeInfo, CancellationToken cancellationToken) where T : struct {
-            var response = await client.GetAsync(url, cancellationToken).ConfigureAwait(false);
-            return await GetMessageContentAsAsync<T>(response, jsonTypeInfo, cancellationToken).ConfigureAwait(false);
+        public static T SendGetRequest<T>(HttpClient client, string url, JsonTypeInfo<T> jsonTypeInfo, CancellationToken cancellationToken) where T : struct {
+            var getTask = client.GetAsync(url, cancellationToken);
+            var response = Sync(getTask);
+            return GetMessageContentAs<T>(response, jsonTypeInfo, cancellationToken);
+        }
+        public static T SendPostRequest<T>(HttpClient client, string url, JsonTypeInfo<T> responseJsonTypeInfo, CancellationToken cancellationToken) where T : struct {
+            var postTask = client.PostAsync(url, null, cancellationToken);
+            var response = Sync(postTask);
+            return GetMessageContentAs(response, responseJsonTypeInfo, cancellationToken);
         }
 
-        public static async Task<T> SendPostRequestAsync<T>(HttpClient client, string url, JsonTypeInfo<T> responseJsonTypeInfo, CancellationToken cancellationToken) where T : struct {
-            var response = await client.PostAsync(url, null, cancellationToken).ConfigureAwait(false);
-            return await GetMessageContentAsAsync<T>(response, responseJsonTypeInfo, cancellationToken).ConfigureAwait(false);
-        }
-
-        public static async Task<TResponse> SendPostRequestAsync<TBody, TResponse>(HttpClient client, string url, TBody body, JsonTypeInfo<TBody> bodyJsonTypeInfo, JsonTypeInfo<TResponse> responseJsonTypeInfo, CancellationToken cancellationToken) where TBody : struct where TResponse : struct {
-            var response = await InnerSendPostRequestAsync(client, url, body, bodyJsonTypeInfo, cancellationToken).ConfigureAwait(false);
-            return await GetMessageContentAsAsync(response, responseJsonTypeInfo, cancellationToken).ConfigureAwait(false);
-        }
-
-        public static async Task SendPostRequestAsync<T>(HttpClient client, string url, T body, JsonTypeInfo<T> bodyJsonTypeInfo, CancellationToken cancellationToken) where T : struct {
-            var response = await InnerSendPostRequestAsync(client, url, body, bodyJsonTypeInfo, cancellationToken).ConfigureAwait(false);
+        public static void SendPostRequest<T>(HttpClient client, string url, T body, JsonTypeInfo<T> bodyJsonTypeInfo, CancellationToken cancellationToken) where T : struct {
+            var response = InnerSendPostRequest(client, url, body, bodyJsonTypeInfo, cancellationToken);
             _ = response.EnsureSuccessStatusCode();
         }
 
-        public static async Task<T> GetMessageContentAsAsync<T>(HttpResponseMessage message, JsonTypeInfo<T> jsonTypeInfo, CancellationToken cancellationToken) where T : struct {
-            var messageContentStream = await message.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
-            return await JsonSerializer.DeserializeAsync(messageContentStream, jsonTypeInfo, cancellationToken).ConfigureAwait(false);
+        public static T GetMessageContentAs<T>(HttpResponseMessage message, JsonTypeInfo<T> jsonTypeInfo, CancellationToken cancellationToken) where T : struct {
+            var messageContentStream = message.Content.ReadAsStream(cancellationToken);
+            return JsonSerializer.Deserialize(messageContentStream, jsonTypeInfo);
         }
 
-        public static void Exit(Constants.ExitCode exitCode) => Environment.Exit((int)exitCode);
+        public static T Sync<T>(Task<T> task) => task.GetAwaiter().GetResult();
 
-        private static Task<HttpResponseMessage> InnerSendPostRequestAsync<T>(HttpClient client, string url, T body, JsonTypeInfo<T> bodyJsonTypeInfo, CancellationToken cancellationToken) where T : struct {
+        public static void Sync(Task task) => task.GetAwaiter().GetResult();
+
+        private static HttpResponseMessage InnerSendPostRequest<T>(HttpClient client, string url, T body, JsonTypeInfo<T> bodyJsonTypeInfo, CancellationToken cancellationToken) where T : struct {
             var contentString = JsonSerializer.Serialize(body, bodyJsonTypeInfo);
             var content = new StringContent(contentString, Encoding.UTF8, "application/json");
-            return client.PostAsync(url, content, cancellationToken);
+            var postTask = client.PostAsync(url, content, cancellationToken);
+            return Sync(postTask);
         }
     }
 }

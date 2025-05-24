@@ -14,32 +14,26 @@
         public static int AccessTokenExpirationMarginMillis = 300;
         public static int SocketKeepaliveTimeoutSeconds = 10;
 
-        public static async Task InitAsync(CancellationToken cancellationToken) {
+        public static void Init() {
             if (!File.Exists(Constants.ConfigFilePath)) {
                 return;
             }
 
-            try {
-                var configFileContents = await File.ReadAllTextAsync(Constants.ConfigFilePath, cancellationToken).ConfigureAwait(false);
-                var configData = JsonSerializer.Deserialize(configFileContents, JsonContext.Default.ConfigData);
-                ChatterClientId = configData.ChatterClientId;
-                ChatterClientSecret = configData.ChatterClientSecret;
-                ChatterScopes = configData.ChatterScopes;
-                BroadcasterClientId = configData.BroadcasterClientId;
-                BroadcasterClientSecret = configData.BroadcasterClientSecret;
-                BroadcasterScopes = configData.BroadcasterScopes;
-                AuthorizationPort = configData.AuthorizationPort;
-                NumMaxLogFiles = configData.NumMaxLogFiles;
-                AccessTokenExpirationMarginMillis = configData.AccessTokenExpirationMarginMillis;
-                SocketKeepaliveTimeoutSeconds = configData.SocketKeepaliveTimeoutSeconds;
-            } catch (OperationCanceledException) {
-                return;
-            } catch (Exception e) {
-                Logger.Warn(e);
-            }
+            var configFileContents = File.ReadAllText(Constants.ConfigFilePath);
+            var configData = JsonSerializer.Deserialize(configFileContents, JsonContext.Default.ConfigData);
+            ChatterClientId = configData.ChatterClientId;
+            ChatterClientSecret = configData.ChatterClientSecret;
+            ChatterScopes = configData.ChatterScopes;
+            BroadcasterClientId = configData.BroadcasterClientId;
+            BroadcasterClientSecret = configData.BroadcasterClientSecret;
+            BroadcasterScopes = configData.BroadcasterScopes;
+            AuthorizationPort = configData.AuthorizationPort;
+            NumMaxLogFiles = configData.NumMaxLogFiles;
+            AccessTokenExpirationMarginMillis = configData.AccessTokenExpirationMarginMillis;
+            SocketKeepaliveTimeoutSeconds = configData.SocketKeepaliveTimeoutSeconds;
         }
 
-        public static Task SaveAsync(CancellationToken cancellationToken) {
+        public static void Save() {
             var contents = JsonSerializer.Serialize(new ConfigData() {
                 ChatterClientId = ChatterClientId,
                 ChatterClientSecret = ChatterClientSecret,
@@ -52,7 +46,7 @@
                 AccessTokenExpirationMarginMillis = AccessTokenExpirationMarginMillis,
                 SocketKeepaliveTimeoutSeconds = SocketKeepaliveTimeoutSeconds,
             }, JsonContext.Default.ConfigData);
-            return File.WriteAllTextAsync(Constants.ConfigFilePath, contents, cancellationToken);
+            File.WriteAllText(Constants.ConfigFilePath, contents);
         }
     }
 }

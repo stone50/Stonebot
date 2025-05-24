@@ -1,76 +1,47 @@
 ﻿namespace Stonebot.UI {
     using Avalonia;
     using Avalonia.Controls.ApplicationLifetimes;
+    using Avalonia.Threading;
     using System.Threading;
-    using Twitch;
 
     internal class App : Application {
-        public override void Initialize() { }
-
         public override void OnFrameworkInitializationCompleted() {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
-                desktop.Startup += async (_, args) => {
-                    await StartupAsync();
-                    if (desktop.MainWindow is MainWindow mainWindow) {
-                        mainWindow.UpdateUsers();
-                    }
-                };
-
-                desktop.Exit += async (_, args) => args.ApplicationExitCode = await ShutdownAsync().ConfigureAwait(false);
-
+                desktop.Startup += (_, _) => FireStartup(CancellationToken.None);
+                desktop.Exit += (_, _) => Shutdown(CancellationToken.None);
                 desktop.MainWindow = new MainWindow();
             }
 
             base.OnFrameworkInitializationCompleted();
         }
 
-        private static async Task StartupAsync() {
-            try {
-                Logger.Init();
-            } catch {
-                Utils.Exit(Constants.ExitCode.LoggerInitError);
-            }
+        private void FireStartup(CancellationToken cancellationToken) => Task.Run(() => {
+            TryElseConsoleError(Logger.Init);
+            TryElseWarn(Config.Init);
+            TryElseWarn(Logger.DeleteExcessFiles);
+            TryElseWarn(() => Cache.Init(cancellationToken));
+            Dispatcher.UIThread.Invoke(() => ((ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow as MainWindow)?.UpdateUsers());
+        }, cancellationToken);
 
-            await Config.InitAsync(CancellationToken.None).ConfigureAwait(false);
-            try {
-                Logger.DeleteExcessFiles();
-            } catch (Exception e) {
-                Logger.Error(e);
-                try {
-                    await Logger.ShutdownAsync().ConfigureAwait(false);
-                } catch {
-                    Utils.Exit(Constants.ExitCode.LoggerDeleteExcessFilesError | Constants.ExitCode.LoggerShutdownError);
-                }
-
-                Utils.Exit(Constants.ExitCode.LoggerDeleteExcessFilesError);
-            }
-
-            await Cache.InitAsync(CancellationToken.None).ConfigureAwait(false);
+        private static void Shutdown(CancellationToken cancellationToken) {
+            TryElseWarn(() => WebSocketClient.Close(cancellationToken));
+            TryElseWarn(Cache.Save);
+            TryElseWarn(Config.Save);
+            TryElseWarn(Logger.Shutdown);
         }
 
-        private static async Task<int> ShutdownAsync() {
+        private static void TryElseConsoleError(Action action) => TryElseLog(action, Console.Error.WriteLine);
+
+        private static void TryElseWarn(Action action) => TryElseLog(action, (e) => Logger.Warn(e));
+
+        private static void TryElseLog(Action action, Action<Exception> log) {
             try {
-                await WebSocketClient.CloseAsync(CancellationToken.None).ConfigureAwait(false);
-                await EventSub.DeleteEventSubsAsync(CancellationToken.None).ConfigureAwait(false);
-                await Cache.SaveAsync(CancellationToken.None).ConfigureAwait(false);
+                action();
             } catch (Exception e) {
-                Logger.Warn(e);
+                try {
+                    log(e);
+                } finally { }
             }
-
-            Cache.ClearAll();
-            try {
-                await Config.SaveAsync(CancellationToken.None).ConfigureAwait(false);
-            } catch (Exception e) {
-                Logger.Warn(e);
-            }
-
-            try {
-                await Logger.ShutdownAsync().ConfigureAwait(false);
-            } catch {
-                return (int)Constants.ExitCode.LoggerShutdownError;
-            }
-
-            return 0;
         }
     }
 }

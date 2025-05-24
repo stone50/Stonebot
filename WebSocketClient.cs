@@ -1,5 +1,4 @@
 ﻿namespace Stonebot {
-    using Models.EventSubMessages;
     using System;
     using System.Net.WebSockets;
     using System.Text;
@@ -14,70 +13,69 @@
 
         public static string? Id { get; private set; }
 
-        public static Task<bool> TryConnectAsync(CancellationToken cancellationToken) {
+        public static void Connect(CancellationToken cancellationToken) {
             var url = Utils.GetUrl("wss://eventsub.wss.twitch.tv/ws", new() { { "keepalive_timeout_seconds", Config.SocketKeepaliveTimeoutSeconds.ToString() } });
-            return ConnectToAsync(url, cancellationToken);
+            ConnectTo(url, cancellationToken);
+            EventSub.SubscribeToChannelChatMessage(cancellationToken);
         }
 
-        public static Task CloseAsync(CancellationToken cancellationToken) => CloseAsync(WebSocketCloseStatus.NormalClosure, null, false, cancellationToken);
-
-        private class CloseException(string? reconnectUrl = null) : Exception {
-            public readonly string? ReconnectUrl = reconnectUrl;
+        public static void Close(CancellationToken cancellationToken) {
+            Close(WebSocketCloseStatus.NormalClosure, null, false, cancellationToken);
+            EventSub.DeleteEventSubs(cancellationToken);
         }
 
         private static ClientWebSocket? socket;
         private static Task? listenTask;
         private static CancellationTokenSource? cancellationTokenSource;
 
-        private static async Task<bool> ConnectToAsync(string url, CancellationToken cancellationToken) {
+        private static void ConnectTo(string url, CancellationToken cancellationToken) {
             socket = new();
-            Id = await ConnectSocketToAsync(socket, url, cancellationToken).ConfigureAwait(false);
-            if (Id is null) {
-                socket = null;
-                return false;
-            }
-
+            Id = ConnectSocketTo(socket, url, cancellationToken);
             cancellationTokenSource = new();
-            listenTask = ListenAction(cancellationTokenSource.Token);
-            return true;
+            listenTask = Task.Run(() => ListenAction(cancellationTokenSource.Token), CancellationToken.None);
+
         }
 
-        private static async Task CloseAsync(WebSocketCloseStatus status, string? statusDescription, bool isUnexpectedClose, CancellationToken cancellationToken) {
-            if (cancellationTokenSource is not null) {
-                await cancellationTokenSource.CancelAsync().ConfigureAwait(false);
+        private static void Close(WebSocketCloseStatus status, string? statusDescription, bool isUnexpectedClose, CancellationToken cancellationToken) {
+            cancellationTokenSource?.Cancel();
+            if (listenTask is not null) {
+                Utils.Sync(listenTask);
             }
 
             listenTask = null;
             cancellationTokenSource = null;
             if (socket is not null) {
                 if (socket.State == WebSocketState.Open) {
-                    await socket.CloseAsync(status, statusDescription, cancellationToken).ConfigureAwait(false);
+                    var closeTask = socket.CloseAsync(status, statusDescription, cancellationToken);
+                    Utils.Sync(closeTask);
                 }
 
                 socket = null;
             }
 
             Id = null;
-
             if (isUnexpectedClose) {
+                EventSub.DeleteEventSubs(cancellationToken);
                 ClosedUnexpectedly.Invoke(null, new());
             }
         }
 
-        private static async Task<string?> ConnectSocketToAsync(ClientWebSocket socket, string url, CancellationToken cancellationToken) {
+        private static string ConnectSocketTo(ClientWebSocket socket, string url, CancellationToken cancellationToken) {
             var socketUri = new Uri(url);
-            await socket.ConnectAsync(socketUri, cancellationToken).ConfigureAwait(false);
-            var request = await GetRequestAsync(socket, cancellationToken).ConfigureAwait(false);
-            if (request is null) {
-                await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, null, cancellationToken);
-                return null;
+            var connectTask = socket.ConnectAsync(socketUri, cancellationToken);
+            Utils.Sync(connectTask);
+            try {
+                var request = GetRequest(socket, cancellationToken);
+                var welcomeMessage = JsonSerializer.Deserialize(request!, JsonContext.Default.EventSubWelcomeMessage);
+                return welcomeMessage.Payload.Session.Id;
+            } catch (Exception e) {
+                var closeTask = socket.CloseAsync(WebSocketCloseStatus.InternalServerError, e.Message, cancellationToken);
+                Utils.Sync(closeTask);
+                throw;
             }
-
-            var welcomeMessage = JsonSerializer.Deserialize(request, JsonContext.Default.EventSubWelcomeMessage);
-            return welcomeMessage.Payload.Session.Id;
         }
 
-        private static async Task ListenAction(CancellationToken cancellationToken) {
+        private static void ListenAction(CancellationToken cancellationToken) {
             if (socket is null) {
                 return;
             }
@@ -86,7 +84,7 @@
                 try {
                     var timeoutCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(Config.SocketKeepaliveTimeoutSeconds));
                     var linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCancellationTokenSource.Token);
-                    var request = await GetRequestAsync(socket, linkedCancellationTokenSource.Token).ConfigureAwait(false);
+                    var request = GetRequest(socket, linkedCancellationTokenSource.Token);
                     if (request is null) {
                         FireClose(WebSocketCloseStatus.NormalClosure, "Close message received.", true);
                         return;
@@ -102,12 +100,14 @@
                     }
 
                     if (TryParseRequest(request, JsonContext.Default.EventSubReconnectMessage, out var reconnectMessage) && reconnectMessage.Metadata.MessageType == "session_reconnect") {
-                        HandleReconnectAsync(reconnectMessage, cancellationToken);
+                        FireReconnect(reconnectMessage.Payload.Session.ReconnectUrl, cancellationToken);
                         continue;
                     }
 
                     if (TryParseRequest(request, JsonContext.Default.EventSubRevocationMessage, out var revocationMessage) && revocationMessage.Metadata.MessageType == "revocation") {
-                        await HandleRevocationAsync(revocationMessage, cancellationToken).ConfigureAwait(false);
+                        var subscription = revocationMessage.Payload.Subscription;
+                        EventSub.DeleteEventSub(subscription.Id, cancellationToken);
+                        Logger.Warn("Event subscription revoked.", subscription.Status);
                         continue;
                     }
 
@@ -117,26 +117,33 @@
                     FireClose(WebSocketCloseStatus.NormalClosure, "Operation cancelled.", false);
                     return;
                 } catch (Exception e) {
-                    Logger.Error(e);
-                    FireClose(WebSocketCloseStatus.InternalServerError, e.Message, true);
+                    try {
+                        Logger.Error(e);
+                    } finally {
+                        FireClose(WebSocketCloseStatus.InternalServerError, e.Message, true);
+                    }
+
                     return;
                 }
             }
         }
 
-        private static async Task<string?> GetRequestAsync(ClientWebSocket socket, CancellationToken cancellationToken) {
+        private static string? GetRequest(ClientWebSocket socket, CancellationToken cancellationToken) {
             var buffer = new byte[65536];
-            var result = await socket.ReceiveAsync(buffer, cancellationToken).ConfigureAwait(false);
+            var receiveTask = socket.ReceiveAsync(buffer, cancellationToken);
+            var result = Utils.Sync(receiveTask);
             return result.MessageType == WebSocketMessageType.Close ? null : Encoding.UTF8.GetString(buffer, 0, result.Count);
         }
 
-        private static async void FireClose(WebSocketCloseStatus status, string? statusDescription, bool isUnexpectedClose) {
-            var closeCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(Constants.WebSocketClientCloseOnCancelTimeoutSeconds));
-            try {
-                await CloseAsync(status, statusDescription, isUnexpectedClose, closeCancellationTokenSource.Token);
-            } catch (Exception e) {
-                Logger.Error(e);
-            }
+        private static void FireClose(WebSocketCloseStatus status, string? statusDescription, bool isUnexpectedClose) {
+            var cancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(Constants.WebSocketClientFireCloseTimeoutSeconds)).Token;
+            _ = Task.Run(() => {
+                try {
+                    Close(status, statusDescription, isUnexpectedClose, cancellationToken);
+                } catch (Exception e) {
+                    Logger.Error(e);
+                }
+            }, cancellationToken);
         }
 
         private static bool TryParseRequest<T>(string request, JsonTypeInfo<T> jsonTypeInfo, out T requestData) where T : struct {
@@ -150,20 +157,18 @@
             return true;
         }
 
-        private static async void HandleReconnectAsync(EventSubReconnectMessage message, CancellationToken cancellationToken) {
-            var newSocket = new ClientWebSocket();
-            var newId = await ConnectSocketToAsync(newSocket, message.Payload.Session.ReconnectUrl!, cancellationToken).ConfigureAwait(false);
-            await CloseAsync(WebSocketCloseStatus.NormalClosure, "Reconnect message received.", false, cancellationToken).ConfigureAwait(false);
-            socket = newSocket;
-            Id = newId;
-            cancellationTokenSource = new();
-            listenTask = ListenAction(cancellationTokenSource.Token);
-        }
-
-        private static async Task HandleRevocationAsync(EventSubRevocationMessage message, CancellationToken cancellationToken) {
-            var subscription = message.Payload.Subscription;
-            await EventSub.DeleteEventSubAsync(subscription.Id, cancellationToken).ConfigureAwait(false);
-            Logger.Warn("Event subscription revoked.", subscription.Type);
-        }
+        private static void FireReconnect(string reconnectUrl, CancellationToken cancellationToken) => Task.Run(() => {
+            try {
+                var newSocket = new ClientWebSocket();
+                var newId = ConnectSocketTo(newSocket, reconnectUrl, cancellationToken);
+                Close(WebSocketCloseStatus.NormalClosure, "Reconnect message received.", false, cancellationToken);
+                socket = newSocket;
+                Id = newId;
+                cancellationTokenSource = new();
+                listenTask = Task.Run(() => ListenAction(cancellationTokenSource.Token), CancellationToken.None);
+            } catch (Exception e) {
+                Logger.Error(e);
+            }
+        }, cancellationToken);
     }
 }
