@@ -1,8 +1,9 @@
-﻿namespace Stonebot.UI {
+﻿namespace Stonebot {
     using Avalonia;
     using Avalonia.Controls.ApplicationLifetimes;
     using Avalonia.Threading;
     using System.Threading;
+    using UI;
 
     internal class App : Application {
         public override void OnFrameworkInitializationCompleted() {
@@ -16,32 +17,18 @@
         }
 
         private void FireStartup(CancellationToken cancellationToken) => Task.Run(() => {
-            TryElseConsoleError(Logger.Init);
-            TryElseWarn(Config.Init);
-            TryElseWarn(Logger.DeleteExcessFiles);
-            TryElseWarn(() => Cache.Init(cancellationToken));
+            Utils.TryElseConsoleError(Logger.Init);
+            Utils.TryElseError(Config.Init);
+            Utils.TryElseError(Logger.DeleteExcessFiles);
+            Utils.TryElseError(() => Cache.Init(cancellationToken));
             Dispatcher.UIThread.Invoke(() => ((ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow as MainWindow)?.UpdateUsers());
         }, cancellationToken);
 
         private static void Shutdown(CancellationToken cancellationToken) {
-            TryElseWarn(() => WebSocketClient.Close(cancellationToken));
-            TryElseWarn(Cache.Save);
-            TryElseWarn(Config.Save);
-            TryElseWarn(Logger.Shutdown);
-        }
-
-        private static void TryElseConsoleError(Action action) => TryElseLog(action, Console.Error.WriteLine);
-
-        private static void TryElseWarn(Action action) => TryElseLog(action, (e) => Logger.Warn(e));
-
-        private static void TryElseLog(Action action, Action<Exception> log) {
-            try {
-                action();
-            } catch (Exception e) {
-                try {
-                    log(e);
-                } finally { }
-            }
+            Utils.TryElseError(() => WebSocketClient.Close(cancellationToken));
+            Utils.TryElseError(Cache.Save);
+            Utils.TryElseError(Config.Save);
+            Utils.TryElseError(Logger.Shutdown);
         }
     }
 }

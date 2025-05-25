@@ -1,8 +1,17 @@
-﻿namespace Stonebot.UI {
+﻿namespace Stonebot.UI.Buttons {
     using Avalonia.Threading;
     using System;
 
     internal class ConnectButton : SButtonBase {
+        public enum ConnectState {
+            Connected,
+            Disconnected,
+            Connecting,
+            Disconnecting,
+        }
+
+        public ConnectState State { get => state; private set => SetState(value); }
+
         public ConnectButton() : base() {
             WebSocketClient.ClosedUnexpectedly += OnWebSocketClientClosedUnexpectedly;
             SetState(ConnectState.Disconnected);
@@ -25,47 +34,27 @@
             base.OnClick();
         }
 
-        private enum ConnectState {
-            Connected,
-            Disconnected,
-            Connecting,
-            Disconnecting,
-        }
-
-        private ConnectState State { get => state; set => SetState(value); }
         private ConnectState state;
 
-        private void FireConnect(CancellationToken cancellationToken) => Task.Run(() => {
+        private void FireConnect(CancellationToken cancellationToken) => Task.Run(() => Utils.TryElseError(() => {
             try {
-                try {
-                    WebSocketClient.Connect(cancellationToken);
-                    _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Connected);
-                } catch (OperationCanceledException) {
-                    _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Disconnected);
-                } catch (Exception e) {
-                    _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Disconnected);
-                    Logger.Error(e);
-                }
-            } catch (Exception e) {
-                Logger.Error(e);
+                // TODO: check for cached authorization data
+                WebSocketClient.Connect(cancellationToken);
+                _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Connected);
+            } catch {
+                _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Disconnected);
+                throw;
             }
-        }, cancellationToken);
+        }), cancellationToken);
 
-        private void FireDisconnect(CancellationToken cancellationToken) => Task.Run(() => {
+        private void FireDisconnect(CancellationToken cancellationToken) => Task.Run(() => Utils.TryElseError(() => {
             try {
-                try {
-                    WebSocketClient.Close(cancellationToken);
-                    _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Disconnected);
-                } catch (OperationCanceledException) {
-                    _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Connected);
-                } catch (Exception e) {
-                    _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Connected);
-                    Logger.Error(e);
-                }
-            } catch (Exception e) {
-                Logger.Error(e);
+                WebSocketClient.Close(cancellationToken);
+                _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Disconnected);
+            } catch {
+                _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Connected);
             }
-        }, cancellationToken);
+        }), cancellationToken);
 
         private void OnWebSocketClientClosedUnexpectedly(object? sender, EventArgs args) => Dispatcher.UIThread.Invoke(() => SetState(ConnectState.Disconnected));
 

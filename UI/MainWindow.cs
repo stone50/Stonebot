@@ -4,28 +4,43 @@
     using Avalonia.Media;
     using Avalonia.Media.Imaging;
     using Avalonia.Platform;
+    using Buttons;
 
     internal class MainWindow : Window {
-
         public MainWindow() {
             Title = "Stonebot";
-            Width = 1000;
-            Height = 800;
-
+            Width = 1000d;
+            Height = 800d;
             connectButton = new() {
                 FontFamily = MainTheme.RobotoFont,
-                FontSize = 18,
+                FontSize = 18d,
                 Foreground = MainTheme.NeutralBrush1,
                 HorizontalContentAlignment = HorizontalAlignment.Center,
                 VerticalContentAlignment = VerticalAlignment.Center,
                 CornerRadius = new(50d),
-                Margin = new(10),
-                Padding = new(15, 5, 15, 8),
-                MaxHeight = 50f,
+                Margin = new(10d),
+                Padding = new(15d, 5d, 15d, 8d),
+                MaxHeight = 50d,
             };
-
-            broadcasterButton = GetUserButton();
-            chatterButton = GetUserButton();
+            removeAuthorizationPopup = new();
+            broadcasterButton = new BroadcasterButton(removeAuthorizationPopup, MainTheme.InfoBrush3, MainTheme.InfoBrush1, MainTheme.InfoBrush2) {
+                FontFamily = MainTheme.RobotoFont,
+                FontSize = 16d,
+                Foreground = MainTheme.NeutralBrush1,
+                HorizontalContentAlignment = HorizontalAlignment.Left,
+                VerticalContentAlignment = VerticalAlignment.Center,
+                CornerRadius = new(5d),
+                Padding = new(10d),
+            };
+            chatterButton = new ChatterButton(removeAuthorizationPopup, MainTheme.InfoBrush3, MainTheme.InfoBrush1, MainTheme.InfoBrush2) {
+                FontFamily = MainTheme.RobotoFont,
+                FontSize = 16d,
+                Foreground = MainTheme.NeutralBrush1,
+                HorizontalContentAlignment = HorizontalAlignment.Left,
+                VerticalContentAlignment = VerticalAlignment.Center,
+                CornerRadius = new(5d),
+                Padding = new(10d),
+            };
             var users = new Grid {
                 RowDefinitions = [
                     new(GridLength.Star),
@@ -44,7 +59,7 @@
                     GetUserLabel("Chatter :"),
                     chatterButton,
                 },
-                Margin = new(10),
+                Margin = new(10d),
             };
             for (var i = 0; i < users.Children.Count; ++i) {
                 Grid.SetColumn(users.Children[i], i % 2);
@@ -63,17 +78,16 @@
                     connectButton,
                     users,
                 },
-                MinHeight = 150d,
-                MaxHeight = 150d,
+                Height = 150d,
             };
             for (var i = 0; i < header.Children.Count; ++i) {
                 Grid.SetColumn(header.Children[i], i);
             }
 
             var body = new Grid();
-            Background = MainTheme.PrimaryBrush2;
-            Content = new Grid {
+            var fullGrid = new Grid {
                 RowDefinitions = [
+                    new(GridLength.Auto),
                     new(GridLength.Auto),
                 ],
                 Children = {
@@ -81,27 +95,28 @@
                     body,
                 }
             };
+            for (var i = 0; i < fullGrid.Children.Count; ++i) {
+                Grid.SetRow(fullGrid.Children[i], i);
+            }
+
+            Background = MainTheme.PrimaryBrush2;
+            Content = new Panel {
+                Children = {
+                    fullGrid,
+                    removeAuthorizationPopup,
+                }
+            };
         }
 
         public void UpdateUsers() {
-            broadcasterButton.Content = Cache.BroadcasterAuthorizationData is null ? "Click to Authorize" : Cache.BroadcasterAuthorizationData.UserLogin;
-            chatterButton.Content = Cache.ChatterAuthorizationData is null ? "Click to Authorize" : Cache.ChatterAuthorizationData.UserLogin;
+            broadcasterButton.UpdateState();
+            chatterButton.UpdateState();
         }
 
         private readonly ConnectButton connectButton;
-        private readonly SButton broadcasterButton;
-        private readonly SButton chatterButton;
-
-        private static SButton GetUserButton() => new(MainTheme.InfoBrush3, MainTheme.InfoBrush1, MainTheme.InfoBrush2) {
-            Content = ". . .",
-            FontFamily = MainTheme.RobotoFont,
-            FontSize = 16,
-            Foreground = MainTheme.NeutralBrush1,
-            HorizontalContentAlignment = HorizontalAlignment.Left,
-            VerticalContentAlignment = VerticalAlignment.Center,
-            CornerRadius = new(5d),
-            Padding = new(10),
-        };
+        private readonly BroadcasterButton broadcasterButton;
+        private readonly ChatterButton chatterButton;
+        private readonly RemoveAuthorizationPopup removeAuthorizationPopup;
 
         private static TextBlock GetUserLabel(string text) => new() {
             Text = text,

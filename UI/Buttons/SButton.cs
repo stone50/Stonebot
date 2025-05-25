@@ -1,4 +1,4 @@
-﻿namespace Stonebot.UI {
+﻿namespace Stonebot.UI.Buttons {
     using Avalonia.Media;
 
     internal class SButton : SButtonBase {

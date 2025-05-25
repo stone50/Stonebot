@@ -1,4 +1,4 @@
-﻿namespace Stonebot.UI {
+﻿namespace Stonebot.UI.Buttons {
     using Avalonia.Controls;
     using Avalonia.Input;
 

@@ -21,6 +21,7 @@
 
         public static void Close(CancellationToken cancellationToken) {
             Close(WebSocketCloseStatus.NormalClosure, null, false, cancellationToken);
+            // TODO: check for cached chatter authorization data
             EventSub.DeleteEventSubs(cancellationToken);
         }
 
@@ -137,13 +138,7 @@
 
         private static void FireClose(WebSocketCloseStatus status, string? statusDescription, bool isUnexpectedClose) {
             var cancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(Constants.WebSocketClientFireCloseTimeoutSeconds)).Token;
-            _ = Task.Run(() => {
-                try {
-                    Close(status, statusDescription, isUnexpectedClose, cancellationToken);
-                } catch (Exception e) {
-                    Logger.Error(e);
-                }
-            }, cancellationToken);
+            _ = Task.Run(() => Utils.TryElseError(() => Close(status, statusDescription, isUnexpectedClose, cancellationToken)), cancellationToken);
         }
 
         private static bool TryParseRequest<T>(string request, JsonTypeInfo<T> jsonTypeInfo, out T requestData) where T : struct {
@@ -157,18 +152,14 @@
             return true;
         }
 
-        private static void FireReconnect(string reconnectUrl, CancellationToken cancellationToken) => Task.Run(() => {
-            try {
-                var newSocket = new ClientWebSocket();
-                var newId = ConnectSocketTo(newSocket, reconnectUrl, cancellationToken);
-                Close(WebSocketCloseStatus.NormalClosure, "Reconnect message received.", false, cancellationToken);
-                socket = newSocket;
-                Id = newId;
-                cancellationTokenSource = new();
-                listenTask = Task.Run(() => ListenAction(cancellationTokenSource.Token), CancellationToken.None);
-            } catch (Exception e) {
-                Logger.Error(e);
-            }
-        }, cancellationToken);
+        private static void FireReconnect(string reconnectUrl, CancellationToken cancellationToken) => Task.Run(() => Utils.TryElseError(() => {
+            var newSocket = new ClientWebSocket();
+            var newId = ConnectSocketTo(newSocket, reconnectUrl, cancellationToken);
+            Close(WebSocketCloseStatus.NormalClosure, "Reconnect message received.", false, cancellationToken);
+            socket = newSocket;
+            Id = newId;
+            cancellationTokenSource = new();
+            listenTask = Task.Run(() => ListenAction(cancellationTokenSource.Token), CancellationToken.None);
+        }), cancellationToken);
     }
 }

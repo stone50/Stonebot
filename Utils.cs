@@ -44,6 +44,23 @@
 
         public static void Sync(Task task) => task.GetAwaiter().GetResult();
 
+        public static void TryElseConsoleError(Action action) => TryElseLog(action, Console.Error.WriteLine);
+
+        public static void TryElseWarn(Action action) => TryElseLog(action, (e) => Logger.Warn(e));
+
+        public static void TryElseError(Action action) => TryElseLog(action, (e) => Logger.Error(e));
+
+        public static void TryElseLog(Action action, Action<Exception> log) {
+            try {
+                action();
+            } catch (OperationCanceledException) {
+            } catch (Exception e) {
+                try {
+                    log(e);
+                } finally { }
+            }
+        }
+
         private static HttpResponseMessage InnerSendPostRequest<T>(HttpClient client, string url, T body, JsonTypeInfo<T> bodyJsonTypeInfo, CancellationToken cancellationToken) where T : struct {
             var contentString = JsonSerializer.Serialize(body, bodyJsonTypeInfo);
             var content = new StringContent(contentString, Encoding.UTF8, "application/json");
