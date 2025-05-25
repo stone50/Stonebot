@@ -26,13 +26,13 @@
         // for future use
         public static void CreateBroadcasterAuthorizationData(CancellationToken cancellationToken) {
             ClearBroadcasterAuthorizationData();
-            BroadcasterAuthorizationData = AuthorizationData.Create(Config.BroadcasterClientId, Config.BroadcasterClientSecret, Config.BroadcasterScopes, cancellationToken);
+            BroadcasterAuthorizationData = AuthorizationData.Create(Config.BroadcasterClientId, Config.BroadcasterClientSecret, Constants.BroadcasterScopes, cancellationToken);
         }
 
         // for future use
         public static void CreateChatterAccessToken(CancellationToken cancellationToken) {
             ClearChatterAuthorizationData();
-            ChatterAuthorizationData = AuthorizationData.Create(Config.ChatterClientId, Config.ChatterClientSecret, Config.ChatterScopes, cancellationToken);
+            ChatterAuthorizationData = AuthorizationData.Create(Config.ChatterClientId, Config.ChatterClientSecret, Constants.ChatterScopes, cancellationToken);
         }
 
         public static void ClearBroadcasterAuthorizationData() {

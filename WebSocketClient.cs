@@ -14,7 +14,7 @@
         public static string? Id { get; private set; }
 
         public static void Connect(CancellationToken cancellationToken) {
-            var url = Utils.GetUrl("wss://eventsub.wss.twitch.tv/ws", new() { { "keepalive_timeout_seconds", Config.SocketKeepaliveTimeoutSeconds.ToString() } });
+            var url = Utils.GetUrl("wss://eventsub.wss.twitch.tv/ws", new() { { "keepalive_timeout_seconds", Constants.WebSocketClientKeepaliveTimeoutSeconds.ToString() } });
             ConnectTo(url, cancellationToken);
             EventSub.SubscribeToChannelChatMessage(cancellationToken);
         }
@@ -84,7 +84,7 @@
 
             while (!cancellationToken.IsCancellationRequested) {
                 try {
-                    var timeoutCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(Config.SocketKeepaliveTimeoutSeconds));
+                    var timeoutCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(Constants.WebSocketClientKeepaliveTimeoutSeconds));
                     var linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCancellationTokenSource.Token);
                     var request = GetRequest(socket, linkedCancellationTokenSource.Token);
                     if (request is null) {

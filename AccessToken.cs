@@ -13,7 +13,7 @@
 
         public bool ShouldRefresh => IsExpired || IsAboutToExpire;
         public bool IsExpired => DateTime.UtcNow >= ExpirationDate;
-        public bool IsAboutToExpire => DateTime.UtcNow.AddMilliseconds(Config.AccessTokenExpirationMarginMillis) >= ExpirationDate;
+        public bool IsAboutToExpire => DateTime.UtcNow.AddMilliseconds(Constants.AccessTokenExpirationMarginMillis) >= ExpirationDate;
 
         public static AccessToken Create(string clientId, string clientSecret, string refreshToken, CancellationToken cancellationToken) {
             var accessTokenData = Auth.RefreshAccessToken(clientId, clientSecret, refreshToken, cancellationToken);
