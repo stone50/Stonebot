@@ -66,12 +66,10 @@
                 FontSize = 16,
                 Foreground = MainTheme.InfoBrush1,
             };
-
             twitchConnectionsLink.Click += (_, _) => Process.Start(new ProcessStartInfo {
                 FileName = "https://www.twitch.tv/settings/connections",
                 UseShellExecute = true
             });
-
             var fullGrid = new Grid {
                 RowDefinitions = [
                     new(GridLength.Auto),

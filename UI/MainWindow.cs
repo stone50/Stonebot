@@ -23,7 +23,14 @@
                 MaxHeight = 50d,
             };
             removeAuthorizationPopup = new();
-            broadcasterButton = new BroadcasterButton(removeAuthorizationPopup, MainTheme.InfoBrush3, MainTheme.InfoBrush1, MainTheme.InfoBrush2) {
+            authorizePopup = new();
+            broadcasterButton = new BroadcasterButton(
+                authorizePopup,
+                removeAuthorizationPopup,
+                MainTheme.InfoBrush3,
+                MainTheme.InfoBrush1,
+                MainTheme.InfoBrush2
+            ) {
                 FontFamily = MainTheme.RobotoFont,
                 FontSize = 16d,
                 Foreground = MainTheme.NeutralBrush1,
@@ -32,7 +39,13 @@
                 CornerRadius = new(5d),
                 Padding = new(10d),
             };
-            chatterButton = new ChatterButton(removeAuthorizationPopup, MainTheme.InfoBrush3, MainTheme.InfoBrush1, MainTheme.InfoBrush2) {
+            chatterButton = new ChatterButton(
+                authorizePopup,
+                removeAuthorizationPopup,
+                MainTheme.InfoBrush3,
+                MainTheme.InfoBrush1,
+                MainTheme.InfoBrush2
+            ) {
                 FontFamily = MainTheme.RobotoFont,
                 FontSize = 16d,
                 Foreground = MainTheme.NeutralBrush1,
@@ -104,6 +117,7 @@
                 Children = {
                     fullGrid,
                     removeAuthorizationPopup,
+                    authorizePopup,
                 }
             };
         }
@@ -116,6 +130,7 @@
         private readonly ConnectButton connectButton;
         private readonly BroadcasterButton broadcasterButton;
         private readonly ChatterButton chatterButton;
+        private readonly AuthorizePopup authorizePopup;
         private readonly RemoveAuthorizationPopup removeAuthorizationPopup;
 
         private static TextBlock GetUserLabel(string text) => new() {

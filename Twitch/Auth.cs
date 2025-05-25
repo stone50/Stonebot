@@ -19,7 +19,7 @@
         public static AccessTokenData GetAccessToken(string clientId, string clientSecret, string[] scopes, CancellationToken cancellationToken) => PostForAccessTokenData(new() {
             { "client_id", clientId },
             { "client_secret", clientSecret },
-            { "code",  GetAuthorizationCode(clientId, scopes) },
+            { "code",  GetAuthorizationCode(clientId, scopes, cancellationToken) },
             { "grant_type", "authorization_code" },
             { "redirect_uri", $"http://localhost:{Config.AuthorizationPort}" },
         }, cancellationToken);
@@ -31,13 +31,13 @@
             return Utils.SendPostRequest(Cache.DefaultClient, url, JsonContext.Default.AccessTokenData, cancellationToken);
         }
 
-        private static string GetAuthorizationCode(string clientId, string[] scopes) {
+        private static string GetAuthorizationCode(string clientId, string[] scopes, CancellationToken cancellationToken) {
             var server = new TcpListener(IPAddress.Loopback, Config.AuthorizationPort);
             server.Start();
             try {
                 var state = GetState();
                 StartAuthorizationProcess(clientId, scopes, state);
-                return GetAuthorizationCodeFromServer(server, state);
+                return GetAuthorizationCodeFromServer(server, state, cancellationToken);
             } finally {
                 server.Stop();
             }
@@ -67,8 +67,9 @@
             }
         }
 
-        private static string GetAuthorizationCodeFromServer(TcpListener server, string state) {
-            using var client = server.AcceptTcpClient();
+        private static string GetAuthorizationCodeFromServer(TcpListener server, string state, CancellationToken cancellationToken) {
+            var acceptClientTask = server.AcceptTcpClientAsync(cancellationToken);
+            using var client = Utils.Sync(acceptClientTask);
             var stream = client.GetStream();
             try {
                 var message = GetMessageFromNetworkStream(stream);
@@ -76,16 +77,20 @@
                     throw new Exception("Response did not contain the correct state.");
                 }
 
-                var authorizationCode = codeRegex.Match(message).Groups["code"].Value;
-                WriteToStream(stream, "HTTP/1.1 200 OK<html><head><title>Authorization Succeeded</title></head><body><h1>Authorization Success!</h1><p>You can close this tab.</p></body></html>");
-                return authorizationCode;
+                var codeMatch = codeRegex.Match(message).Groups["code"];
+                if (!codeMatch.Success) {
+                    throw new Exception("Response did not contain an authorization code.");
+                }
+
+                WriteToStream(stream, "HTTP/1.1 200 OK\r\n\r\n<html><head><title>Authorization Succeeded</title></head><body><h1>Authorization Success! :)</h1><p>You can close this tab.</p></body></html>");
+                return codeMatch.Value;
             } catch (OperationCanceledException) {
                 throw;
             } catch (Exception e) {
-                WriteToStream(stream, $"HTTP/1.1 400 Bad Request<html><head><title>Authorization Failed</title></head><body><h1>:(</h1><p>{e.Message}</p><p>See logs for more details.</p></body></html>");
+                WriteToStream(stream, $"HTTP/1.1 200 OK\r\n\r\n<html><head><title>Authorization Failed</title></head><body><h1>:(</h1><p>{e.Message}</p><p>See logs for more details.</p></body></html>");
                 throw;
             } finally {
-                stream.Dispose();
+                stream.Close();
             }
         }
 
