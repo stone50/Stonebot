@@ -1,12 +1,12 @@
 ﻿namespace Stonebot.UI.Buttons {
     using Avalonia.Media;
 
-    internal class ChatterButton(AuthorizePopup authorizePopup,
-        RemoveAuthorizationPopup removeAuthorizationPopup,
+    internal class ChatterButton(
+        MainWindow mainWindow,
         IImmutableBrush defaultBrush,
         IImmutableBrush hoveredBrush,
         IImmutableBrush pressedBrush
-    ) : UserButton(authorizePopup, removeAuthorizationPopup, defaultBrush, hoveredBrush, pressedBrush) {
+    ) : UserButton(mainWindow, defaultBrush, hoveredBrush, pressedBrush) {
         public override AuthorizationData? AuthorizationData => Cache.ChatterAuthorizationData;
 
         public override void Authorize(CancellationToken cancellationToken) => Cache.CreateChatterAccessToken(cancellationToken);

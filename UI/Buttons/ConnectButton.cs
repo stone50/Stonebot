@@ -12,9 +12,9 @@
 
         public ConnectState State { get => state; private set => SetState(value); }
 
-        public ConnectButton() : base() {
+        public ConnectButton(MainWindow mainWindow) : base(mainWindow) {
             WebSocketClient.ClosedUnexpectedly += OnWebSocketClientClosedUnexpectedly;
-            SetState(ConnectState.Disconnected);
+            State = ConnectState.Disconnected;
         }
 
         protected override void OnClick() {
@@ -38,7 +38,22 @@
 
         private void FireConnect(CancellationToken cancellationToken) => Task.Run(() => Utils.TryElseError(() => {
             try {
-                // TODO: check for cached authorization data
+                if (Cache.BroadcasterAuthorizationData is null) {
+                    Dispatcher.UIThread.Invoke(() => {
+                        MainWindow.BroadcasterButton.Background = MainTheme.DangerBrush2;
+                        State = ConnectState.Disconnected;
+                    });
+                    return;
+                }
+
+                if (Cache.ChatterAuthorizationData is null) {
+                    Dispatcher.UIThread.Invoke(() => {
+                        MainWindow.ChatterButton.Background = MainTheme.DangerBrush2;
+                        State = ConnectState.Disconnected;
+                    });
+                    return;
+                }
+
                 WebSocketClient.Connect(cancellationToken);
                 _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Connected);
             } catch {

@@ -4,10 +4,15 @@
     using Buttons;
 
     internal class AuthorizePopup : SPopup {
-        public CancellationTokenSource? CancellationTokenSource { get; private set; }
+        public CancellationTokenSource? CancellationTokenSource;
 
-        public AuthorizePopup() {
-            var cancelButton = new SButton(MainTheme.DangerBrush3, MainTheme.DangerBrush1, MainTheme.DangerBrush2) {
+        public AuthorizePopup(MainWindow mainWindow) : base(mainWindow) {
+            var cancelButton = new SButton(
+                MainWindow,
+                MainTheme.DangerBrush3,
+                MainTheme.DangerBrush1,
+                MainTheme.DangerBrush2
+            ) {
                 Content = "Cancel",
                 FontFamily = MainTheme.RobotoFont,
                 FontSize = 16d,
@@ -21,6 +26,7 @@
             };
             cancelButton.Click += (_, _) => {
                 CancellationTokenSource!.Cancel();
+                CancellationTokenSource = null;
                 IsVisible = false;
             };
             var fullGrid = new Grid {

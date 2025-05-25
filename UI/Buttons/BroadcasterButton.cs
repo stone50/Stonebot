@@ -2,12 +2,11 @@
     using Avalonia.Media;
 
     internal class BroadcasterButton(
-        AuthorizePopup authorizePopup,
-        RemoveAuthorizationPopup removeAuthorizationPopup,
+        MainWindow mainWindow,
         IImmutableBrush defaultBrush,
         IImmutableBrush hoveredBrush,
         IImmutableBrush pressedBrush
-    ) : UserButton(authorizePopup, removeAuthorizationPopup, defaultBrush, hoveredBrush, pressedBrush) {
+    ) : UserButton(mainWindow, defaultBrush, hoveredBrush, pressedBrush) {
         public override AuthorizationData? AuthorizationData => Cache.BroadcasterAuthorizationData;
 
         public override void Authorize(CancellationToken cancellationToken) => Cache.CreateBroadcasterAuthorizationData(cancellationToken);

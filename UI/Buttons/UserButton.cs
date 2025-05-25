@@ -9,22 +9,15 @@
             Loading,
         }
 
-        public readonly AuthorizePopup AuthorizePopup;
-        public readonly RemoveAuthorizationPopup RemoveAuthorizationPopup;
         public AuthorizationState State { get => state; private set => SetState(value); }
         public abstract AuthorizationData? AuthorizationData { get; }
 
         public UserButton(
-            AuthorizePopup authorizePopup,
-            RemoveAuthorizationPopup removeAuthorizationPopup,
+            MainWindow mainWindow,
             IImmutableBrush defaultBrush,
             IImmutableBrush hoveredBrush,
             IImmutableBrush pressedBrush
-        ) : base(defaultBrush, hoveredBrush, pressedBrush) {
-            AuthorizePopup = authorizePopup;
-            RemoveAuthorizationPopup = removeAuthorizationPopup;
-            State = AuthorizationState.Loading;
-        }
+        ) : base(mainWindow, defaultBrush, hoveredBrush, pressedBrush) => State = AuthorizationState.Loading;
 
         public abstract void Authorize(CancellationToken cancellationToken);
 
@@ -36,13 +29,13 @@
             switch (State) {
                 case AuthorizationState.Authorized:
                     State = AuthorizationState.Loading;
-                    RemoveAuthorizationPopup.Show(UpdateState, FireClearAuthorizationData);
+                    MainWindow.RemoveAuthorizationPopup.Show(UpdateState, FireClearAuthorizationData);
                     break;
                 case AuthorizationState.Unauthorized:
                     State = AuthorizationState.Loading;
                     var cancellationTokenSource = new CancellationTokenSource();
                     FireAuthorize(cancellationTokenSource.Token);
-                    AuthorizePopup.Show(cancellationTokenSource);
+                    MainWindow.AuthorizePopup.Show(cancellationTokenSource);
                     break;
             }
 
@@ -79,7 +72,7 @@
         private void FireAuthorize(CancellationToken cancellationToken) => Task.Run(() => {
             Utils.TryElseError(() => Authorize(cancellationToken));
             Dispatcher.UIThread.Invoke(() => {
-                AuthorizePopup.IsVisible = false;
+                MainWindow.AuthorizePopup.IsVisible = false;
                 UpdateState();
             });
         }, cancellationToken);

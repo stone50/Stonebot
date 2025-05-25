@@ -7,11 +7,17 @@
     using Buttons;
 
     internal class MainWindow : Window {
+        public readonly ConnectButton ConnectButton;
+        public readonly BroadcasterButton BroadcasterButton;
+        public readonly ChatterButton ChatterButton;
+        public readonly AuthorizePopup AuthorizePopup;
+        public readonly RemoveAuthorizationPopup RemoveAuthorizationPopup;
+
         public MainWindow() {
             Title = "Stonebot";
             Width = 1000d;
             Height = 800d;
-            connectButton = new() {
+            ConnectButton = new(this) {
                 FontFamily = MainTheme.RobotoFont,
                 FontSize = 18d,
                 Foreground = MainTheme.NeutralBrush1,
@@ -22,11 +28,10 @@
                 Padding = new(15d, 5d, 15d, 8d),
                 MaxHeight = 50d,
             };
-            removeAuthorizationPopup = new();
-            authorizePopup = new();
-            broadcasterButton = new BroadcasterButton(
-                authorizePopup,
-                removeAuthorizationPopup,
+            RemoveAuthorizationPopup = new(this);
+            AuthorizePopup = new(this);
+            BroadcasterButton = new BroadcasterButton(
+                this,
                 MainTheme.InfoBrush3,
                 MainTheme.InfoBrush1,
                 MainTheme.InfoBrush2
@@ -39,9 +44,8 @@
                 CornerRadius = new(5d),
                 Padding = new(10d),
             };
-            chatterButton = new ChatterButton(
-                authorizePopup,
-                removeAuthorizationPopup,
+            ChatterButton = new ChatterButton(
+                this,
                 MainTheme.InfoBrush3,
                 MainTheme.InfoBrush1,
                 MainTheme.InfoBrush2
@@ -68,9 +72,9 @@
                 VerticalAlignment = VerticalAlignment.Center,
                 Children = {
                     GetUserLabel("Broadcaster :"),
-                    broadcasterButton,
+                    BroadcasterButton,
                     GetUserLabel("Chatter :"),
-                    chatterButton,
+                    ChatterButton,
                 },
                 Margin = new(10d),
             };
@@ -88,7 +92,7 @@
                 ],
                 Children = {
                     GetLogo(),
-                    connectButton,
+                    ConnectButton,
                     users,
                 },
                 Height = 150d,
@@ -116,22 +120,16 @@
             Content = new Panel {
                 Children = {
                     fullGrid,
-                    removeAuthorizationPopup,
-                    authorizePopup,
+                    RemoveAuthorizationPopup,
+                    AuthorizePopup,
                 }
             };
         }
 
         public void UpdateUsers() {
-            broadcasterButton.UpdateState();
-            chatterButton.UpdateState();
+            BroadcasterButton.UpdateState();
+            ChatterButton.UpdateState();
         }
-
-        private readonly ConnectButton connectButton;
-        private readonly BroadcasterButton broadcasterButton;
-        private readonly ChatterButton chatterButton;
-        private readonly AuthorizePopup authorizePopup;
-        private readonly RemoveAuthorizationPopup removeAuthorizationPopup;
 
         private static TextBlock GetUserLabel(string text) => new() {
             Text = text,

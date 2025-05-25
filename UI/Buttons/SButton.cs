@@ -6,7 +6,12 @@
         public readonly IImmutableBrush HoveredBrush;
         public readonly IImmutableBrush PressedBrush;
 
-        public SButton(IImmutableBrush defaultBrush, IImmutableBrush hoveredBrush, IImmutableBrush pressedBrush) {
+        public SButton(
+            MainWindow mainWindow,
+            IImmutableBrush defaultBrush,
+            IImmutableBrush hoveredBrush,
+            IImmutableBrush pressedBrush
+        ) : base(mainWindow) {
             DefaultBrush = defaultBrush;
             HoveredBrush = hoveredBrush;
             PressedBrush = pressedBrush;

@@ -8,11 +8,16 @@
     using System.Diagnostics;
 
     internal class RemoveAuthorizationPopup : SPopup {
-        public Action? OnCancel { get; private set; }
-        public Action? OnOk { get; private set; }
+        public Action? OnCancel;
+        public Action? OnOk;
 
-        public RemoveAuthorizationPopup() {
-            var cancelButton = new SButton(MainTheme.DangerBrush3, MainTheme.DangerBrush1, MainTheme.DangerBrush2) {
+        public RemoveAuthorizationPopup(MainWindow mainWindow) : base(mainWindow) {
+            var cancelButton = new SButton(
+                MainWindow,
+                MainTheme.DangerBrush3,
+                MainTheme.DangerBrush1,
+                MainTheme.DangerBrush2
+            ) {
                 Content = "Cancel",
                 FontFamily = MainTheme.RobotoFont,
                 FontSize = 16d,
@@ -26,9 +31,15 @@
             };
             cancelButton.Click += (_, _) => {
                 OnCancel!();
+                OnCancel = null;
                 IsVisible = false;
             };
-            var okButton = new SButton(MainTheme.InfoBrush3, MainTheme.InfoBrush1, MainTheme.InfoBrush2) {
+            var okButton = new SButton(
+                MainWindow,
+                MainTheme.InfoBrush3,
+                MainTheme.InfoBrush1,
+                MainTheme.InfoBrush2
+            ) {
                 Content = "OK",
                 FontFamily = MainTheme.RobotoFont,
                 FontSize = 16d,
@@ -42,6 +53,7 @@
             };
             okButton.Click += (_, _) => {
                 OnOk!();
+                OnOk = null;
                 IsVisible = false;
             };
             var footer = new Grid {

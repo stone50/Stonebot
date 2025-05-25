@@ -21,8 +21,9 @@
 
         public static void Close(CancellationToken cancellationToken) {
             Close(WebSocketCloseStatus.NormalClosure, null, false, cancellationToken);
-            // TODO: check for cached chatter authorization data
-            EventSub.DeleteEventSubs(cancellationToken);
+            if (Cache.ChatterAuthorizationData is not null) {
+                EventSub.DeleteEventSubs(cancellationToken);
+            }
         }
 
         private static ClientWebSocket? socket;
