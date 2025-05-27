@@ -23,9 +23,11 @@
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.3.0" />
     <PackageReference Include="Avalonia.Desktop" Version="11.3.0" />
+    <PackageReference Include="Avalonia.Themes.Simple" Version="11.3.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <AvaloniaResource Include="Assets\JetBrainsMono-Regular.ttf" />
     <AvaloniaResource Include="Assets\logo.png" />
   </ItemGroup>
 

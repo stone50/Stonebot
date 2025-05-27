@@ -1,5 +1,5 @@
 ﻿namespace Stonebot.UI.Buttons {
-    using Avalonia.Media;
+    using Avalonia.Layout;
     using Avalonia.Threading;
 
     internal abstract class UserButton : SButton {
@@ -9,15 +9,21 @@
             Loading,
         }
 
+        public readonly MainPanel MainPanel;
         public AuthorizationState State { get => state; private set => SetState(value); }
         public abstract AuthorizationData? AuthorizationData { get; }
 
-        public UserButton(
-            MainWindow mainWindow,
-            IImmutableBrush defaultBrush,
-            IImmutableBrush hoveredBrush,
-            IImmutableBrush pressedBrush
-        ) : base(mainWindow, defaultBrush, hoveredBrush, pressedBrush) => State = AuthorizationState.Loading;
+        public UserButton(MainPanel mainPanel) : base(MainTheme.InfoBrush3, MainTheme.InfoBrush1, MainTheme.InfoBrush2) {
+            MainPanel = mainPanel;
+            FontFamily = MainTheme.Font;
+            FontSize = 18d;
+            Foreground = MainTheme.NeutralBrush1;
+            HorizontalContentAlignment = HorizontalAlignment.Left;
+            VerticalContentAlignment = VerticalAlignment.Center;
+            CornerRadius = new(5d);
+            Padding = new(10d);
+            State = AuthorizationState.Loading;
+        }
 
         public abstract void Authorize(CancellationToken cancellationToken);
 
@@ -29,13 +35,13 @@
             switch (State) {
                 case AuthorizationState.Authorized:
                     State = AuthorizationState.Loading;
-                    MainWindow.RemoveAuthorizationPopup.Show(UpdateState, FireClearAuthorizationData);
+                    MainPanel.RemoveAuthorizationPopup.Show(UpdateState, FireClearAuthorizationData);
                     break;
                 case AuthorizationState.Unauthorized:
                     State = AuthorizationState.Loading;
                     var cancellationTokenSource = new CancellationTokenSource();
                     FireAuthorize(cancellationTokenSource.Token);
-                    MainWindow.AuthorizePopup.Show(cancellationTokenSource);
+                    MainPanel.AuthorizePopup.Show(cancellationTokenSource);
                     break;
             }
 
@@ -52,12 +58,16 @@
             state = newState;
             switch (State) {
                 case AuthorizationState.Loading:
-                    Content = ". . .";
+                    Content = "...";
                     break;
                 case AuthorizationState.Authorized:
                     Content = AuthorizationData!.UserLogin;
                     break;
                 case AuthorizationState.Unauthorized:
+                    if (MainPanel.ConnectButton.State == ConnectButton.ConnectState.Connected) {
+                        MainPanel.ConnectButton.ManualClick();
+                    }
+
                     Content = "Click to Authorize";
                     break;
             }
@@ -72,7 +82,7 @@
         private void FireAuthorize(CancellationToken cancellationToken) => Task.Run(() => {
             Utils.TryElseError(() => Authorize(cancellationToken));
             Dispatcher.UIThread.Invoke(() => {
-                MainWindow.AuthorizePopup.IsVisible = false;
+                MainPanel.AuthorizePopup.IsVisible = false;
                 UpdateState();
             });
         }, cancellationToken);

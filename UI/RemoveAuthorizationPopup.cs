@@ -1,26 +1,23 @@
 ﻿namespace Stonebot.UI {
     using Avalonia.Controls;
     using Avalonia.Controls.Documents;
-    using Avalonia.Input;
     using Avalonia.Layout;
     using Avalonia.Media;
     using Buttons;
-    using System.Diagnostics;
 
     internal class RemoveAuthorizationPopup : SPopup {
         public Action? OnCancel;
         public Action? OnOk;
 
-        public RemoveAuthorizationPopup(MainWindow mainWindow) : base(mainWindow) {
+        public RemoveAuthorizationPopup(MainPanel mainPanel) : base(mainPanel) {
             var cancelButton = new SButton(
-                MainWindow,
                 MainTheme.DangerBrush3,
                 MainTheme.DangerBrush1,
                 MainTheme.DangerBrush2
             ) {
                 Content = "Cancel",
-                FontFamily = MainTheme.RobotoFont,
-                FontSize = 16d,
+                FontFamily = MainTheme.Font,
+                FontSize = 18d,
                 Foreground = MainTheme.NeutralBrush1,
                 HorizontalContentAlignment = HorizontalAlignment.Center,
                 VerticalContentAlignment = VerticalAlignment.Center,
@@ -35,14 +32,13 @@
                 IsVisible = false;
             };
             var okButton = new SButton(
-                MainWindow,
                 MainTheme.InfoBrush3,
                 MainTheme.InfoBrush1,
                 MainTheme.InfoBrush2
             ) {
-                Content = "OK",
-                FontFamily = MainTheme.RobotoFont,
-                FontSize = 16d,
+                Content = "Ok",
+                FontFamily = MainTheme.Font,
+                FontSize = 18d,
                 Foreground = MainTheme.NeutralBrush1,
                 HorizontalContentAlignment = HorizontalAlignment.Center,
                 VerticalContentAlignment = VerticalAlignment.Center,
@@ -71,17 +67,11 @@
                 Grid.SetColumn(footer.Children[i], i);
             }
 
-            var twitchConnectionsLink = new Button {
+            var twitchConnectionsLink = new Link {
                 Content = "https://www.twitch.tv/settings/connections",
-                Cursor = new Cursor(StandardCursorType.Hand),
-                FontFamily = MainTheme.RobotoFont,
-                FontSize = 16,
-                Foreground = MainTheme.InfoBrush1,
+                FontFamily = MainTheme.Font,
+                FontSize = 18d,
             };
-            twitchConnectionsLink.Click += (_, _) => Process.Start(new ProcessStartInfo {
-                FileName = "https://www.twitch.tv/settings/connections",
-                UseShellExecute = true
-            });
             var fullGrid = new Grid {
                 RowDefinitions = [
                     new(GridLength.Auto),
@@ -93,8 +83,8 @@
                         Background = MainTheme.PrimaryBrush1,
                         Child = new TextBlock{
                             Text = "Remove Cached Authorization?",
-                            FontFamily = MainTheme.RobotoFont,
-                            FontSize = 20d,
+                            FontFamily = MainTheme.Font,
+                            FontSize = 24d,
                             Foreground = MainTheme.NeutralBrush1,
                             Padding = new(10d),
                         },
@@ -103,12 +93,12 @@
                     new TextBlock {
                         TextWrapping = TextWrapping.Wrap,
                         Inlines = [
-                            new Run("This will only remove cached authorization data. To disconnect Stonebot from Twitch, go to "),
-                            new InlineUIContainer(twitchConnectionsLink),
-                            new Run(". Make sure you are logged in to the correct user."),
+                            new Run("This will only remove cached authorization data.\nTo disconnect Stonebot from Twitch, go to:\n"),
+                            twitchConnectionsLink.GetInline(),
+                            new Run("\nMake sure you are logged into the correct user."),
                         ],
-                        FontFamily = MainTheme.RobotoFont,
-                        FontSize = 16d,
+                        FontFamily = MainTheme.Font,
+                        FontSize = 18d,
                         Foreground = MainTheme.NeutralBrush1,
                         Padding = new(10d),
                     },

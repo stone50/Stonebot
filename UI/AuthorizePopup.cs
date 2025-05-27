@@ -6,16 +6,15 @@
     internal class AuthorizePopup : SPopup {
         public CancellationTokenSource? CancellationTokenSource;
 
-        public AuthorizePopup(MainWindow mainWindow) : base(mainWindow) {
+        public AuthorizePopup(MainPanel mainPanel) : base(mainPanel) {
             var cancelButton = new SButton(
-                MainWindow,
                 MainTheme.DangerBrush3,
                 MainTheme.DangerBrush1,
                 MainTheme.DangerBrush2
             ) {
                 Content = "Cancel",
-                FontFamily = MainTheme.RobotoFont,
-                FontSize = 16d,
+                FontFamily = MainTheme.Font,
+                FontSize = 18d,
                 Foreground = MainTheme.NeutralBrush1,
                 HorizontalContentAlignment = HorizontalAlignment.Center,
                 VerticalContentAlignment = VerticalAlignment.Center,
@@ -39,8 +38,8 @@
                         Background = MainTheme.PrimaryBrush1,
                         Child = new TextBlock{
                             Text = "Please authorize in your browser",
-                            FontFamily = MainTheme.RobotoFont,
-                            FontSize = 20d,
+                            FontFamily = MainTheme.Font,
+                            FontSize = 24d,
                             Foreground = MainTheme.NeutralBrush1,
                             Padding = new(10d),
                         },

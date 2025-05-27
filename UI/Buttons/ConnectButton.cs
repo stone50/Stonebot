@@ -10,12 +10,16 @@
             Disconnecting,
         }
 
+        public readonly MainPanel MainPanel;
         public ConnectState State { get => state; private set => SetState(value); }
 
-        public ConnectButton(MainWindow mainWindow) : base(mainWindow) {
+        public ConnectButton(MainPanel mainPanel) {
+            MainPanel = mainPanel;
             WebSocketClient.ClosedUnexpectedly += OnWebSocketClientClosedUnexpectedly;
             State = ConnectState.Disconnected;
         }
+
+        public void ManualClick() => OnClick();
 
         protected override void OnClick() {
             switch (State) {
@@ -40,7 +44,7 @@
             try {
                 if (Cache.BroadcasterAuthorizationData is null) {
                     Dispatcher.UIThread.Invoke(() => {
-                        MainWindow.BroadcasterButton.Background = MainTheme.DangerBrush2;
+                        MainPanel.BroadcasterButton.Background = MainTheme.DangerBrush2;
                         State = ConnectState.Disconnected;
                     });
                     return;
@@ -48,7 +52,7 @@
 
                 if (Cache.ChatterAuthorizationData is null) {
                     Dispatcher.UIThread.Invoke(() => {
-                        MainWindow.ChatterButton.Background = MainTheme.DangerBrush2;
+                        MainPanel.ChatterButton.Background = MainTheme.DangerBrush2;
                         State = ConnectState.Disconnected;
                     });
                     return;

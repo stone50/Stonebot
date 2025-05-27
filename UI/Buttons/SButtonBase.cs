@@ -3,12 +3,7 @@
     using Avalonia.Input;
 
     internal abstract class SButtonBase : Button {
-        public readonly MainWindow MainWindow;
-
-        public SButtonBase(MainWindow mainWindow) {
-            MainWindow = mainWindow;
-            Cursor = new(StandardCursorType.Hand);
-        }
+        public SButtonBase() => Cursor = new(StandardCursorType.Hand);
 
         protected override void OnPointerEntered(PointerEventArgs args) => UpdateBackground();
 

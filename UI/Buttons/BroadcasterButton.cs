@@ -1,12 +1,5 @@
 ﻿namespace Stonebot.UI.Buttons {
-    using Avalonia.Media;
-
-    internal class BroadcasterButton(
-        MainWindow mainWindow,
-        IImmutableBrush defaultBrush,
-        IImmutableBrush hoveredBrush,
-        IImmutableBrush pressedBrush
-    ) : UserButton(mainWindow, defaultBrush, hoveredBrush, pressedBrush) {
+    internal class BroadcasterButton(MainPanel mainPanel) : UserButton(mainPanel) {
         public override AuthorizationData? AuthorizationData => Cache.BroadcasterAuthorizationData;
 
         public override void Authorize(CancellationToken cancellationToken) => Cache.CreateBroadcasterAuthorizationData(cancellationToken);
