@@ -15,22 +15,27 @@
 
         public ConnectButton(MainPanel mainPanel) {
             MainPanel = mainPanel;
+            CornerRadius = new(50d);
+            MaxHeight = 50d;
+            MinWidth = 220d;
             WebSocketClient.ClosedUnexpectedly += OnWebSocketClientClosedUnexpectedly;
             State = ConnectState.Disconnected;
         }
 
-        public void ManualClick() => OnClick();
+        public void Disconnect() {
+            State = ConnectState.Disconnecting;
+            var disconnectCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(Constants.WebSocketClientDisconnectTimeoutSeconds));
+            FireDisconnect(disconnectCancellationTokenSource.Token);
+        }
 
         protected override void OnClick() {
             switch (State) {
                 case ConnectState.Connected:
-                    State = ConnectState.Disconnecting;
-                    var disconnectCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(Constants.WebSocketClientDisconnectTimeoutSeconds));
-                    FireDisconnect(disconnectCancellationTokenSource.Token);
+                    Disconnect();
                     break;
                 case ConnectState.Disconnected:
                     State = ConnectState.Connecting;
-                    var connectCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(Constants.WebSocketClientConnectTimeoutSeconds));
+                    var connectCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(Config.WebSocketConnectTimeoutSeconds));
                     FireConnect(connectCancellationTokenSource.Token);
                     break;
             }

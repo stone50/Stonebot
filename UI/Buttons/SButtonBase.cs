@@ -1,9 +1,20 @@
 ﻿namespace Stonebot.UI.Buttons {
     using Avalonia.Controls;
     using Avalonia.Input;
+    using Avalonia.Layout;
 
     internal abstract class SButtonBase : Button {
-        public SButtonBase() => Cursor = new(StandardCursorType.Hand);
+        public SButtonBase() {
+            FontFamily = MainTheme.Font;
+            Foreground = MainTheme.NeutralBrush1;
+            FontSize = 18d;
+            HorizontalContentAlignment = HorizontalAlignment.Center;
+            VerticalContentAlignment = VerticalAlignment.Center;
+            CornerRadius = new(5d);
+            Padding = new(10d);
+            Margin = new(10d);
+            Cursor = new(StandardCursorType.Hand);
+        }
 
         protected override void OnPointerEntered(PointerEventArgs args) => UpdateBackground();
 

@@ -12,8 +12,11 @@
         public string BroadcasterClientSecret { get; set; }
         [JsonPropertyName("authorization_port")]
         public int AuthorizationPort { get; set; }
-
         [JsonPropertyName("num_max_log_files")]
         public int NumMaxLogFiles { get; set; }
+        [JsonPropertyName("web_socket_connect_timeout_seconds")]
+        public int WebSocketConnectTimeoutSeconds { get; set; }
+        [JsonPropertyName("web_socket_keepalive_timeout_seconds")]
+        public int WebSocketKeepaliveTimeoutSeconds { get; set; }
     }
 }

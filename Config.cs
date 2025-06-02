@@ -9,6 +9,8 @@
         public static string ChatterClientSecret = "";
         public static int AuthorizationPort = 50505;
         public static int NumMaxLogFiles = 5;
+        public static int WebSocketKeepaliveTimeoutSeconds = 10;
+        public static int WebSocketConnectTimeoutSeconds = 3;
 
         public static void Init() {
             if (!File.Exists(Constants.ConfigFilePath)) {
@@ -23,6 +25,8 @@
             ChatterClientSecret = configData.ChatterClientSecret;
             AuthorizationPort = configData.AuthorizationPort;
             NumMaxLogFiles = configData.NumMaxLogFiles;
+            WebSocketKeepaliveTimeoutSeconds = configData.WebSocketKeepaliveTimeoutSeconds;
+            WebSocketConnectTimeoutSeconds = configData.WebSocketConnectTimeoutSeconds;
         }
 
         public static void Save() {
@@ -33,6 +37,8 @@
                 ChatterClientSecret = ChatterClientSecret,
                 AuthorizationPort = AuthorizationPort,
                 NumMaxLogFiles = NumMaxLogFiles,
+                WebSocketKeepaliveTimeoutSeconds = WebSocketKeepaliveTimeoutSeconds,
+                WebSocketConnectTimeoutSeconds = WebSocketConnectTimeoutSeconds,
             }, JsonContext.Default.ConfigData);
             File.WriteAllText(Constants.ConfigFilePath, contents);
         }

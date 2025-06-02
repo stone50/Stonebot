@@ -1,4 +1,4 @@
-﻿namespace Stonebot.UI.Buttons {
+﻿namespace Stonebot.UI.Buttons.UserButtons {
     internal class ChatterButton(MainPanel mainPanel) : UserButton(mainPanel) {
         public override AuthorizationData? AuthorizationData => Cache.ChatterAuthorizationData;
 

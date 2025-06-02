@@ -24,7 +24,7 @@
             Utils.TryElseError(Config.Init);
             Utils.TryElseError(Logger.DeleteExcessFiles);
             Utils.TryElseError(() => Cache.Init(cancellationToken));
-            Dispatcher.UIThread.Invoke(() => ((ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow as MainWindow)?.MainPanel.UpdateUsers());
+            Dispatcher.UIThread.Invoke(() => ((MainWindow)((IClassicDesktopStyleApplicationLifetime)ApplicationLifetime!).MainWindow!).MainPanel.UpdateUsers());
         }, cancellationToken);
 
         private static void Shutdown(CancellationToken cancellationToken) {

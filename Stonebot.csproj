@@ -30,6 +30,7 @@
   <ItemGroup>
     <AvaloniaResource Include="Assets\JetBrainsMono-Regular.ttf" />
     <AvaloniaResource Include="Assets\logo.png" />
+    <AvaloniaResource Include="Assets\cog.png" />
   </ItemGroup>
 
 </Project>

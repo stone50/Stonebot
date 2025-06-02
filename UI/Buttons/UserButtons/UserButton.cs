@@ -1,8 +1,7 @@
-﻿namespace Stonebot.UI.Buttons {
-    using Avalonia.Layout;
+﻿namespace Stonebot.UI.Buttons.UserButtons {
     using Avalonia.Threading;
 
-    internal abstract class UserButton : SButton {
+    internal abstract class UserButton : InfoButton {
         public enum AuthorizationState {
             Authorized,
             Unauthorized,
@@ -13,15 +12,8 @@
         public AuthorizationState State { get => state; private set => SetState(value); }
         public abstract AuthorizationData? AuthorizationData { get; }
 
-        public UserButton(MainPanel mainPanel) : base(MainTheme.InfoBrush3, MainTheme.InfoBrush1, MainTheme.InfoBrush2) {
+        public UserButton(MainPanel mainPanel) {
             MainPanel = mainPanel;
-            FontFamily = MainTheme.Font;
-            FontSize = 18d;
-            Foreground = MainTheme.NeutralBrush1;
-            HorizontalContentAlignment = HorizontalAlignment.Left;
-            VerticalContentAlignment = VerticalAlignment.Center;
-            CornerRadius = new(5d);
-            Padding = new(10d);
             State = AuthorizationState.Loading;
         }
 
@@ -51,6 +43,10 @@
         private AuthorizationState state;
 
         private void SetState(AuthorizationState newState) {
+            if (MainPanel.ConnectButton.State is ConnectButton.ConnectState.Connecting or ConnectButton.ConnectState.Disconnecting) {
+                return;
+            }
+
             if (newState == State) {
                 return;
             }
@@ -65,7 +61,7 @@
                     break;
                 case AuthorizationState.Unauthorized:
                     if (MainPanel.ConnectButton.State == ConnectButton.ConnectState.Connected) {
-                        MainPanel.ConnectButton.ManualClick();
+                        MainPanel.ConnectButton.Disconnect();
                     }
 
                     Content = "Click to Authorize";

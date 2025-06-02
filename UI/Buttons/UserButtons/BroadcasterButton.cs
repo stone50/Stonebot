@@ -1,4 +1,4 @@
-﻿namespace Stonebot.UI.Buttons {
+﻿namespace Stonebot.UI.Buttons.UserButtons {
     internal class BroadcasterButton(MainPanel mainPanel) : UserButton(mainPanel) {
         public override AuthorizationData? AuthorizationData => Cache.BroadcasterAuthorizationData;
 
