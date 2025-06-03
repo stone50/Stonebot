@@ -35,7 +35,6 @@
             Id = ConnectSocketTo(socket, url, cancellationToken);
             cancellationTokenSource = new();
             listenTask = Task.Run(() => ListenAction(cancellationTokenSource.Token), CancellationToken.None);
-
         }
 
         private static void Close(WebSocketCloseStatus status, string? statusDescription, bool isUnexpectedClose, CancellationToken cancellationToken) {
@@ -83,9 +82,10 @@
             }
 
             while (!cancellationToken.IsCancellationRequested) {
+                var timeoutCancellationTokenSource = new CancellationTokenSource();
                 try {
-                    var timeoutCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(Config.WebSocketKeepaliveTimeoutSeconds));
                     var linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCancellationTokenSource.Token);
+                    timeoutCancellationTokenSource.CancelAfter(Config.WebSocketKeepaliveTimeoutSeconds * 1000); // TODO: add margin time
                     var request = GetRequest(socket, linkedCancellationTokenSource.Token);
                     if (request is null) {
                         FireClose(WebSocketCloseStatus.NormalClosure, "Close message received.", true);
@@ -116,7 +116,13 @@
                     FireClose(WebSocketCloseStatus.InvalidMessageType, null, true);
                     return;
                 } catch (OperationCanceledException) {
-                    FireClose(WebSocketCloseStatus.NormalClosure, "Operation cancelled.", false);
+                    if (timeoutCancellationTokenSource.IsCancellationRequested) {
+                        Logger.Warn("No keepalive message received.");
+                        FireClose(WebSocketCloseStatus.NormalClosure, "No keepalive message received.", true);
+                    } else {
+                        FireClose(WebSocketCloseStatus.NormalClosure, "Operation cancelled.", false);
+                    }
+
                     return;
                 } catch (Exception e) {
                     try {

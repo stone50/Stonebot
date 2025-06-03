@@ -13,8 +13,9 @@
 
         public const string AllowedStateChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-~";
 
+        public const int AccessTokenExpirationMarginMillis = 300;
         public const int WebSocketClientDisconnectTimeoutSeconds = 3;
         public const int WebSocketClientFireCloseTimeoutSeconds = 3;
-        public const int AccessTokenExpirationMarginMillis = 300;
+        public const int SendChatMessageFromScriptTimeoutSeconds = 3;
     }
 }

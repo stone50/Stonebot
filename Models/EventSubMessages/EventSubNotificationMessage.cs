@@ -61,7 +61,7 @@
         public string SessionId { get; set; }
     }
 
-    internal struct EventSubNotificationMessagePayloadEvent {
+    public struct EventSubNotificationMessagePayloadEvent {
         [JsonPropertyName("broadcaster_user_id")]
         public string BroadcasterId { get; set; }
         [JsonPropertyName("broadcaster_user_name")]
@@ -104,14 +104,14 @@
         public bool? IsSourceOnly { get; set; }
     }
 
-    internal struct EventSubNotificationMessagePayloadEventMessage {
+    public struct EventSubNotificationMessagePayloadEventMessage {
         [JsonPropertyName("text")]
         public string Text { get; set; }
         [JsonPropertyName("fragments")]
         public EventSubNotificationMessagePayloadEventMessageFragment[] Fragments { get; set; }
     }
 
-    internal struct EventSubNotificationMessagePayloadEventMessageFragment {
+    public struct EventSubNotificationMessagePayloadEventMessageFragment {
         [JsonPropertyName("type")]
         public string Type { get; set; }
         [JsonPropertyName("text")]
@@ -124,7 +124,7 @@
         public EventSubNotificationMessagePayloadEventMessageFragmentMention? Mention { get; set; }
     }
 
-    internal struct EventSubNotificationMessagePayloadEventMessageFragmentCheermote {
+    public struct EventSubNotificationMessagePayloadEventMessageFragmentCheermote {
         [JsonPropertyName("prefix")]
         public string Prefix { get; set; }
         [JsonPropertyName("bits")]
@@ -133,7 +133,7 @@
         public int Tier { get; set; }
     }
 
-    internal struct EventSubNotificationMessagePayloadEventMessageFragmentEmote {
+    public struct EventSubNotificationMessagePayloadEventMessageFragmentEmote {
         [JsonPropertyName("id")]
         public string Id { get; set; }
         [JsonPropertyName("emote_set_id")]
@@ -144,7 +144,7 @@
         public string[] Format { get; set; }
     }
 
-    internal struct EventSubNotificationMessagePayloadEventMessageFragmentMention {
+    public struct EventSubNotificationMessagePayloadEventMessageFragmentMention {
         [JsonPropertyName("user_id")]
         public string UserId { get; set; }
         [JsonPropertyName("user_name")]
@@ -153,7 +153,7 @@
         public string UserLogin { get; set; }
     }
 
-    internal struct EventSubNotificationMessagePayloadEventBadge {
+    public struct EventSubNotificationMessagePayloadEventBadge {
         [JsonPropertyName("set_id")]
         public string SetId { get; set; }
         [JsonPropertyName("id")]
@@ -162,12 +162,12 @@
         public string Info { get; set; }
     }
 
-    internal struct EventSubNotificationMessagePayloadEventCheer {
+    public struct EventSubNotificationMessagePayloadEventCheer {
         [JsonPropertyName("bits")]
         public int Bits { get; set; }
     }
 
-    internal struct EventSubNotificationMessagePayloadEventReply {
+    public struct EventSubNotificationMessagePayloadEventReply {
         [JsonPropertyName("parent_message_id")]
         public string ParentMessageId { get; set; }
         [JsonPropertyName("parent_message_body")]
@@ -188,7 +188,7 @@
         public string ThreadUserLogin { get; set; }
     }
 
-    internal struct EventSubNotificationMessagePayloadEventSourceBadges {
+    public struct EventSubNotificationMessagePayloadEventSourceBadges {
         [JsonPropertyName("set_id")]
         public string SetId { get; set; }
         [JsonPropertyName("id")]

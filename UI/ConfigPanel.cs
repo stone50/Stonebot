@@ -5,7 +5,6 @@
     using Buttons;
     using Popups;
     using Stonebot.UI.Buttons.Links;
-    using System;
 
     internal class ConfigPanel : Panel {
         public readonly MainWindow MainWindow;

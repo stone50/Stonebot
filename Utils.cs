@@ -35,6 +35,11 @@
             _ = response.EnsureSuccessStatusCode();
         }
 
+        public static TResponse SendPostRequest<TBody, TResponse>(HttpClient client, string url, TBody body, JsonTypeInfo<TBody> bodyJsonTypeInfo, JsonTypeInfo<TResponse> responseJsonTypeInfo, CancellationToken cancellationToken) where TBody : struct where TResponse : struct {
+            var response = InnerSendPostRequest(client, url, body, bodyJsonTypeInfo, cancellationToken);
+            return GetMessageContentAs(response, responseJsonTypeInfo, cancellationToken);
+        }
+
         public static T GetMessageContentAs<T>(HttpResponseMessage message, JsonTypeInfo<T> jsonTypeInfo, CancellationToken cancellationToken) where T : struct {
             var messageContentStream = message.Content.ReadAsStream(cancellationToken);
             return JsonSerializer.Deserialize(messageContentStream, jsonTypeInfo);

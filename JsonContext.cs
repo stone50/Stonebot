@@ -19,5 +19,7 @@
     [JsonSerializable(typeof(GetSubscriptionResponse))]
     [JsonSerializable(typeof(GetUsersResponse))]
     [JsonSerializable(typeof(GetVIPsResponse))]
+    [JsonSerializable(typeof(SendChatMessage))]
+    [JsonSerializable(typeof(SendChatMessageResponse))]
     internal partial class JsonContext : JsonSerializerContext { }
 }
