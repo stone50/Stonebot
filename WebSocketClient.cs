@@ -85,7 +85,7 @@
                 var timeoutCancellationTokenSource = new CancellationTokenSource();
                 try {
                     var linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCancellationTokenSource.Token);
-                    timeoutCancellationTokenSource.CancelAfter(Config.WebSocketKeepaliveTimeoutSeconds * 1000); // TODO: add margin time
+                    timeoutCancellationTokenSource.CancelAfter((Config.WebSocketKeepaliveTimeoutSeconds + Config.WebSocketKeepaliveTimeoutMarginSeconds) * 1000);
                     var request = GetRequest(socket, linkedCancellationTokenSource.Token);
                     if (request is null) {
                         FireClose(WebSocketCloseStatus.NormalClosure, "Close message received.", true);

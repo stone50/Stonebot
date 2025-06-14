@@ -18,5 +18,7 @@
         public int WebSocketConnectTimeoutSeconds { get; set; }
         [JsonPropertyName("web_socket_keepalive_timeout_seconds")]
         public int WebSocketKeepaliveTimeoutSeconds { get; set; }
+        [JsonPropertyName("web_socket_keepalive_timeout_margin_seconds")]
+        public int WebSocketKeepaliveTimeoutMarginSeconds { get; set; }
     }
 }

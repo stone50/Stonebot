@@ -7,10 +7,11 @@
         public static string BroadcasterClientSecret = "";
         public static string ChatterClientId = "";
         public static string ChatterClientSecret = "";
-        public static int AuthorizationPort = 50505;
-        public static int NumMaxLogFiles = 5;
-        public static int WebSocketKeepaliveTimeoutSeconds = 10;
-        public static int WebSocketConnectTimeoutSeconds = 3;
+        public static int AuthorizationPort = Constants.AuthorizationPortDefault;
+        public static int NumMaxLogFiles = Constants.NumMaxLogFilesDefault;
+        public static int WebSocketConnectTimeoutSeconds = Constants.WebSocketConnectTimeoutSecondsDefault;
+        public static int WebSocketKeepaliveTimeoutSeconds = Constants.WebSocketKeepaliveTimeoutSecondsDefault;
+        public static int WebSocketKeepaliveTimeoutMarginSeconds = Constants.WebSocketKeepaliveTimeoutMarginSecondsDefault;
 
         public static void Init() {
             if (!File.Exists(Constants.ConfigFilePath)) {
@@ -25,8 +26,9 @@
             ChatterClientSecret = configData.ChatterClientSecret;
             AuthorizationPort = configData.AuthorizationPort;
             NumMaxLogFiles = configData.NumMaxLogFiles;
-            WebSocketKeepaliveTimeoutSeconds = configData.WebSocketKeepaliveTimeoutSeconds;
             WebSocketConnectTimeoutSeconds = configData.WebSocketConnectTimeoutSeconds;
+            WebSocketKeepaliveTimeoutSeconds = configData.WebSocketKeepaliveTimeoutSeconds;
+            WebSocketKeepaliveTimeoutMarginSeconds = configData.WebSocketKeepaliveTimeoutMarginSeconds;
         }
 
         public static void Save() {
@@ -37,8 +39,9 @@
                 ChatterClientSecret = ChatterClientSecret,
                 AuthorizationPort = AuthorizationPort,
                 NumMaxLogFiles = NumMaxLogFiles,
-                WebSocketKeepaliveTimeoutSeconds = WebSocketKeepaliveTimeoutSeconds,
                 WebSocketConnectTimeoutSeconds = WebSocketConnectTimeoutSeconds,
+                WebSocketKeepaliveTimeoutSeconds = WebSocketKeepaliveTimeoutSeconds,
+                WebSocketKeepaliveTimeoutMarginSeconds = WebSocketKeepaliveTimeoutMarginSeconds,
             }, JsonContext.Default.ConfigData);
             File.WriteAllText(Constants.ConfigFilePath, contents);
         }
