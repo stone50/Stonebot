@@ -3,6 +3,7 @@
     using Models.Data;
     using Models.EventSubMessages;
     using Models.Responses;
+    using System.Collections.Concurrent;
     using System.Text.Json.Serialization;
 
     [JsonSerializable(typeof(AccessTokenData))]
@@ -21,5 +22,6 @@
     [JsonSerializable(typeof(GetVIPsResponse))]
     [JsonSerializable(typeof(SendChatMessage))]
     [JsonSerializable(typeof(SendChatMessageResponse))]
+    [JsonSerializable(typeof(ConcurrentDictionary<string, object>))]
     internal partial class JsonContext : JsonSerializerContext { }
 }

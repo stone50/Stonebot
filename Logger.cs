@@ -1,5 +1,6 @@
 ﻿namespace Stonebot {
     using System;
+    using System.Collections.Concurrent;
     using System.Diagnostics;
     using System.Text;
 
@@ -56,7 +57,7 @@
             public readonly DateTime CreationTime = creationTime;
         }
 
-        private static readonly Queue<string> logQueue = new();
+        private static readonly ConcurrentQueue<string> logQueue = new();
         private static string? filePath;
         private static Task? flushingTask;
         private static readonly CancellationTokenSource flushingTaskCancellationTokenSource = new();
@@ -77,14 +78,12 @@
         }
 
         private static void FlushQueue() {
-            var numLogs = logQueue.Count;
-            if (numLogs == 0) {
+            if (logQueue.IsEmpty) {
                 return;
             }
 
             var logs = new StringBuilder();
-            for (var i = 0; i < numLogs; ++i) {
-                var log = logQueue.Dequeue();
+            while (logQueue.TryDequeue(out var log)) {
                 WriteToConsole(log);
                 if (filePath is not null) {
                     _ = logs.AppendLine(log);
