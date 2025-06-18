@@ -4,16 +4,12 @@
 
     internal static class CustomData {
         public static void Init() {
-            Logger.Debug("Custom Data:");
             if (!File.Exists(Constants.CustomDataFilePath)) {
                 return;
             }
 
             var customDataFileContents = File.ReadAllText(Constants.CustomDataFilePath);
             data = JsonSerializer.Deserialize(customDataFileContents, JsonContext.Default.ConcurrentDictionaryStringObject)!;
-            foreach (var item in data) {
-                Logger.Debug(item.Key, item.Value);
-            }
         }
 
         public static object Get(string key) => data[key];

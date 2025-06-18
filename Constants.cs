@@ -2,11 +2,14 @@
     using System.IO;
 
     internal static class Constants {
-        public static readonly string AppDataPath = new(Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Stonebot"));
-        public static readonly string LogsPath = new(Path.Join(AppDataPath, "logs"));
-        public static readonly string ConfigFilePath = new(Path.Join(AppDataPath, "config.json"));
-        public static readonly string CacheFilePath = new(Path.Join(AppDataPath, "cache.json"));
-        public static readonly string CustomDataFilePath = new(Path.Join(AppDataPath, "custom_data.json"));
+        public static readonly string LocalAppDataPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Stonebot");
+        public static readonly string LogsPath = Path.Join(LocalAppDataPath, "logs");
+        public static readonly string ConfigFilePath = Path.Join(LocalAppDataPath, "config.json");
+        public static readonly string CacheFilePath = Path.Join(LocalAppDataPath, "cache.json");
+        public static readonly string CustomDataFilePath = Path.Join(LocalAppDataPath, "custom_data.json");
+        public static readonly string CommandManagerFilePath = Path.Join(LocalAppDataPath, "command_manager.json");
+        public static readonly string ScriptsPath = Path.Join(LocalAppDataPath, "scripts");
+        public static readonly string CommandScriptsPath = Path.Join(ScriptsPath, "commands");
 
         public static readonly string[] BroadcasterScopes = ["channel:read:vips", "channel:read:subscriptions", "moderation:read"];
         public static readonly string[] ChatterScopes = ["user:write:chat", "user:read:chat"];

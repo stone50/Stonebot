@@ -26,10 +26,12 @@
             Utils.TryElseError(() => Cache.Init(cancellationToken));
             Dispatcher.UIThread.Invoke(() => ((MainWindow)((IClassicDesktopStyleApplicationLifetime)ApplicationLifetime!).MainWindow!).MainPanel.UpdateUsers());
             Utils.TryElseError(CustomData.Init);
+            Utils.TryElseError(CommandManager.Init);
         }, cancellationToken);
 
         private static void Shutdown(CancellationToken cancellationToken) {
             Utils.TryElseError(() => WebSocketClient.Close(cancellationToken));
+            Utils.TryElseError(CommandManager.Save);
             Utils.TryElseError(Cache.Save);
             Utils.TryElseError(Config.Save);
             Utils.TryElseError(Logger.Shutdown);

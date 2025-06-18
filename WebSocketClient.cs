@@ -97,7 +97,7 @@
                     }
 
                     if (TryParseRequest(request, JsonContext.Default.EventSubNotificationMessage, out var notificationMessage) && notificationMessage.Metadata.MessageType == "notification") {
-                        ChatMessageHandler.HandleChatMessage(notificationMessage.Payload.Event);
+                        Utils.TryElseError(() => ChatMessageHandler.HandleChatMessage(notificationMessage.Payload.Event));
                         continue;
                     }
 

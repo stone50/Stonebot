@@ -22,6 +22,7 @@
     [JsonSerializable(typeof(GetVIPsResponse))]
     [JsonSerializable(typeof(SendChatMessage))]
     [JsonSerializable(typeof(SendChatMessageResponse))]
+    [JsonSerializable(typeof(CommandManagerData))]
     [JsonSerializable(typeof(ConcurrentDictionary<string, object>))]
     internal partial class JsonContext : JsonSerializerContext { }
 }
