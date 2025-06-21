@@ -12,21 +12,21 @@
         public string? ReplyParentMessageId { get; set; }
     }
 
-    internal struct SendChatMessageResponse {
+    public struct SendChatMessageResponse {
         [JsonPropertyName("data")]
         public SendChatMessageResponseDataPoint[] Data { get; set; }
         [JsonPropertyName("drop_reason")]
         public SendChatMessageResponseDropReason DropReason { get; set; }
     }
 
-    internal struct SendChatMessageResponseDataPoint {
+    public struct SendChatMessageResponseDataPoint {
         [JsonPropertyName("message_id")]
         public string MessageId { get; set; }
         [JsonPropertyName("is_sent")]
         public bool IsSent { get; set; }
     }
 
-    internal struct SendChatMessageResponseDropReason {
+    public struct SendChatMessageResponseDropReason {
         [JsonPropertyName("code")]
         public string Code { get; set; }
         [JsonPropertyName("message")]

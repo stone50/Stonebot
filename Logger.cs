@@ -13,15 +13,15 @@
         }
 
         [Conditional("DEBUG")]
-        public static void Debug(params object?[] messages) => Log(LogType.Debug, messages);
+        public static void Debug(params object?[]? messages) => Log(LogType.Debug, messages);
 
-        public static void Info(params object?[] messages) => Log(LogType.Info, messages);
+        public static void Info(params object?[]? messages) => Log(LogType.Info, messages);
 
-        public static void Warn(params object?[] messages) => Log(LogType.Warning, messages);
+        public static void Warn(params object?[]? messages) => Log(LogType.Warning, messages);
 
-        public static void Error(params object?[] messages) => Log(LogType.Error, messages);
+        public static void Error(params object?[]? messages) => Log(LogType.Error, messages);
 
-        public static void Log(LogType logType, params object?[] messages) => logQueue.Enqueue($"[{GetFormattedDateTime()}] {logType.ToString().ToUpper()}: {string.Join(" | ", messages)}");
+        public static void Log(LogType logType, params object?[]? messages) => logQueue.Enqueue($"[{GetFormattedDateTime()}] {logType.ToString().ToUpper()}: {string.Join(" | ", messages ?? [])}");
 
         public static void Init() {
             _ = Directory.CreateDirectory(Constants.LogsPath);

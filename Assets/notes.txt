@@ -1,0 +1,4 @@
+﻿IronPython:
+	Python 3.4
+	https://github.com/IronLanguages/ironpython3/wiki/Package-compatibility
+	stack overflow exception will crash Stonebot

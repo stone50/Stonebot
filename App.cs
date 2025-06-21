@@ -32,6 +32,7 @@
         private static void Shutdown(CancellationToken cancellationToken) {
             Utils.TryElseError(() => WebSocketClient.Close(cancellationToken));
             Utils.TryElseError(CommandManager.Save);
+            Utils.TryElseError(CustomData.Save);
             Utils.TryElseError(Cache.Save);
             Utils.TryElseError(Config.Save);
             Utils.TryElseError(Logger.Shutdown);
