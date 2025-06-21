@@ -33,8 +33,9 @@
         public const int WebSocketKeepaliveTimeoutMarginSecondsDefault = 5;
 
         public const int AccessTokenExpirationMarginMillis = 300;
+        public const int GetHighestUserPermissionLevelTimeoutSeconds = 5;
+        public const int SendChatMessageFromScriptTimeoutSeconds = 3;
         public const int WebSocketClientDisconnectTimeoutSeconds = 3;
         public const int WebSocketClientFireCloseTimeoutSeconds = 3;
-        public const int SendChatMessageFromScriptTimeoutSeconds = 3;
     }
 }

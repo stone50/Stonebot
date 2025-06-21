@@ -9,16 +9,17 @@
     internal static class PythonRunner {
         public static readonly ScriptEngine Engine = Python.CreateEngine();
 
-        public static void RunScript(ScriptSource script, EventSubNotificationMessagePayloadEvent channelChatMessageEvent) {
-            scope.SetVariable("Stonebot", new ScriptInterface(channelChatMessageEvent));
+        public static void RunScript(ScriptSource script, EventSubNotificationMessagePayloadEvent channelChatMessageEvent, UserPermission.Level permissionLevel) {
+            scope.SetVariable("Stonebot", new ScriptInterface(channelChatMessageEvent, permissionLevel));
             Utils.TryElseError(() => script.Execute(scope));
         }
 
         private static readonly ScriptScope scope = Engine.CreateScope();
     }
 
-    public class ScriptInterface(EventSubNotificationMessagePayloadEvent channelChatMessageEvent) {
+    public class ScriptInterface(EventSubNotificationMessagePayloadEvent channelChatMessageEvent, UserPermission.Level permissionLevel) {
         public readonly EventSubNotificationMessagePayloadEvent ChatMessageData = channelChatMessageEvent;
+        public readonly UserPermission.Level ChatterPermissionLevel = permissionLevel;
 
         public static void Log(params object?[] messages) => Logger.Info(messages);
 

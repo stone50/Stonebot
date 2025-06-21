@@ -15,14 +15,29 @@
             var fileContents = File.ReadAllText(Constants.CommandManagerFilePath);
             var data = JsonSerializer.Deserialize(fileContents, JsonContext.Default.CommandManagerData);
             foreach (var commandData in data.Commands) {
-                Utils.TryElseWarn(() => commands.Add(new(commandData.Name, commandData.Aliases, commandData.CooldownMillis)));
+                Utils.TryElseWarn(() => commands.Add(new(
+                    commandData.Name,
+                    commandData.Aliases,
+                    commandData.Enabled,
+                    commandData.PermissionLevel,
+                    commandData.CooldownMillis
+                )));
             }
         }
 
         public static bool TryUseCommand(EventSubNotificationMessagePayloadEvent channelChatMessageEvent) {
             var keyword = GetCommandKeyword(channelChatMessageEvent.Message.Text);
             foreach (var command in commands) {
-                if (command.Name != keyword && !command.Aliases.Contains(keyword)) {
+                if (command.Name != keyword) {
+                    continue;
+                }
+
+                _ = command.TryProc(channelChatMessageEvent);
+                return true;
+            }
+
+            foreach (var command in commands) {
+                if (!command.Aliases.Contains(keyword)) {
                     continue;
                 }
 
@@ -38,6 +53,8 @@
                 Commands = [.. commands.Select(command => new CommandManagerDataCommand() {
                     Name = command.Name,
                     Aliases = [.. command.Aliases],
+                    Enabled = command.Enabled,
+                    PermissionLevel = command.PermissionLevel,
                     CooldownMillis = command.CooldownMillis,
                 })],
             }, JsonContext.Default.CommandManagerData);

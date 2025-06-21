@@ -7,12 +7,15 @@
     internal class Command {
         public string Name;
         public List<string> Aliases;
-        // TODO: add tags, add permissions
+        public bool Enabled;
+        public UserPermission.Level PermissionLevel;
         public int CooldownMillis;
 
-        public Command(string name, string[] aliases, int cooldownMillis) {
+        public Command(string name, string[] aliases, bool enabled, UserPermission.Level permissionLevel, int cooldownMillis) {
             Name = name;
             Aliases = [.. aliases];
+            Enabled = enabled;
+            PermissionLevel = permissionLevel;
             CooldownMillis = cooldownMillis;
             lastProcTime = DateTime.UtcNow.AddMilliseconds(-CooldownMillis);
             var scriptFilePath = Path.Join(Constants.CommandScriptsPath, $"{Name}.py");
@@ -25,15 +28,23 @@
 
         public void ReloadScriptFile() => scriptSource = PythonRunner.Engine.CreateScriptSourceFromFile(scriptSource.Path);
 
-        public bool CanProc() => lastProcTime.AddMilliseconds(CooldownMillis) <= DateTime.UtcNow;
-
         public bool TryProc(EventSubNotificationMessagePayloadEvent channelChatMessageEvent) {
-            if (!CanProc()) {
+            if (!Enabled) {
+                return false;
+            }
+
+            if (lastProcTime.AddMilliseconds(CooldownMillis) > DateTime.UtcNow) {
+                return false;
+            }
+
+            var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(Constants.GetHighestUserPermissionLevelTimeoutSeconds));
+            var userPermissionLevel = UserPermission.GetHighestLevel(channelChatMessageEvent.ChatterId, cancellationTokenSource.Token);
+            if (userPermissionLevel < PermissionLevel) {
                 return false;
             }
 
             lastProcTime = DateTime.UtcNow;
-            PythonRunner.RunScript(scriptSource, channelChatMessageEvent);
+            PythonRunner.RunScript(scriptSource, channelChatMessageEvent, userPermissionLevel);
             return true;
         }
 
