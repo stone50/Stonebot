@@ -4,6 +4,7 @@
     using Models;
     using Models.EventSubMessages;
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using Twitch;
 
     internal static class PythonRunner {
@@ -18,6 +19,7 @@
     }
 
     public class ScriptInterface(EventSubNotificationMessagePayloadEvent channelChatMessageEvent, UserPermission.Level permissionLevel) {
+        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(ScriptInterface))]
         public readonly EventSubNotificationMessagePayloadEvent ChatMessageData = channelChatMessageEvent;
         public readonly UserPermission.Level ChatterPermissionLevel = permissionLevel;
 
