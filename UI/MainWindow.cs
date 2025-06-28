@@ -19,6 +19,7 @@
                     ConfigPanel,
                 }
             };
+            WindowState = WindowState.Maximized;
         }
     }
 }

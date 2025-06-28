@@ -1,6 +1,7 @@
 ﻿namespace Stonebot {
     using Microsoft.Scripting.Hosting;
     using Models.EventSubMessages;
+    using PythonInterface;
     using System;
     using System.Collections.Generic;
 
@@ -23,10 +24,10 @@
                 File.Create(scriptFilePath).Close();
             }
 
-            scriptSource = PythonRunner.Engine.CreateScriptSourceFromFile(scriptFilePath);
+            scriptSource = ScriptRunner.Engine.CreateScriptSourceFromFile(scriptFilePath);
         }
 
-        public void ReloadScriptFile() => scriptSource = PythonRunner.Engine.CreateScriptSourceFromFile(scriptSource.Path);
+        public void ReloadScriptFile() => scriptSource = ScriptRunner.Engine.CreateScriptSourceFromFile(scriptSource.Path);
 
         public bool TryProc(EventSubNotificationMessagePayloadEvent channelChatMessageEvent) {
             if (!Enabled) {
@@ -44,7 +45,7 @@
             }
 
             lastProcTime = DateTime.UtcNow;
-            PythonRunner.RunScript(scriptSource, channelChatMessageEvent, userPermissionLevel);
+            ScriptRunner.Run(scriptSource, channelChatMessageEvent, userPermissionLevel);
             return true;
         }
 
