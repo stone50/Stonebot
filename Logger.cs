@@ -21,7 +21,13 @@
 
         public static void Error(params object?[]? messages) => Log(LogType.Error, messages);
 
-        public static void Log(LogType logType, params object?[]? messages) => logQueue.Enqueue($"[{GetFormattedDateTime()}] {logType.ToString().ToUpper()}: {string.Join(" | ", messages ?? [])}");
+        public static void Log(LogType logType, params object?[]? messages) {
+            if (flushingTask is not null && flushingTask.IsCompleted) {
+                return;
+            }
+
+            logQueue.Enqueue($"[{GetFormattedDateTime()}] {logType.ToString().ToUpper()}: {string.Join(" | ", messages ?? [])}");
+        }
 
         public static void Init() {
             _ = Directory.CreateDirectory(Constants.LogsPath);
