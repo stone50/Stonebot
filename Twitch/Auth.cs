@@ -16,7 +16,7 @@
             { "refresh_token",  refreshToken },
         }, cancellationToken);
 
-        public static AccessTokenData GetAccessToken(string clientId, string clientSecret, string[] scopes, CancellationToken cancellationToken) => PostForAccessTokenData(new() {
+        public static AccessTokenData GetAccessToken(string clientId, string clientSecret, string scopes, CancellationToken cancellationToken) => PostForAccessTokenData(new() {
             { "client_id", clientId },
             { "client_secret", clientSecret },
             { "code",  GetAuthorizationCode(clientId, scopes, cancellationToken) },
@@ -31,7 +31,7 @@
             return Utils.SendPostRequest(Cache.DefaultClient, url, JsonContext.Default.AccessTokenData, cancellationToken);
         }
 
-        private static string GetAuthorizationCode(string clientId, string[] scopes, CancellationToken cancellationToken) {
+        private static string GetAuthorizationCode(string clientId, string scopes, CancellationToken cancellationToken) {
             var server = new TcpListener(IPAddress.Loopback, Config.AuthorizationPort);
             server.Start();
             try {
@@ -52,13 +52,13 @@
             return new(stateChars);
         }
 
-        private static void StartAuthorizationProcess(string clientId, string[] scopes, string state) {
+        private static void StartAuthorizationProcess(string clientId, string scopes, string state) {
             var url = Utils.GetUrl("https://id.twitch.tv/oauth2/authorize", new() {
                 { "client_id", clientId },
                 { "force_verify",  "true"},
                 { "redirect_uri", $"http://localhost:{Config.AuthorizationPort}"},
                 { "response_type", "code"},
-                { "scope", string.Join(" ", scopes)},
+                { "scope", scopes},
                 { "state", state},
             });
             var process = new Process { StartInfo = { UseShellExecute = true, FileName = url } };

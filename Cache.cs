@@ -15,22 +15,22 @@
             var cacheFileContents = File.ReadAllText(Constants.CacheFilePath);
             var cacheData = JsonSerializer.Deserialize(cacheFileContents, JsonContext.Default.CacheData);
             if (cacheData.BroadcasterRefreshToken is not null) {
-                BroadcasterAuthorizationData = AuthorizationData.Create(Config.BroadcasterClientId, Config.BroadcasterClientSecret, cacheData.BroadcasterRefreshToken, cancellationToken);
+                BroadcasterAuthorizationData = AuthorizationData.CreateFromRefreshToken(Config.BroadcasterClientId, Config.BroadcasterClientSecret, cacheData.BroadcasterRefreshToken, cancellationToken);
             }
 
             if (cacheData.ChatterRefreshToken is not null) {
-                ChatterAuthorizationData = AuthorizationData.Create(Config.ChatterClientId, Config.ChatterClientSecret, cacheData.ChatterRefreshToken, cancellationToken);
+                ChatterAuthorizationData = AuthorizationData.CreateFromRefreshToken(Config.ChatterClientId, Config.ChatterClientSecret, cacheData.ChatterRefreshToken, cancellationToken);
             }
         }
 
         public static void CreateBroadcasterAuthorizationData(CancellationToken cancellationToken) {
             ClearBroadcasterAuthorizationData();
-            BroadcasterAuthorizationData = AuthorizationData.Create(Config.BroadcasterClientId, Config.BroadcasterClientSecret, Constants.BroadcasterScopes, cancellationToken);
+            BroadcasterAuthorizationData = AuthorizationData.CreateFromScopes(Config.BroadcasterClientId, Config.BroadcasterClientSecret, Constants.BroadcasterScopes, cancellationToken);
         }
 
         public static void CreateChatterAccessToken(CancellationToken cancellationToken) {
             ClearChatterAuthorizationData();
-            ChatterAuthorizationData = AuthorizationData.Create(Config.ChatterClientId, Config.ChatterClientSecret, Constants.ChatterScopes, cancellationToken);
+            ChatterAuthorizationData = AuthorizationData.CreateFromScopes(Config.ChatterClientId, Config.ChatterClientSecret, Constants.ChatterScopes, cancellationToken);
         }
 
         public static void ClearBroadcasterAuthorizationData() {

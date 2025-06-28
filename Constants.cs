@@ -11,8 +11,8 @@
         public static readonly string ScriptsPath = Path.Join(LocalAppDataPath, "scripts");
         public static readonly string CommandScriptsPath = Path.Join(ScriptsPath, "commands");
 
-        public static readonly string[] BroadcasterScopes = ["channel:read:vips", "channel:read:subscriptions", "moderation:read"];
-        public static readonly string[] ChatterScopes = ["user:write:chat", "user:read:chat"];
+        public const string BroadcasterScopes = "channel:read:vips channel:read:subscriptions moderation:read";
+        public const string ChatterScopes = "user:write:chat user:read:chat";
 
         public const string AllowedStateChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-~";
 

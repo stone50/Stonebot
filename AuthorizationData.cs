@@ -4,13 +4,13 @@
         public readonly string UserLogin;
         public readonly AccessToken AccessToken;
 
-        public static AuthorizationData Create(string clientId, string clientSecret, string refreshToken, CancellationToken cancellationToken) {
-            var accessToken = AccessToken.Create(clientId, clientSecret, refreshToken, cancellationToken);
+        public static AuthorizationData CreateFromRefreshToken(string clientId, string clientSecret, string refreshToken, CancellationToken cancellationToken) {
+            var accessToken = AccessToken.CreateFromRefreshToken(clientId, clientSecret, refreshToken, cancellationToken);
             return Create(accessToken, cancellationToken);
         }
 
-        public static AuthorizationData Create(string clientId, string clientSecret, string[] scopes, CancellationToken cancellationToken) {
-            var accessToken = AccessToken.Create(clientId, clientSecret, scopes, cancellationToken);
+        public static AuthorizationData CreateFromScopes(string clientId, string clientSecret, string scopes, CancellationToken cancellationToken) {
+            var accessToken = AccessToken.CreateFromScopes(clientId, clientSecret, scopes, cancellationToken);
             return Create(accessToken, cancellationToken);
         }
 

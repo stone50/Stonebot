@@ -15,12 +15,12 @@
         public bool IsExpired => DateTime.UtcNow >= ExpirationDate;
         public bool IsAboutToExpire => DateTime.UtcNow.AddMilliseconds(Constants.AccessTokenExpirationMarginMillis) >= ExpirationDate;
 
-        public static AccessToken Create(string clientId, string clientSecret, string refreshToken, CancellationToken cancellationToken) {
+        public static AccessToken CreateFromRefreshToken(string clientId, string clientSecret, string refreshToken, CancellationToken cancellationToken) {
             var accessTokenData = Auth.RefreshAccessToken(clientId, clientSecret, refreshToken, cancellationToken);
             return FromData(accessTokenData, clientId, clientSecret);
         }
 
-        public static AccessToken Create(string clientId, string clientSecret, string[] scopes, CancellationToken cancellationToken) {
+        public static AccessToken CreateFromScopes(string clientId, string clientSecret, string scopes, CancellationToken cancellationToken) {
             var accessTokenData = Auth.GetAccessToken(clientId, clientSecret, scopes, cancellationToken);
             return FromData(accessTokenData, clientId, clientSecret);
         }
