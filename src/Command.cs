@@ -1,7 +1,7 @@
 ﻿namespace Stonebot {
     using Microsoft.Scripting.Hosting;
     using Models.EventSubMessages;
-    using PythonInterface;
+    using Python;
     using System;
     using System.Collections.Generic;
 

@@ -19,13 +19,13 @@
     <SelfContained>true</SelfContained>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 
-    <ApplicationIcon>Assets\logo.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\logo.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.3.1" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.3.1" />
-    <PackageReference Include="Avalonia.Themes.Simple" Version="11.3.1" />
+    <PackageReference Include="Avalonia" Version="11.3.2" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.2" />
+    <PackageReference Include="Avalonia.Themes.Simple" Version="11.3.2" />
     <PackageReference Include="IronPython" Version="3.4.2" />
     <PackageReference Include="IronPython.StdLib" Version="3.4.2" />
   </ItemGroup>
@@ -37,9 +37,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AvaloniaResource Include="Assets\JetBrainsMono-Regular.ttf" />
-    <AvaloniaResource Include="Assets\logo.png" />
-    <AvaloniaResource Include="Assets\cog.png" />
+    <AvaloniaResource Include="Resources\JetBrainsMono-Regular.ttf" />
+    <AvaloniaResource Include="Resources\logo.png" />
+    <AvaloniaResource Include="Resources\cog.png" />
   </ItemGroup>
 
 </Project>

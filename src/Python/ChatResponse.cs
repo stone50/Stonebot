@@ -1,10 +1,10 @@
-﻿namespace Stonebot.PythonInterface {
+﻿namespace Stonebot.Python {
     using Models;
     using System.Linq;
 
     public class ChatResponse(SendChatMessageResponse response) {
         public readonly DataPoint[] data = [.. response.Data.Select(dataPoint => new DataPoint(dataPoint))];
-        public readonly DropReason drop_reason = new DropReason(response.DropReason);
+        public readonly DropReason drop_reason = new(response.DropReason);
 
         public class DataPoint(SendChatMessageResponseDataPoint dataPoint) {
             public readonly string message_id = dataPoint.MessageId;

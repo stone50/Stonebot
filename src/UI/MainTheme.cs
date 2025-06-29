@@ -84,7 +84,7 @@
         public static readonly IImmutableBrush NeutralBrush5 = GetImmutableBrush(NeutralColor5);
         public static readonly IImmutableBrush NeutralBrush6 = GetImmutableBrush(NeutralColor6);
 
-        public static readonly FontFamily Font = new("avares://Stonebot/Assets/JetBrainsMono-Regular.ttf#JetBrains Mono");
+        public static readonly FontFamily Font = new("avares://Stonebot/Resources/JetBrainsMono-Regular.ttf#JetBrains Mono");
 
         private static IImmutableBrush GetImmutableBrush(Color color) => new SolidColorBrush(color).ToImmutable();
     }

@@ -1,4 +1,4 @@
-﻿namespace Stonebot.PythonInterface {
+﻿namespace Stonebot.Python {
     public class ChatterPermission(UserPermission.Level permissionLevel) {
         public readonly int level = (int)permissionLevel;
         public readonly string role = permissionLevel switch {

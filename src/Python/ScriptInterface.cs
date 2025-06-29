@@ -1,4 +1,4 @@
-﻿namespace Stonebot.PythonInterface {
+﻿namespace Stonebot.Python {
     using Models.EventSubMessages;
     using System;
     using System.Diagnostics.CodeAnalysis;

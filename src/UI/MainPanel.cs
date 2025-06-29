@@ -61,7 +61,7 @@
                 Background = MainTheme.PrimaryBrush1,
                 Height = 150d,
             };
-            var body = new Grid(); // TODO
+            var body = new InteractionGrid();
             var fullGrid = new SGrid([
                 GridLength.Auto,
                 GridLength.Star,
