@@ -90,7 +90,7 @@
 
             var logs = new StringBuilder();
             while (logQueue.TryDequeue(out var log)) {
-                WriteToConsole(log);
+                LogToConsole(log);
                 if (filePath is not null) {
                     _ = logs.AppendLine(log);
                 }
@@ -101,7 +101,7 @@
             }
         }
 
-        [Conditional("DEBUG")]
-        private static void WriteToConsole(string log) => Console.WriteLine(log);
+        [Conditional("CONSOLE")]
+        private static void LogToConsole(string log) => Console.WriteLine(log);
     }
 }

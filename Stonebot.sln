@@ -7,12 +7,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stonebot", "Stonebot.csproj
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug Console|Any CPU = Debug Console|Any CPU
 		Debug|Any CPU = Debug|Any CPU
+		Release Console|Any CPU = Release Console|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{175651F5-548C-4CAB-8EC9-C7781555B2B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{175651F5-548C-4CAB-8EC9-C7781555B2B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{175651F5-548C-4CAB-8EC9-C7781555B2B3}.Debug Console|Any CPU.ActiveCfg = Debug Console|Any CPU
+		{175651F5-548C-4CAB-8EC9-C7781555B2B3}.Debug Console|Any CPU.Build.0 = Debug Console|Any CPU
+		{175651F5-548C-4CAB-8EC9-C7781555B2B3}.Release Console|Any CPU.ActiveCfg = Release Console|Any CPU
+		{175651F5-548C-4CAB-8EC9-C7781555B2B3}.Release Console|Any CPU.Build.0 = Release Console|Any CPU
 		{175651F5-548C-4CAB-8EC9-C7781555B2B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{175651F5-548C-4CAB-8EC9-C7781555B2B3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
