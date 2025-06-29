@@ -57,6 +57,7 @@
                     Content = "...";
                     break;
                 case AuthorizationState.Authorized:
+                    Background = DefaultBrush;
                     Content = AuthorizationData!.UserLogin;
                     break;
                 case AuthorizationState.Unauthorized:

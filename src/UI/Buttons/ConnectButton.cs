@@ -34,9 +34,7 @@
                     Disconnect();
                     break;
                 case ConnectState.Disconnected:
-                    State = ConnectState.Connecting;
-                    var connectCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(Config.WebSocketConnectTimeoutSeconds));
-                    FireConnect(connectCancellationTokenSource.Token);
+                    Connect();
                     break;
             }
 
@@ -45,24 +43,24 @@
 
         private ConnectState state;
 
+        private void Connect() {
+            if (Cache.BroadcasterAuthorizationData is null) {
+                MainPanel.BroadcasterButton.Background = MainTheme.DangerBrush2;
+                return;
+            }
+
+            if (Cache.ChatterAuthorizationData is null) {
+                MainPanel.ChatterButton.Background = MainTheme.DangerBrush2;
+                return;
+            }
+
+            State = ConnectState.Connecting;
+            var connectCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(Config.WebSocketConnectTimeoutSeconds));
+            FireConnect(connectCancellationTokenSource.Token);
+        }
+
         private void FireConnect(CancellationToken cancellationToken) => Task.Run(() => Utils.TryElseError(() => {
             try {
-                if (Cache.BroadcasterAuthorizationData is null) {
-                    Dispatcher.UIThread.Invoke(() => {
-                        MainPanel.BroadcasterButton.Background = MainTheme.DangerBrush2;
-                        State = ConnectState.Disconnected;
-                    });
-                    return;
-                }
-
-                if (Cache.ChatterAuthorizationData is null) {
-                    Dispatcher.UIThread.Invoke(() => {
-                        MainPanel.ChatterButton.Background = MainTheme.DangerBrush2;
-                        State = ConnectState.Disconnected;
-                    });
-                    return;
-                }
-
                 WebSocketClient.Connect(cancellationToken);
                 _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Connected);
             } catch {
