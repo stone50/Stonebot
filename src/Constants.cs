@@ -2,6 +2,10 @@
     using System.IO;
 
     internal static class Constants {
+        public const string BaseAvaloniaResourcePath = "avares://Stonebot/Resources";
+        public static readonly string LogoAvaloniaResourceFilePath = Path.Join(BaseAvaloniaResourcePath, "Logo.png");
+        public static readonly string CogAvaloniaResourceFilePath = Path.Join(BaseAvaloniaResourcePath, "Cog.png");
+
         public static readonly string LocalAppDataPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Stonebot");
         public static readonly string LogsPath = Path.Join(LocalAppDataPath, "logs");
         public static readonly string ConfigFilePath = Path.Join(LocalAppDataPath, "config.json");
@@ -9,6 +13,8 @@
         public static readonly string CustomDataFilePath = Path.Join(LocalAppDataPath, "custom_data.json");
         public static readonly string CommandManagerFilePath = Path.Join(LocalAppDataPath, "command_manager.json");
         public static readonly string ScriptsPath = Path.Join(LocalAppDataPath, "scripts");
+        public static readonly string ScriptsTypeHintsPackagePath = Path.Join(ScriptsPath, "stonebot");
+        public static readonly string ScriptsTypeHintsFilePath = Path.Join(ScriptsTypeHintsPackagePath, "__init__.pyi");
         public static readonly string CommandScriptsPath = Path.Join(ScriptsPath, "commands");
 
         public const string BroadcasterScopes = "channel:read:vips channel:read:subscriptions moderation:read";

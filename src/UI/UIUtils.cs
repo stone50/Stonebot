@@ -7,7 +7,7 @@
 
     internal static class UIUtils {
         public static Image GetLogo() {
-            var uri = new Uri("avares://Stonebot/Resources/logo.png");
+            var uri = new Uri(Constants.LogoAvaloniaResourceFilePath);
             var assetStream = AssetLoader.Open(uri);
             var bitmap = new Bitmap(assetStream);
             var logo = new Image {
@@ -19,7 +19,7 @@
         }
 
         public static Image GetConfigIcon() {
-            var uri = new Uri("avares://Stonebot/Resources/cog.png");
+            var uri = new Uri(Constants.CogAvaloniaResourceFilePath);
             var assetStream = AssetLoader.Open(uri);
             var bitmap = new Bitmap(assetStream);
             var icon = new Image {

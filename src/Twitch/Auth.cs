@@ -1,5 +1,6 @@
 ﻿namespace Stonebot.Twitch {
     using Models.Data;
+    using Resources;
     using System;
     using System.Diagnostics;
     using System.Net;
@@ -82,12 +83,12 @@
                     throw new Exception("Response did not contain an authorization code.");
                 }
 
-                WriteToStream(stream, "HTTP/1.1 200 OK\r\n\r\n<html><head><title>Authorization Succeeded</title></head><body><h1>Authorization Success! :)</h1><p>You can close this tab.</p></body></html>");
+                WriteToStream(stream, $"HTTP/1.1 200 OK\r\n\r\n{Embedded.AuthSuccessHtml}");
                 return codeMatch.Value;
             } catch (OperationCanceledException) {
                 throw;
             } catch (Exception e) {
-                WriteToStream(stream, $"HTTP/1.1 200 OK\r\n\r\n<html><head><title>Authorization Failed</title></head><body><h1>:(</h1><p>{e.Message}</p><p>See logs for more details.</p></body></html>");
+                WriteToStream(stream, $"HTTP/1.1 200 OK\r\n\r\n{Embedded.AuthFailHtml.Replace("<error-message />", e.Message)}");
                 throw;
             } finally {
                 stream.Close();

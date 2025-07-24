@@ -59,8 +59,23 @@
 
   <ItemGroup>
     <AvaloniaResource Include="Resources\JetBrainsMono-Regular.ttf" />
-    <AvaloniaResource Include="Resources\logo.png" />
-    <AvaloniaResource Include="Resources\cog.png" />
+    <AvaloniaResource Include="Resources\Logo.png" />
+    <AvaloniaResource Include="Resources\Cog.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources\Embedded.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Embedded.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Embedded.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Embedded.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

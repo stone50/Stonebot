@@ -3,6 +3,7 @@
     using Avalonia.Controls.ApplicationLifetimes;
     using Avalonia.Themes.Simple;
     using Avalonia.Threading;
+    using Resources;
     using System.Threading;
     using UI;
 
@@ -27,6 +28,7 @@
             Dispatcher.UIThread.Invoke(() => ((MainWindow)((IClassicDesktopStyleApplicationLifetime)ApplicationLifetime!).MainWindow!).MainPanel.UpdateUsers());
             Utils.TryElseError(CustomData.Init);
             Utils.TryElseError(CommandManager.Init);
+            Utils.TryElseError(CopyScriptsTypeHintsFile);
         }, cancellationToken);
 
         private static void Shutdown(CancellationToken cancellationToken) {
@@ -36,6 +38,11 @@
             Utils.TryElseError(Cache.Save);
             Utils.TryElseError(Config.Save);
             Utils.TryElseError(Logger.Shutdown);
+        }
+
+        private static void CopyScriptsTypeHintsFile() {
+            _ = Directory.CreateDirectory(Constants.ScriptsTypeHintsPackagePath);
+            File.WriteAllText(Constants.ScriptsTypeHintsFilePath, Embedded.ScriptsTypeHintsFile);
         }
     }
 }
