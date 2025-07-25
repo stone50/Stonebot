@@ -59,8 +59,8 @@
 
   <ItemGroup>
     <AvaloniaResource Include="Resources\JetBrainsMono-Regular.ttf" />
-    <AvaloniaResource Include="Resources\Logo.png" />
-    <AvaloniaResource Include="Resources\Cog.png" />
+    <AvaloniaResource Include="Resources\logo.png" />
+    <AvaloniaResource Include="Resources\cog.png" />
   </ItemGroup>
 
   <ItemGroup>
