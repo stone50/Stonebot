@@ -21,29 +21,29 @@
             return new(Chat.Send(message, reply_parent_message_id, cancellationTokenSource.Token));
         }
 
-        public static object? get_data(string key) => CustomData.Get(key);
+        public static object? get(string key) => CustomData.Get(key);
 
-        public static void set_data(string key, object value) {
-            set_data_without_saving(key, value);
-            save_data();
+        public static void set(string key, object value) {
+            set_without_saving(key, value);
+            save();
         }
 
-        public static void set_data_without_saving(string key, object value) => CustomData.Set(key, value);
+        public static void set_without_saving(string key, object value) => CustomData.Set(key, value);
 
-        public static bool delete_data(string key) {
-            if (!delete_data_without_saving(key)) {
+        public static bool delete(string key) {
+            if (!delete_without_saving(key)) {
                 return false;
             }
 
-            save_data();
+            save();
             return true;
         }
 
-        public static bool delete_data_without_saving(string key) => CustomData.Delete(key);
+        public static bool delete_without_saving(string key) => CustomData.Delete(key);
 
-        public static bool data_contains(string key) => CustomData.Contains(key);
+        public static bool has(string key) => CustomData.Contains(key);
 
-        public static void save_data() => CustomData.Save();
+        public static void save() => CustomData.Save();
     }
 #pragma warning restore IDE1006 // Naming Styles
 }
