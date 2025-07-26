@@ -5,39 +5,51 @@
     using Avalonia.Media;
 
     internal class SPopup : Panel {
-        public SPopup(string title, InlineCollection? body, Control footer) {
+        public SPopup(string title, InlineCollection? bodyInlines, Control footer) {
             HorizontalAlignment = HorizontalAlignment.Stretch;
             VerticalAlignment = VerticalAlignment.Stretch;
             Background = new SolidColorBrush(Color.FromArgb(100, 0, 0, 0));
             IsVisible = false;
-            Children.Add(new Border() {
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                Background = MainTheme.PrimaryBrush2,
-                CornerRadius = new(10d),
-                Child = new SGrid([
-                    GridLength.Auto,
-                    GridLength.Auto,
-                    GridLength.Auto,
-                ], [
-                    GridLength.Star,
-                ], [
-                    new Border{
-                        Background = MainTheme.PrimaryBrush1,
-                        Child = new STextBlock{
-                            Text = title,
-                            FontSize = 24d,
-                        },
-                        CornerRadius = new(10d, 0d),
-                    },
-                    new STextBlock {
-                        TextWrapping = TextWrapping.Wrap,
-                        Inlines = body,
-                    },
-                    footer,
-                ]),
-                MaxWidth = 700d,
-            });
+            var header = GetHeader(title);
+            var body = GetBody(bodyInlines);
+            var mainBorderChild = GetMainBorderChild(header, body, footer);
+            var mainBorder = GetMainBorder(mainBorderChild);
+            Children.Add(mainBorder);
         }
+
+        private static Border GetMainBorder(SGrid child) => new() {
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+            Background = MainTheme.PrimaryBrush2,
+            CornerRadius = new(10d),
+            Child = child,
+            MaxWidth = 700d,
+        };
+
+        private static SGrid GetMainBorderChild(Border header, STextBlock body, Control footer) => new([
+                GridLength.Auto,
+                GridLength.Auto,
+                GridLength.Auto,
+            ], [
+                GridLength.Star,
+            ], [
+                header,
+                body,
+                footer,
+            ]);
+
+        private static Border GetHeader(string title) => new() {
+            Background = MainTheme.PrimaryBrush1,
+            Child = new STextBlock {
+                Text = title,
+                FontSize = 24d,
+            },
+            CornerRadius = new(10d, 0d),
+        };
+
+        private static STextBlock GetBody(InlineCollection? inlines) => new() {
+            TextWrapping = TextWrapping.Wrap,
+            Inlines = inlines,
+        };
     }
 }

@@ -6,11 +6,7 @@
         public CancellationTokenSource? CancellationTokenSource;
 
         public static AuthorizePopup Create() {
-            var cancelButton = new DangerButton() {
-                Content = "Cancel",
-                Margin = new(0d, 10d, 0d, 0d),
-                MaxHeight = 50d,
-            };
+            var cancelButton = GetCancelButton();
             var authorizePopup = new AuthorizePopup(cancelButton);
             cancelButton.Click += (_, _) => {
                 authorizePopup.CancellationTokenSource!.Cancel();
@@ -26,5 +22,11 @@
         }
 
         private AuthorizePopup(Control footer) : base("Please Authorize in Your Browser", null, footer) { }
+
+        private static DangerButton GetCancelButton() => new() {
+            Content = "Cancel",
+            Margin = new(0d, 10d, 0d, 0d),
+            MaxHeight = 50d,
+        };
     }
 }

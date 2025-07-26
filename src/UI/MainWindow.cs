@@ -10,16 +10,20 @@
             Width = 1000d;
             Height = 800d;
             MainPanel = new(this);
-            ConfigPanel = new(this) {
-                IsVisible = false,
-            };
-            Content = new Panel {
-                Children = {
-                    MainPanel,
-                    ConfigPanel,
-                }
-            };
+            ConfigPanel = GetConfigPanel();
+            Content = GetContent(MainPanel, ConfigPanel);
             WindowState = WindowState.Maximized;
         }
+
+        private ConfigPanel GetConfigPanel() => new(this) {
+            IsVisible = false
+        };
+
+        private static Panel GetContent(MainPanel mainPanel, ConfigPanel configPanel) => new() {
+            Children = {
+                mainPanel,
+                configPanel,
+            }
+        };
     }
 }

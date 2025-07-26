@@ -2,8 +2,8 @@
     using Avalonia.Controls;
     using Avalonia.Layout;
     using Buttons;
-    using Stonebot.UI.Buttons.UserButtons;
-    using Stonebot.UI.Popups;
+    using Buttons.UserButtons;
+    using Popups;
 
     internal class MainPanel : Panel {
         public readonly MainWindow MainWindow;
@@ -15,25 +15,78 @@
 
         public MainPanel(MainWindow mainWindow) {
             MainWindow = mainWindow;
-            ConnectButton = new(this);
+            Background = MainTheme.PrimaryBrush2;
+
             RemoveAuthorizationPopup = RemoveAuthorizationPopup.Create();
             AuthorizePopup = AuthorizePopup.Create();
+            var logo = GetLogo();
+            ConnectButton = new(this);
             BroadcasterButton = new(this);
             ChatterButton = new(this);
-            var users = new SGrid([
+            var users = GetUsers(BroadcasterButton, ChatterButton);
+            var configButton = GetConfigButton();
+            var header = GetHeader(logo, ConnectButton, users, configButton);
+            var body = new InteractionGrid();
+            var mainGrid = GetMainGrid(header, body);
+            Children.Add(mainGrid);
+            Children.Add(RemoveAuthorizationPopup);
+            Children.Add(AuthorizePopup);
+        }
+
+        public void UpdateUsers() {
+            BroadcasterButton.UpdateState();
+            ChatterButton.UpdateState();
+        }
+
+        private static SGrid GetMainGrid(SGrid header, InteractionGrid body) => new([
+                GridLength.Auto,
                 GridLength.Star,
+            ], [
+                GridLength.Star,
+            ], [
+                header,
+                body,
+            ]);
+
+        private static SGrid GetHeader(Image logo, ConnectButton connectButton, SGrid users, InfoButton configButton) => new([
                 GridLength.Star,
             ], [
                 GridLength.Auto,
                 GridLength.Auto,
+                GridLength.Star,
+                GridLength.Auto,
             ], [
-                GetUserLabel("Broadcaster:"),
-                BroadcasterButton,
-                GetUserLabel("Chatter:"),
-                ChatterButton,
+                logo,
+                connectButton,
+                users,
+                configButton,
             ]) {
-                VerticalAlignment = VerticalAlignment.Center,
-            };
+            Background = MainTheme.PrimaryBrush1,
+            Height = 150d,
+        };
+
+        private static Image GetLogo() {
+            var logo = UIUtils.GetLogo();
+            logo.Margin = new(10d);
+            return logo;
+        }
+
+        private static SGrid GetUsers(BroadcasterButton broadcasterButton, ChatterButton chatterButton) => new([
+            GridLength.Star,
+            GridLength.Star,
+        ], [
+            GridLength.Auto,
+            GridLength.Auto,
+        ], [
+            GetUserLabel("Broadcaster:"),
+            broadcasterButton,
+            GetUserLabel("Chatter:"),
+            chatterButton,
+        ]) {
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+
+        private InfoButton GetConfigButton() {
             var configButton = new InfoButton() {
                 Content = UIUtils.GetConfigIcon(),
                 VerticalAlignment = VerticalAlignment.Center,
@@ -43,43 +96,7 @@
                 IsVisible = false;
                 MainWindow.ConfigPanel.Show();
             };
-            var logo = UIUtils.GetLogo();
-            logo.Margin = new(10d);
-            var header = new SGrid([
-                GridLength.Star,
-            ], [
-                GridLength.Auto,
-                GridLength.Auto,
-                GridLength.Star,
-                GridLength.Auto,
-            ], [
-                logo,
-                ConnectButton,
-                users,
-                configButton,
-            ]) {
-                Background = MainTheme.PrimaryBrush1,
-                Height = 150d,
-            };
-            var body = new InteractionGrid();
-            var fullGrid = new SGrid([
-                GridLength.Auto,
-                GridLength.Star,
-            ], [
-                GridLength.Star,
-            ], [
-                header,
-                body,
-            ]);
-            Background = MainTheme.PrimaryBrush2;
-            Children.Add(fullGrid);
-            Children.Add(RemoveAuthorizationPopup);
-            Children.Add(AuthorizePopup);
-        }
-
-        public void UpdateUsers() {
-            BroadcasterButton.UpdateState();
-            ChatterButton.UpdateState();
+            return configButton;
         }
 
         private static STextBlock GetUserLabel(string text) => new() {

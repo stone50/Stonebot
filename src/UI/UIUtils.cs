@@ -7,26 +7,22 @@
 
     internal static class UIUtils {
         public static Image GetLogo() {
-            var uri = new Uri(Constants.LogoAvaloniaResourceFilePath);
-            var assetStream = AssetLoader.Open(uri);
-            var bitmap = new Bitmap(assetStream);
-            var logo = new Image {
-                Source = bitmap,
-                Stretch = Stretch.UniformToFill,
-            };
+            var logo = GetImage(Constants.LogoAvaloniaResourceFilePath);
             RenderOptions.SetBitmapInterpolationMode(logo, BitmapInterpolationMode.None);
             return logo;
         }
 
-        public static Image GetConfigIcon() {
-            var uri = new Uri(Constants.CogAvaloniaResourceFilePath);
+        public static Image GetConfigIcon() => GetImage(Constants.CogAvaloniaResourceFilePath);
+
+        private static Image GetImage(string avaloniaResourceFilePath) {
+            var uri = new Uri(avaloniaResourceFilePath);
             var assetStream = AssetLoader.Open(uri);
             var bitmap = new Bitmap(assetStream);
-            var icon = new Image {
+            var image = new Image {
                 Source = bitmap,
                 Stretch = Stretch.UniformToFill,
             };
-            return icon;
+            return image;
         }
     }
 }
