@@ -68,6 +68,24 @@
             }
         }
 
+        public static void DoAfter(Action action, params Task[] tasks) {
+            foreach (var task in tasks) {
+                Sync(task);
+            }
+
+            action();
+        }
+
+        public static void TryElseErrorAfter(Action action, params Task[] tasks) => DoAfter(() => TryElseError(action), tasks);
+
+        public static Task FireTryElseConsoleError(Action action, CancellationToken cancellationToken) => Task.Run(() => TryElseConsoleError(action), cancellationToken);
+
+        public static Task FireTryElseError(Action action, CancellationToken cancellationToken) => Task.Run(() => TryElseError(action), cancellationToken);
+
+        public static Task FireDoAfter(Action action, CancellationToken cancellationToken, params Task[] tasks) => Task.Run(() => DoAfter(action, tasks), cancellationToken);
+
+        public static Task FireTryElseErrorAfter(Action action, CancellationToken cancellationToken, params Task[] tasks) => FireDoAfter(() => TryElseError(action), cancellationToken, tasks);
+
         private static HttpResponseMessage InnerSendPostRequest<T>(HttpClient client, string url, T body, JsonTypeInfo<T> bodyJsonTypeInfo, CancellationToken cancellationToken) where T : struct {
             var contentString = JsonSerializer.Serialize(body, bodyJsonTypeInfo);
             var content = new StringContent(contentString, Encoding.UTF8, "application/json");

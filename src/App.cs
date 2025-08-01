@@ -12,7 +12,7 @@
 
         public override void OnFrameworkInitializationCompleted() {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
-                desktop.Startup += (_, _) => FireStartup(CancellationToken.None);
+                desktop.Startup += (_, _) => Startup(CancellationToken.None);
                 desktop.Exit += (_, _) => Shutdown(CancellationToken.None);
                 desktop.MainWindow = new MainWindow();
             }
@@ -20,29 +20,32 @@
             base.OnFrameworkInitializationCompleted();
         }
 
-        private void FireStartup(CancellationToken cancellationToken) => Task.Run(() => {
-            Utils.TryElseConsoleError(Logger.Init);
-            Utils.TryElseError(Config.Init);
-            Utils.TryElseError(Logger.DeleteExcessFiles);
-            Utils.TryElseError(() => Cache.Init(cancellationToken));
-            Dispatcher.UIThread.Invoke(() => ((MainWindow)((IClassicDesktopStyleApplicationLifetime)ApplicationLifetime!).MainWindow!).MainPanel.UpdateUsers());
-            Utils.TryElseError(CustomData.Init);
-            Utils.TryElseError(CommandManager.Init);
-            Utils.TryElseError(CopyScriptsTypeHintsFile);
-        }, cancellationToken);
+        private void Startup(CancellationToken cancellationToken) {
+            var loggerInitTask = Utils.FireTryElseConsoleError(Logger.Init, cancellationToken);
+            var configInitTask = Utils.FireTryElseErrorAfter(Config.Init, cancellationToken, loggerInitTask);
+            var deleteExcessLogFilesTask = Utils.FireTryElseErrorAfter(Logger.DeleteExcessFiles, cancellationToken, configInitTask);
+            var cacheInitTask = Utils.FireTryElseErrorAfter(() => Cache.Init(cancellationToken), cancellationToken, configInitTask);
+            FireUpdateMainPanelAfter(mainPanel => mainPanel.UpdateUsers(), cancellationToken, cacheInitTask);
+            var customDataInitTask = Utils.FireTryElseError(CustomData.Init, cancellationToken);
+            var commandManagerInitTask = Utils.FireTryElseError(CommandManager.Init, cancellationToken);
+            FireUpdateMainPanelAfter(mainPanel => mainPanel.UpdateInteractionGrid(), cancellationToken, commandManagerInitTask);
+            var copyScriptsTypeHintsFileTask = Utils.FireTryElseError(CopyScriptsTypeHintsFile, cancellationToken);
+        }
 
         private static void Shutdown(CancellationToken cancellationToken) {
-            Utils.TryElseError(() => WebSocketClient.Close(cancellationToken));
-            Utils.TryElseError(CommandManager.Save);
-            Utils.TryElseError(CustomData.Save);
-            Utils.TryElseError(Cache.Save);
-            Utils.TryElseError(Config.Save);
-            Utils.TryElseError(Logger.Shutdown);
+            var webSocketClientCloseTask = Utils.FireTryElseError(() => WebSocketClient.Close(cancellationToken), cancellationToken);
+            var customDataSaveTask = Utils.FireTryElseErrorAfter(CustomData.Save, cancellationToken, webSocketClientCloseTask);
+            var commandManaderSaveTask = Utils.FireTryElseError(CommandManager.Save, cancellationToken);
+            var cacheSaveTask = Utils.FireTryElseError(Cache.Save, cancellationToken);
+            var configSaveTask = Utils.FireTryElseError(Config.Save, cancellationToken);
+            Utils.TryElseErrorAfter(Logger.Shutdown, webSocketClientCloseTask, customDataSaveTask, commandManaderSaveTask, cacheSaveTask, configSaveTask);
         }
 
         private static void CopyScriptsTypeHintsFile() {
             _ = Directory.CreateDirectory(Constants.ScriptsTypeHintsPackagePath);
             File.WriteAllText(Constants.ScriptsTypeHintsFilePath, Embedded.ScriptsTypeHintsFile);
         }
+
+        private void FireUpdateMainPanelAfter(Action<MainPanel> update, CancellationToken cancellationToken, params Task[] tasks) => Utils.FireDoAfter(() => Dispatcher.UIThread.Invoke(() => update(((MainWindow)((IClassicDesktopStyleApplicationLifetime)ApplicationLifetime!).MainWindow!).MainPanel)), cancellationToken, tasks);
     }
 }
