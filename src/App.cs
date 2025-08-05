@@ -26,10 +26,10 @@
             var deleteExcessLogFilesTask = Utils.FireTryElseErrorAfter(Logger.DeleteExcessFiles, cancellationToken, configInitTask);
             var cacheInitTask = Utils.FireTryElseErrorAfter(() => Cache.Init(cancellationToken), cancellationToken, configInitTask);
             FireUpdateMainPanelAfter(mainPanel => mainPanel.UpdateUsers(), cancellationToken, cacheInitTask);
-            var customDataInitTask = Utils.FireTryElseError(CustomData.Init, cancellationToken);
-            var commandManagerInitTask = Utils.FireTryElseError(CommandManager.Init, cancellationToken);
+            var customDataInitTask = Utils.FireTryElseErrorAfter(CustomData.Init, cancellationToken, loggerInitTask);
+            var commandManagerInitTask = Utils.FireTryElseErrorAfter(CommandManager.Init, cancellationToken, loggerInitTask);
             FireUpdateMainPanelAfter(mainPanel => mainPanel.UpdateInteractionGrid(), cancellationToken, commandManagerInitTask);
-            var copyScriptsTypeHintsFileTask = Utils.FireTryElseError(CopyScriptsTypeHintsFile, cancellationToken);
+            var copyScriptsTypeHintsFileTask = Utils.FireTryElseErrorAfter(CopyScriptsTypeHintsFile, cancellationToken, loggerInitTask);
         }
 
         private static void Shutdown(CancellationToken cancellationToken) {
@@ -46,6 +46,20 @@
             File.WriteAllText(Constants.ScriptsTypeHintsFilePath, Embedded.ScriptsTypeHintsFile);
         }
 
-        private void FireUpdateMainPanelAfter(Action<MainPanel> update, CancellationToken cancellationToken, params Task[] tasks) => Utils.FireDoAfter(() => Dispatcher.UIThread.Invoke(() => update(((MainWindow)((IClassicDesktopStyleApplicationLifetime)ApplicationLifetime!).MainWindow!).MainPanel)), cancellationToken, tasks);
+        private void FireUpdateMainPanelAfter(
+            Action<MainPanel> update,
+            CancellationToken cancellationToken,
+            params Task[] tasks
+        ) {
+            void updateMainPanel() {
+                var desktopApplicationLifetime = (IClassicDesktopStyleApplicationLifetime)ApplicationLifetime!;
+                var mainWindow = (MainWindow)desktopApplicationLifetime.MainWindow!;
+                update(mainWindow.MainPanel);
+            }
+
+            void updateOnUIThread() => Dispatcher.UIThread.Invoke(updateMainPanel);
+            void tryElseErrorUpdateOnUIThread() => Utils.TryElseError(updateOnUIThread);
+            _ = Utils.FireDoAfter(tryElseErrorUpdateOnUIThread, cancellationToken, tasks);
+        }
     }
 }
