@@ -6,6 +6,8 @@
     using System.Text.Json;
 
     internal static class CommandManager {
+        public static readonly List<Command> Commands = [];
+
         public static void Init() {
             _ = Directory.CreateDirectory(Constants.CommandScriptsPath);
             if (!File.Exists(Constants.CommandManagerFilePath)) {
@@ -15,7 +17,7 @@
             var fileContents = File.ReadAllText(Constants.CommandManagerFilePath);
             var data = JsonSerializer.Deserialize(fileContents, JsonContext.Default.CommandManagerData);
             foreach (var commandData in data.Commands) {
-                Utils.TryElseWarn(() => commands.Add(new(
+                Utils.TryElseWarn(() => Commands.Add(new(
                     commandData.Name,
                     commandData.Aliases,
                     commandData.Enabled,
@@ -27,7 +29,7 @@
 
         public static bool TryUseCommand(EventSubNotificationMessagePayloadEvent channelChatMessageEvent) {
             var keyword = GetCommandKeyword(channelChatMessageEvent.Message.Text);
-            foreach (var command in commands) {
+            foreach (var command in Commands) {
                 if (command.Name != keyword) {
                     continue;
                 }
@@ -36,7 +38,7 @@
                 return true;
             }
 
-            foreach (var command in commands) {
+            foreach (var command in Commands) {
                 if (!command.Aliases.Contains(keyword)) {
                     continue;
                 }
@@ -50,7 +52,7 @@
 
         public static void Save() {
             var contents = JsonSerializer.Serialize(new CommandManagerData() {
-                Commands = [.. commands.Select(command => new CommandManagerDataCommand() {
+                Commands = [.. Commands.Select(command => new CommandManagerDataCommand() {
                     Name = command.Name,
                     Aliases = [.. command.Aliases],
                     Enabled = command.Enabled,
@@ -60,8 +62,6 @@
             }, JsonContext.Default.CommandManagerData);
             File.WriteAllText(Constants.CommandManagerFilePath, contents);
         }
-
-        private static readonly List<Command> commands = [];
 
         private static string GetCommandKeyword(string text) {
             var keywordEndIndex = text.Length - 1;
