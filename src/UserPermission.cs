@@ -1,39 +1,32 @@
 ﻿namespace Stonebot {
-    using Twitch;
+    using Models.EventSubMessages;
 
     public static class UserPermission {
         public enum Level {
             Viewer,
+            Subscriber,
             VIP,
-            Tier1Sub,
-            Tier2Sub,
-            Tier3Sub,
             Moderator,
             Broadcaster
         }
 
-        public static Level GetHighestLevel(string userId, CancellationToken cancellationToken) {
-            if (userId == Cache.BroadcasterAuthorizationData!.UserId) {
-                return Level.Broadcaster;
-            }
-
-            if (User.GetIsModerator(userId, cancellationToken)) {
-                return Level.Moderator;
-            }
-
-            var subTier = User.GetSubscriptionTier(userId, cancellationToken);
-            if (subTier != -1) {
-                switch (subTier) {
-                    case 1:
-                        return Level.Tier1Sub;
-                    case 2:
-                        return Level.Tier2Sub;
-                    case 3:
-                        return Level.Tier3Sub;
+        public static Level GetHighestLevel(EventSubNotificationMessagePayloadEventBadge[] badges) {
+            foreach (var badge in badges) {
+                switch (badge.SetId) {
+                    case "broadcaster":
+                        return Level.Broadcaster;
+                    case "moderator":
+                        return Level.Moderator;
+                    case "vip":
+                        return Level.VIP;
+                    case "subscriber":
+                        return Level.Subscriber;
+                    case "founder":
+                        return Level.Subscriber;
                 }
             }
 
-            return User.GetIsVIP(userId, cancellationToken) ? Level.VIP : Level.Viewer;
+            return Level.Viewer;
         }
     }
 }

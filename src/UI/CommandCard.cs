@@ -106,7 +106,7 @@
         }
 
         private static SGrid GetPermissionDropDownOptions(Command command, InfoButton permissionInput) {
-            var permissionDropDownOptions = Enum.GetValues<UserPermission.Level>().Select(permissionLevel => GetPermissionDropDownOption(command, permissionInput, permissionLevel));
+            var permissionDropDownOptions = Enum.GetValues<UserPermission.Level>().Reverse().Select(permissionLevel => GetPermissionDropDownOption(command, permissionInput, permissionLevel));
             return new(
                 [.. Enumerable.Repeat(GridLength.Auto, permissionDropDownOptions.Count())],
                 [GridLength.Auto],

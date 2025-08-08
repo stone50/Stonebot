@@ -38,8 +38,7 @@
                 return false;
             }
 
-            var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(Constants.GetHighestUserPermissionLevelTimeoutSeconds));
-            var userPermissionLevel = UserPermission.GetHighestLevel(channelChatMessageEvent.ChatterId, cancellationTokenSource.Token);
+            var userPermissionLevel = UserPermission.GetHighestLevel(channelChatMessageEvent.Badges);
             if (userPermissionLevel < PermissionLevel) {
                 return false;
             }

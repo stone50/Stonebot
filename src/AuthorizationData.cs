@@ -1,4 +1,6 @@
 ﻿namespace Stonebot {
+    using Twitch;
+
     internal class AuthorizationData : IDisposable {
         public readonly string UserId;
         public readonly string UserLogin;
@@ -23,7 +25,7 @@
         }
 
         private static AuthorizationData Create(AccessToken accessToken, CancellationToken cancellationToken) {
-            var userData = Twitch.User.GetUser(accessToken, cancellationToken);
+            var userData = User.GetUser(accessToken, cancellationToken);
             return new(userData.Id, userData.Login, accessToken);
         }
     }
