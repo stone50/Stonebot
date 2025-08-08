@@ -132,7 +132,9 @@
                 GridLength.Star,
             ], [
                 header,
-                body,
+                new ScrollViewer() {
+                    Content = body,
+                }
             ]);
 
         private static SGrid GetHeader(Image configIcon, STextBlock headerTitle, DangerButton cancelButton, SuccessButton saveButton) => new([
