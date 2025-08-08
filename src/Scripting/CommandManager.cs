@@ -1,4 +1,4 @@
-﻿namespace Stonebot {
+﻿namespace Stonebot.Scripting {
     using Models.Data;
     using Models.EventSubMessages;
     using System.Collections.Generic;

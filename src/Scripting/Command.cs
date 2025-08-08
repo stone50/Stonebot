@@ -1,4 +1,4 @@
-﻿namespace Stonebot {
+﻿namespace Stonebot.Scripting {
     using Microsoft.Scripting.Hosting;
     using Models.EventSubMessages;
     using Python;
@@ -20,15 +20,12 @@
             PermissionLevel = permissionLevel;
             CooldownSeconds = cooldownSeconds;
             lastProcTime = DateTime.UtcNow.AddSeconds(-CooldownSeconds);
-            var scriptFilePath = Path.Join(Constants.CommandScriptsPath, $"{Name}.py");
-            if (!File.Exists(scriptFilePath)) {
-                File.WriteAllText(scriptFilePath, Embedded.ScriptsTemplatePy);
-            }
-
-            scriptSource = ScriptRunner.Engine.CreateScriptSourceFromFile(scriptFilePath);
+            scriptSource = GetReloadedScriptSource();
         }
 
-        public void ReloadScriptFile() => scriptSource = ScriptRunner.Engine.CreateScriptSourceFromFile(scriptSource.Path);
+        public string GetScriptFilePath() => Path.Join(Constants.CommandScriptsPath, $"{Name}.py");
+
+        public void ReloadScriptFile() => scriptSource = GetReloadedScriptSource();
 
         public bool TryProc(EventSubNotificationMessagePayloadEvent channelChatMessageEvent) {
             if (!Enabled) {
@@ -51,5 +48,14 @@
 
         private DateTime lastProcTime;
         private ScriptSource scriptSource;
+
+        private ScriptSource GetReloadedScriptSource() {
+            var scriptFilePath = GetScriptFilePath();
+            if (!File.Exists(scriptFilePath)) {
+                File.WriteAllText(scriptFilePath, Embedded.ScriptsTemplatePy);
+            }
+
+            return ScriptRunner.Engine.CreateScriptSourceFromFile(scriptFilePath);
+        }
     }
 }

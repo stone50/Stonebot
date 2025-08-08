@@ -1,5 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+	<PropertyGroup>
+		<NeutralLanguage>en-US</NeutralLanguage>
+	</PropertyGroup>
+
 	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
 		<OutputType>WinExe</OutputType>
 		<DefineConstants>DEBUG;TRACE</DefineConstants>

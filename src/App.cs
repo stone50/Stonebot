@@ -4,6 +4,7 @@
     using Avalonia.Themes.Simple;
     using Avalonia.Threading;
     using Resources;
+    using Scripting;
     using System.Threading;
     using UI;
 

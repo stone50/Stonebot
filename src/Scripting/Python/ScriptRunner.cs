@@ -1,4 +1,4 @@
-﻿namespace Stonebot.Python {
+﻿namespace Stonebot.Scripting.Python {
     using IronPython.Hosting;
     using Microsoft.Scripting.Hosting;
     using Models.EventSubMessages;

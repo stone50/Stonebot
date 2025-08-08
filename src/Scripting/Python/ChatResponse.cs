@@ -1,4 +1,4 @@
-﻿namespace Stonebot.Python {
+﻿namespace Stonebot.Scripting.Python {
     using Models;
     using System.Linq;
 

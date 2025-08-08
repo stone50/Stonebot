@@ -1,4 +1,4 @@
-﻿namespace Stonebot.Python {
+﻿namespace Stonebot.Scripting.Python {
     using Models.EventSubMessages;
     using System.Linq;
 
