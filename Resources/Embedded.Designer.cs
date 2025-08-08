@@ -111,6 +111,18 @@ namespace Stonebot.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to # Type hints
+        ///if not Stonebot:
+        ///    from stonebot import Stonebot
+        ///.
+        /// </summary>
+        internal static string ScriptsTemplatePy {
+            get {
+                return ResourceManager.GetString("ScriptsTemplatePy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to from typing import List, Optional, Any
         ///
         ///
@@ -140,9 +152,9 @@ namespace Stonebot.Resources {
         ///    chatter_user_name: str
         ///     [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string ScriptsTypeHintsFile {
+        internal static string ScriptsTypeHintsPyi {
             get {
-                return ResourceManager.GetString("ScriptsTypeHintsFile", resourceCulture);
+                return ResourceManager.GetString("ScriptsTypeHintsPyi", resourceCulture);
             }
         }
     }

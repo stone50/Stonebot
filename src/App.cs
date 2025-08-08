@@ -43,7 +43,7 @@
 
         private static void CopyScriptsTypeHintsFile() {
             _ = Directory.CreateDirectory(Constants.ScriptsTypeHintsPackagePath);
-            File.WriteAllText(Constants.ScriptsTypeHintsFilePath, Embedded.ScriptsTypeHintsFile);
+            File.WriteAllText(Constants.ScriptsTypeHintsFilePath, Embedded.ScriptsTypeHintsPyi);
         }
 
         private void FireUpdateMainPanelAfter(

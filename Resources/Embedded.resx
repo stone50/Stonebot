@@ -124,7 +124,10 @@
   <data name="AuthFailHtml" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>auth_fail.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
-  <data name="ScriptsTypeHintsFile" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="ScriptsTypeHintsPyi" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>scripts_type_hints.pyi;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="ScriptsTemplatePy" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>scripts_template.py;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
 </root>

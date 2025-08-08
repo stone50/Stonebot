@@ -2,6 +2,7 @@
     using Microsoft.Scripting.Hosting;
     using Models.EventSubMessages;
     using Python;
+    using Resources;
     using System;
     using System.Collections.Generic;
 
@@ -21,7 +22,7 @@
             lastProcTime = DateTime.UtcNow.AddSeconds(-CooldownSeconds);
             var scriptFilePath = Path.Join(Constants.CommandScriptsPath, $"{Name}.py");
             if (!File.Exists(scriptFilePath)) {
-                File.Create(scriptFilePath).Close();
+                File.WriteAllText(scriptFilePath, Embedded.ScriptsTemplatePy);
             }
 
             scriptSource = ScriptRunner.Engine.CreateScriptSourceFromFile(scriptFilePath);
