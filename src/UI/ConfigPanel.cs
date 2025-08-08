@@ -21,7 +21,7 @@
 
         public ConfigPanel(MainWindow mainWindow) {
             MainWindow = mainWindow;
-            Background = MainTheme.PrimaryBrush2;
+            Background = MainTheme.PrimaryBrush1;
 
             var configIcon = UIUtils.GetConfigIcon();
             var headerTitle = GetHeaderTitle();
@@ -150,7 +150,7 @@
                 cancelButton,
                 saveButton,
            ]) {
-            Background = MainTheme.PrimaryBrush1,
+            Background = MainTheme.PrimaryBrush2,
             Height = 150d,
         };
 
@@ -163,7 +163,7 @@
         private DangerButton GetCancelButton() {
             var cancelButton = new DangerButton() {
                 Content = "Cancel",
-                Height = 60d,
+                VerticalAlignment = VerticalAlignment.Center,
             };
             cancelButton.Click += (_, _) => {
                 IsVisible = false;
@@ -175,7 +175,7 @@
         private SuccessButton GetSaveButton() {
             var saveButton = new SuccessButton() {
                 Content = "Save",
-                Height = 60d
+                VerticalAlignment = VerticalAlignment.Center,
             };
             saveButton.Click += GetOnSaveButtonClick();
             return saveButton;
@@ -220,7 +220,7 @@
             MainWindow.MainPanel.IsVisible = true;
         };
 
-        private static SGrid GetBody(SGrid basicConfigGrid, STextBlock separator, SGrid advancedConfigGrid) => new([
+        private static SGrid GetBody(SGrid basicConfigGrid, Border separator, SGrid advancedConfigGrid) => new([
                 GridLength.Auto,
                 GridLength.Auto,
                 GridLength.Auto,
@@ -234,17 +234,23 @@
 
         private static SGrid GetBasicConfigGrid(Controls children) {
             var basicConfigGrid = GetConfigGrid(children);
-            basicConfigGrid.Margin = new(50d, 10d, 10d, 50d);
+            basicConfigGrid.Margin = new(20d, 10d);
             return basicConfigGrid;
         }
 
-        private static STextBlock GetBodySeparator() => new() {
-            Text = "- Advanced -",
+        private static Border GetBodySeparator() => new() {
+            Child = new STextBlock() {
+                Text = "- Advanced -",
+                FontSize = 24d,
+                FontWeight = Avalonia.Media.FontWeight.Bold,
+            },
+            Background = MainTheme.PrimaryBrush2,
+            CornerRadius = new(5d),
         };
 
         private static SGrid GetAdvancedConfigGrid(Controls children) {
             var advancedConfigGrid = GetConfigGrid(children);
-            advancedConfigGrid.Margin = new(50d, 10d, 10d, 10d);
+            advancedConfigGrid.Margin = new(20d, 10d);
             return advancedConfigGrid;
         }
 
@@ -304,7 +310,6 @@
 
         private static STextBlock GetConfigValueLabel(string text) => new() {
             Text = text,
-            FontSize = 24d,
             HorizontalAlignment = HorizontalAlignment.Left,
         };
 
