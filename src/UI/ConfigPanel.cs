@@ -62,19 +62,19 @@
             var bodySeparator = GetBodySeparator();
 
             var authorizationPortPopup = GetAuthorizationPortPopup();
-            AuthorizationPortInput = GetAuthorizationPortInput();
+            AuthorizationPortInput = GetNumericUpDown(Constants.AuthorizationPortMin, Constants.AuthorizationPortMax, false);
 
             var numMaxLogFilesPopup = GetNumMaxLogFilesPopup();
-            NumMaxLogFilesInput = GetNumMaxLogFilesInput();
+            NumMaxLogFilesInput = GetNumericUpDown(Constants.NumMaxLogFilesMin, Constants.NumMaxLogFilesMax, true);
 
             var webSocketConnectTimeoutSecondsPopup = GetWebSocketConnectTimeoutSecondsPopup();
-            WebSocketConnectTimeoutSecondsInput = GetWebSocketConnectionTimeoutSecondsInput();
+            WebSocketConnectTimeoutSecondsInput = GetNumericUpDown(Constants.WebSocketConnectTimeoutSecondsMin, Constants.WebSocketConnectTimeoutSecondsMax, true);
 
             var webSocketKeepaliveTimeoutSecondsPopup = GetWebSocketKeepaliveTimeoutSecondsPopup();
-            WebSocketKeepaliveTimeoutSecondsInput = GetWebSocketKeepaliveTimeoutSecondsInput();
+            WebSocketKeepaliveTimeoutSecondsInput = GetNumericUpDown(Constants.WebSocketKeepaliveTimeoutSecondsMin, Constants.WebSocketKeepaliveTimeoutSecondsMax, true);
 
             var webSocketKeepaliveTimeoutMarginSecondsPopup = GetWebSocketKeepaliveTimeoutMarginSecondsPopup();
-            WebSocketKeepaliveTimeoutMarginSecondsInput = GetWebSocketKeepaliveTimeoutMarginSecondsInput();
+            WebSocketKeepaliveTimeoutMarginSecondsInput = GetNumericUpDown(Constants.WebSocketKeepaliveTimeoutMarginSecondsMin, Constants.WebSocketKeepaliveTimeoutMarginSecondsMax, true);
 
             var advancedConfigGrid = GetAdvancedConfigGrid([
                 GetConfigValueLabel("Authorization Port"),
@@ -207,7 +207,7 @@
             Config.AuthorizationPort = (int)AuthorizationPortInput.Value!;
             if ((int)NumMaxLogFilesInput.Value! != Config.NumMaxLogFiles) {
                 Config.NumMaxLogFiles = (int)NumMaxLogFilesInput.Value;
-                _ = Task.Run(() => Utils.TryElseError(Logger.DeleteExcessFiles));
+                _ = Utils.FireTryElseError(Logger.DeleteExcessFiles, CancellationToken.None);
             }
 
             Config.WebSocketConnectTimeoutSeconds = (int)WebSocketConnectTimeoutSecondsInput.Value!;
@@ -253,33 +253,15 @@
                 GetUrlLinkInline("https://dev.twitch.tv/console"),
             ], Constants.AuthorizationPortMin, Constants.AuthorizationPortMax, Constants.AuthorizationPortDefault);
 
-        private static NumericUpDown GetAuthorizationPortInput() {
-            var authorizationPortInput = GetNumericUpDown(Constants.AuthorizationPortMin, Constants.AuthorizationPortMax, false);
-            authorizationPortInput.Width = 75d;
-            return authorizationPortInput;
-        }
-
         private static SPopup GetNumMaxLogFilesPopup() => GetConfigValueInfoPopup("Max Log Files", [
                 new Run("Every time Stonebot is launched, it writes a new log file to "),
                 GetFolderLinkInline("this folder in your local app data folder", Constants.LogsPath),
                 new Run(". If the number of files in the logs folder exceeds this value, logs will be deleted, starting from the oldest."),
             ], Constants.NumMaxLogFilesMin, Constants.NumMaxLogFilesMax, Constants.NumMaxLogFilesDefault);
 
-        private static NumericUpDown GetNumMaxLogFilesInput() {
-            var numMaxLogFilesInput = GetNumericUpDown(Constants.NumMaxLogFilesMin, Constants.NumMaxLogFilesMax, true);
-            numMaxLogFilesInput.MinWidth = 75d;
-            return numMaxLogFilesInput;
-        }
-
         private static SPopup GetWebSocketConnectTimeoutSecondsPopup() => GetConfigValueInfoPopup("Connect Timeout Seconds", [
                 new Run("This is the number of seconds Stonebot will wait when trying to connect to Twitch before considering it a failed attempt."),
             ], Constants.WebSocketConnectTimeoutSecondsMin, Constants.WebSocketConnectTimeoutSecondsMax, Constants.WebSocketConnectTimeoutSecondsDefault);
-
-        private static NumericUpDown GetWebSocketConnectionTimeoutSecondsInput() {
-            var webSocketConnectTimeoutSecondsInput = GetNumericUpDown(Constants.WebSocketConnectTimeoutSecondsMin, Constants.WebSocketConnectTimeoutSecondsMax, true);
-            webSocketConnectTimeoutSecondsInput.MinWidth = 75d;
-            return webSocketConnectTimeoutSecondsInput;
-        }
 
         private static SPopup GetWebSocketKeepaliveTimeoutSecondsPopup() {
             var keepaliveMessageUrlLink = new UrlLink("https://dev.twitch.tv/docs/eventsub/handling-websocket-events/#keepalive-message");
@@ -290,12 +272,6 @@
             ], Constants.WebSocketKeepaliveTimeoutSecondsMin, Constants.WebSocketKeepaliveTimeoutSecondsMax, Constants.WebSocketKeepaliveTimeoutSecondsDefault);
         }
 
-        private static NumericUpDown GetWebSocketKeepaliveTimeoutSecondsInput() {
-            var webSocketKeepaliveTimeoutSecondsInput = GetNumericUpDown(Constants.WebSocketKeepaliveTimeoutSecondsMin, Constants.WebSocketKeepaliveTimeoutSecondsMax, true);
-            webSocketKeepaliveTimeoutSecondsInput.MinWidth = 75d;
-            return webSocketKeepaliveTimeoutSecondsInput;
-        }
-
         private static SPopup GetWebSocketKeepaliveTimeoutMarginSecondsPopup() {
             var keepaliveMessageUrlLink = new UrlLink("https://dev.twitch.tv/docs/eventsub/handling-websocket-events/#keepalive-message");
             ((STextBlock)keepaliveMessageUrlLink.Content!).MaxWidth = 700d;
@@ -303,12 +279,6 @@
                 new Run("This is the number of seconds Stonebot will wait after not receiving an expected keepalive message from Twitch before considering the connection lost. For info, go to:"),
                 keepaliveMessageUrlLink.GetInline(),
             ], Constants.WebSocketKeepaliveTimeoutMarginSecondsMin, Constants.WebSocketKeepaliveTimeoutMarginSecondsMax, Constants.WebSocketKeepaliveTimeoutMarginSecondsDefault);
-        }
-
-        private static NumericUpDown GetWebSocketKeepaliveTimeoutMarginSecondsInput() {
-            var webSocketKeepaliveTimeoutMarginSecondsInput = GetNumericUpDown(Constants.WebSocketKeepaliveTimeoutMarginSecondsMin, Constants.WebSocketKeepaliveTimeoutMarginSecondsMax, true);
-            webSocketKeepaliveTimeoutMarginSecondsInput.MinWidth = 75d;
-            return webSocketKeepaliveTimeoutMarginSecondsInput;
         }
 
         private static SGrid GetConfigGrid(Controls children) => new(
@@ -321,28 +291,13 @@
             children
         );
 
-        private static TextBox GetMaskedConfigValueTextBox() => new() {
+        private static STextBox GetMaskedConfigValueTextBox() => new() {
             PasswordChar = '*',
-            FontFamily = MainTheme.Font,
-            Foreground = MainTheme.NeutralBrush1,
-            FontSize = 18d,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
             Width = 340d,
         };
 
-        private static NumericUpDown GetNumericUpDown(decimal min, decimal max, bool showSpinner) => new() {
-            Minimum = min,
-            Maximum = max,
-            Increment = 1M,
-            ParsingNumberStyle = System.Globalization.NumberStyles.Integer,
-            AllowSpin = showSpinner,
-            ShowButtonSpinner = showSpinner,
-            FontFamily = MainTheme.Font,
-            FontSize = 18d,
-            Foreground = MainTheme.NeutralBrush1,
-            HorizontalAlignment = HorizontalAlignment.Left,
-            VerticalAlignment = VerticalAlignment.Center,
+        private static SNumericUpDown GetNumericUpDown(decimal min, decimal max, bool showSpinner) => new(min, max, showSpinner) {
+            Width = 75d,
         };
 
         private static STextBlock GetConfigValueLabel(string text) => new() {

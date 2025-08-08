@@ -70,14 +70,14 @@
             }
         }
 
-        private void FireClearAuthorizationData() => Task.Run(() => Utils.TryElseError(() => {
+        private void FireClearAuthorizationData() => Utils.FireTryElseError(() => {
             ClearAuthorizationData();
             Cache.Save();
             Dispatcher.UIThread.Invoke(UpdateState);
-        }));
+        }, CancellationToken.None);
 
-        private void FireAuthorize(CancellationToken cancellationToken) => Task.Run(() => {
-            Utils.TryElseError(() => Authorize(cancellationToken));
+        private void FireAuthorize(CancellationToken cancellationToken) => Utils.FireTryElseError(() => {
+            Authorize(cancellationToken);
             Dispatcher.UIThread.Invoke(() => {
                 MainPanel.AuthorizePopup.IsVisible = false;
                 UpdateState();

@@ -15,7 +15,7 @@
         public bool Enabled { get; set; }
         [JsonPropertyName("permission_level")]
         public UserPermission.Level PermissionLevel { get; set; }
-        [JsonPropertyName("cooldown_millis")]
-        public int CooldownMillis { get; set; }
+        [JsonPropertyName("cooldown_seconds")]
+        public int CooldownSeconds { get; set; }
     }
 }

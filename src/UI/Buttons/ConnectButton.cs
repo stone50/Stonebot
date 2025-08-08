@@ -59,7 +59,7 @@
             FireConnect(connectCancellationTokenSource.Token);
         }
 
-        private void FireConnect(CancellationToken cancellationToken) => Task.Run(() => Utils.TryElseError(() => {
+        private void FireConnect(CancellationToken cancellationToken) => Utils.FireTryElseError(() => {
             try {
                 WebSocketClient.Connect(cancellationToken);
                 _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Connected);
@@ -67,16 +67,17 @@
                 _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Disconnected);
                 throw;
             }
-        }), cancellationToken);
+        }, cancellationToken);
 
-        private void FireDisconnect(CancellationToken cancellationToken) => Task.Run(() => Utils.TryElseError(() => {
+        private void FireDisconnect(CancellationToken cancellationToken) => Utils.FireTryElseError(() => {
             try {
                 WebSocketClient.Close(cancellationToken);
                 _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Disconnected);
             } catch {
                 _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Connected);
+                throw;
             }
-        }), cancellationToken);
+        }, cancellationToken);
 
         private void OnWebSocketClientClosedUnexpectedly(object? sender, EventArgs args) => Dispatcher.UIThread.Invoke(() => SetState(ConnectState.Disconnected));
 

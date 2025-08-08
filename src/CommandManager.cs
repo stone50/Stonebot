@@ -22,7 +22,7 @@
                     commandData.Aliases,
                     commandData.Enabled,
                     commandData.PermissionLevel,
-                    commandData.CooldownMillis
+                    commandData.CooldownSeconds
                 )));
             }
         }
@@ -57,7 +57,7 @@
                     Aliases = [.. command.Aliases],
                     Enabled = command.Enabled,
                     PermissionLevel = command.PermissionLevel,
-                    CooldownMillis = command.CooldownMillis,
+                    CooldownSeconds = command.CooldownSeconds,
                 })],
             }, JsonContext.Default.CommandManagerData);
             File.WriteAllText(Constants.CommandManagerFilePath, contents);

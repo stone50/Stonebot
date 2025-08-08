@@ -145,7 +145,7 @@
 
         private static void FireClose(WebSocketCloseStatus status, string? statusDescription, bool isUnexpectedClose) {
             var cancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(Constants.WebSocketClientFireCloseTimeoutSeconds)).Token;
-            _ = Task.Run(() => Utils.TryElseError(() => Close(status, statusDescription, isUnexpectedClose, cancellationToken)), cancellationToken);
+            _ = Utils.FireTryElseError(() => Close(status, statusDescription, isUnexpectedClose, cancellationToken), cancellationToken);
         }
 
         private static bool TryParseRequest<T>(string request, JsonTypeInfo<T> jsonTypeInfo, out T requestData) where T : struct {
@@ -159,7 +159,7 @@
             return true;
         }
 
-        private static void FireReconnect(string reconnectUrl, CancellationToken cancellationToken) => Task.Run(() => Utils.TryElseError(() => {
+        private static void FireReconnect(string reconnectUrl, CancellationToken cancellationToken) => Utils.FireTryElseError(() => {
             var newSocket = new ClientWebSocket();
             var newId = ConnectSocketTo(newSocket, reconnectUrl, cancellationToken);
             Close(WebSocketCloseStatus.NormalClosure, "Reconnect message received.", false, cancellationToken);
@@ -167,6 +167,6 @@
             Id = newId;
             cancellationTokenSource = new();
             listenTask = Task.Run(() => ListenAction(cancellationTokenSource.Token), CancellationToken.None);
-        }), cancellationToken);
+        }, cancellationToken);
     }
 }

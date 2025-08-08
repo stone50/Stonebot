@@ -12,10 +12,11 @@
         public readonly ChatterButton ChatterButton;
         public readonly AuthorizePopup AuthorizePopup;
         public readonly RemoveAuthorizationPopup RemoveAuthorizationPopup;
+        public readonly InteractionGrid InteractionGrid;
 
         public MainPanel(MainWindow mainWindow) {
             MainWindow = mainWindow;
-            Background = MainTheme.PrimaryBrush2;
+            Background = MainTheme.PrimaryBrush1;
 
             RemoveAuthorizationPopup = RemoveAuthorizationPopup.Create();
             AuthorizePopup = AuthorizePopup.Create();
@@ -26,8 +27,8 @@
             var users = GetUsers(BroadcasterButton, ChatterButton);
             var configButton = GetConfigButton();
             var header = GetHeader(logo, ConnectButton, users, configButton);
-            var body = new InteractionGrid();
-            var mainGrid = GetMainGrid(header, body);
+            InteractionGrid = new InteractionGrid();
+            var mainGrid = GetMainGrid(header, InteractionGrid);
             Children.Add(mainGrid);
             Children.Add(RemoveAuthorizationPopup);
             Children.Add(AuthorizePopup);
@@ -38,6 +39,8 @@
             ChatterButton.UpdateState();
         }
 
+        public void UpdateInteractionGrid() => InteractionGrid.Update();
+
         private static SGrid GetMainGrid(SGrid header, InteractionGrid body) => new([
                 GridLength.Auto,
                 GridLength.Star,
@@ -45,7 +48,9 @@
                 GridLength.Star,
             ], [
                 header,
-                body,
+                new ScrollViewer() {
+                    Content = body,
+                }
             ]);
 
         private static SGrid GetHeader(Image logo, ConnectButton connectButton, SGrid users, InfoButton configButton) => new([
@@ -61,7 +66,7 @@
                 users,
                 configButton,
             ]) {
-            Background = MainTheme.PrimaryBrush1,
+            Background = MainTheme.PrimaryBrush2,
             Height = 150d,
         };
 

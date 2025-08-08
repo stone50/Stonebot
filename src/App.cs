@@ -14,7 +14,7 @@
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
                 desktop.Startup += (_, _) => Startup(CancellationToken.None);
                 desktop.Exit += (_, _) => Shutdown(CancellationToken.None);
-                desktop.MainWindow = new MainWindow();
+                Utils.TryElseConsoleError(() => desktop.MainWindow = new MainWindow());
             }
 
             base.OnFrameworkInitializationCompleted();

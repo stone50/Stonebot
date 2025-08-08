@@ -14,6 +14,12 @@
 
         public static Image GetConfigIcon() => GetImage(Constants.CogAvaloniaResourceFilePath);
 
+        public static Image GetPowerIcon() {
+            var power = GetImage(Constants.PowerAvaloniaResourceFilePath);
+            RenderOptions.SetBitmapInterpolationMode(power, BitmapInterpolationMode.MediumQuality);
+            return power;
+        }
+
         private static Image GetImage(string avaloniaResourceFilePath) {
             var uri = new Uri(avaloniaResourceFilePath);
             var assetStream = AssetLoader.Open(uri);

@@ -5,6 +5,7 @@
         public const string BaseAvaloniaResourcePath = "avares://Stonebot/Resources";
         public static readonly string LogoAvaloniaResourceFilePath = Path.Join(BaseAvaloniaResourcePath, "logo.png");
         public static readonly string CogAvaloniaResourceFilePath = Path.Join(BaseAvaloniaResourcePath, "cog.png");
+        public static readonly string PowerAvaloniaResourceFilePath = Path.Join(BaseAvaloniaResourcePath, "power.png");
 
         public static readonly string LocalAppDataPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Stonebot");
         public static readonly string LogsPath = Path.Join(LocalAppDataPath, "logs");
@@ -25,6 +26,8 @@
         public const int AuthorizationPortMin = 1024;
         public const int AuthorizationPortMax = 49151;
         public const int AuthorizationPortDefault = 27043;
+        public const int CommandCooldownSecondsMax = int.MaxValue;
+        public const int NumMaxCommandNameChars = 15;
         public const int NumMaxLogFilesMin = 1;
         public const int NumMaxLogFilesMax = 300;
         public const int NumMaxLogFilesDefault = 5;

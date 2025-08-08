@@ -10,15 +10,15 @@
         public List<string> Aliases;
         public bool Enabled;
         public UserPermission.Level PermissionLevel;
-        public int CooldownMillis;
+        public int CooldownSeconds;
 
-        public Command(string name, string[] aliases, bool enabled, UserPermission.Level permissionLevel, int cooldownMillis) {
+        public Command(string name, string[] aliases, bool enabled, UserPermission.Level permissionLevel, int cooldownSeconds) {
             Name = name;
             Aliases = [.. aliases];
             Enabled = enabled;
             PermissionLevel = permissionLevel;
-            CooldownMillis = cooldownMillis;
-            lastProcTime = DateTime.UtcNow.AddMilliseconds(-CooldownMillis);
+            CooldownSeconds = cooldownSeconds;
+            lastProcTime = DateTime.UtcNow.AddSeconds(-CooldownSeconds);
             var scriptFilePath = Path.Join(Constants.CommandScriptsPath, $"{Name}.py");
             if (!File.Exists(scriptFilePath)) {
                 File.Create(scriptFilePath).Close();
@@ -34,7 +34,7 @@
                 return false;
             }
 
-            if (lastProcTime.AddMilliseconds(CooldownMillis) > DateTime.UtcNow) {
+            if (lastProcTime.AddSeconds(CooldownSeconds) > DateTime.UtcNow) {
                 return false;
             }
 

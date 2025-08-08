@@ -54,7 +54,10 @@
 
         public static void Shutdown() {
             flushingTaskCancellationTokenSource.Cancel();
-            flushingTask?.GetAwaiter().GetResult();
+            if (flushingTask is not null) {
+                Utils.Sync(flushingTask);
+            }
+
             FlushQueue();
         }
 
@@ -77,7 +80,10 @@
                 } catch (OperationCanceledException) {
                     return;
                 } catch (Exception e) {
-                    Error(e);
+                    try {
+                        Error(e);
+                    } catch { }
+
                     return;
                 }
             }

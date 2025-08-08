@@ -8,5 +8,11 @@
             VerticalAlignment = VerticalAlignment.Top;
             Margin = new(10d);
         }
+
+        public void Update() {
+            foreach (var command in CommandManager.Commands) {
+                Children.Add(new CommandCard(command));
+            }
+        }
     }
 }
