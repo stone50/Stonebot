@@ -1,14 +1,10 @@
 ﻿namespace Stonebot.Scripting {
     internal static class ScriptFilesWatcher {
         public static void Init() {
-            fileSystemWatcher = new(Constants.ScriptsPath) {
-                NotifyFilter = NotifyFilters.LastWrite,
-                Filter = "*.py",
-                IncludeSubdirectories = true,
-                EnableRaisingEvents = true,
-            };
+            fileSystemWatcher.Path = Constants.ScriptsPath;
             fileSystemWatcher.Changed += (_, e) => ReloadScript(e.FullPath);
             fileSystemWatcher.Error += (_, e) => Logger.Error(e.GetException());
+            fileSystemWatcher.EnableRaisingEvents = true;
         }
 
         private static void ReloadScript(string scriptFilePath) {
@@ -23,6 +19,10 @@
             }
         }
 
-        private static FileSystemWatcher? fileSystemWatcher;
+        private static readonly FileSystemWatcher fileSystemWatcher = new() {
+            NotifyFilter = NotifyFilters.LastWrite,
+            Filter = "*.py",
+            IncludeSubdirectories = true,
+        };
     }
 }
