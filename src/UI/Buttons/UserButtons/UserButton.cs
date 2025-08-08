@@ -27,7 +27,7 @@
             switch (State) {
                 case AuthorizationState.Authorized:
                     State = AuthorizationState.Loading;
-                    MainPanel.RemoveAuthorizationPopup.Show(UpdateState, FireClearAuthorizationData);
+                    MainPanel.RemoveAuthorizationPopup.Show(UpdateState, OnClearAuthorizationDataRequested);
                     break;
                 case AuthorizationState.Unauthorized:
                     State = AuthorizationState.Loading;
@@ -70,11 +70,13 @@
             }
         }
 
-        private void FireClearAuthorizationData() => Utils.FireTryElseError(() => {
+        private void OnClearAuthorizationDataRequested() {
             ClearAuthorizationData();
-            Cache.Save();
-            Dispatcher.UIThread.Invoke(UpdateState);
-        }, CancellationToken.None);
+            _ = Utils.FireTryElseError(() => {
+                Cache.Save();
+                Dispatcher.UIThread.Invoke(UpdateState);
+            }, CancellationToken.None);
+        }
 
         private void FireAuthorize(CancellationToken cancellationToken) => Utils.FireTryElseError(() => {
             Authorize(cancellationToken);
