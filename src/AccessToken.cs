@@ -4,7 +4,7 @@
     using System.Threading;
     using Twitch;
 
-    internal sealed class AccessToken : IDisposable {
+    internal class AccessToken : IDisposable {
         public readonly string ClientId;
         public readonly string ClientSecret;
         public string[] Scopes { get; private set; }

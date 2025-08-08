@@ -31,6 +31,7 @@
             var commandManagerInitTask = Utils.FireTryElseErrorAfter(CommandManager.Init, cancellationToken, loggerInitTask);
             FireUpdateMainPanelAfter(mainPanel => mainPanel.UpdateInteractionGrid(), cancellationToken, commandManagerInitTask);
             var copyScriptsTypeHintsFileTask = Utils.FireTryElseErrorAfter(CopyScriptsTypeHintsFile, cancellationToken, loggerInitTask);
+            var scriptFilesWatcherInitTask = Utils.FireTryElseErrorAfter(ScriptFilesWatcher.Init, cancellationToken, commandManagerInitTask);
         }
 
         private static void Shutdown(CancellationToken cancellationToken) {
