@@ -1,6 +1,7 @@
 ﻿namespace Stonebot.UI {
     using Avalonia.Controls;
     using Buttons;
+    using Scripting;
 
     internal class CommandCard : Border {
         public readonly Command Command;

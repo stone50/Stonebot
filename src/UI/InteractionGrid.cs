@@ -1,6 +1,7 @@
 ﻿namespace Stonebot.UI {
     using Avalonia.Controls;
     using Avalonia.Layout;
+    using Scripting;
 
     internal class InteractionGrid : WrapPanel {
         public InteractionGrid() {
