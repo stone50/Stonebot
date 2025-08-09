@@ -24,7 +24,11 @@
 
         public static Image GetCrossIcon() => GetImage(Constants.CrossAvaloniaResourceFilePath);
 
-        public static Image GetPencilIcon() => GetImage(Constants.PencilAvaloniaResourceFilePath);
+        public static Image GetPencilIcon() {
+            var pencil = GetImage(Constants.PencilAvaloniaResourceFilePath);
+            RenderOptions.SetBitmapInterpolationMode(pencil, BitmapInterpolationMode.MediumQuality);
+            return pencil;
+        }
 
         private static Image GetImage(string avaloniaResourceFilePath) {
             var uri = new Uri(avaloniaResourceFilePath);

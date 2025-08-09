@@ -99,7 +99,7 @@
 
         private static InfoButton GetNameEditButton() => new() {
             Content = UIUtils.GetPencilIcon(),
-            Padding = new(7d),
+            Padding = new(5d),
             Height = 30d,
         };
 
@@ -128,21 +128,9 @@
                     return;
                 }
 
-                if (newName.Length is 0 or > Constants.NumMaxCommandNameChars) {
+                if (!IsNewNameValid(newName)) {
                     nameTextBox.Background = MainTheme.DangerBrush1;
                     return;
-                }
-
-                if (!newName.All(char.IsLetter)) {
-                    nameTextBox.Background = MainTheme.DangerBrush1;
-                    return;
-                }
-
-                foreach (var otherCommand in CommandManager.Commands) {
-                    if (newName == otherCommand.Name) {
-                        nameTextBox.Background = MainTheme.DangerBrush1;
-                        return;
-                    }
                 }
 
                 nameTextBox.Background = null;
@@ -188,19 +176,8 @@
                 return;
             }
 
-            if (newName.Length is 0 or > Constants.NumMaxCommandNameChars) {
+            if (!IsNewNameValid(newName)) {
                 return;
-            }
-
-            if (!newName.All(char.IsLetter)) {
-                nameTextBox.Background = MainTheme.DangerBrush1;
-                return;
-            }
-
-            foreach (var otherCommand in CommandManager.Commands) {
-                if (newName == otherCommand.Name) {
-                    return;
-                }
             }
 
             swappableName.Swap();
@@ -298,6 +275,24 @@
                 _ = Utils.FireTryElseError(CommandManager.Save, CancellationToken.None);
             };
             return cooldownInput;
+        }
+
+        private static bool IsNewNameValid(string newName) {
+            if (newName.Length is 0 or > Constants.NumMaxCommandNameChars) {
+                return false;
+            }
+
+            if (!newName.All(char.IsLetter)) {
+                return false;
+            }
+
+            foreach (var command in CommandManager.Commands) {
+                if (newName == command.Name) {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }
