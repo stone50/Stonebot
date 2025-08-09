@@ -20,6 +20,12 @@
             return power;
         }
 
+        public static Image GetCheckIcon() => GetImage(Constants.CheckAvaloniaResourceFilePath);
+
+        public static Image GetCrossIcon() => GetImage(Constants.CrossAvaloniaResourceFilePath);
+
+        public static Image GetPencilIcon() => GetImage(Constants.PencilAvaloniaResourceFilePath);
+
         private static Image GetImage(string avaloniaResourceFilePath) {
             var uri = new Uri(avaloniaResourceFilePath);
             var assetStream = AssetLoader.Open(uri);

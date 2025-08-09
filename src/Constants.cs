@@ -6,6 +6,9 @@
         public static readonly string LogoAvaloniaResourceFilePath = Path.Join(BaseAvaloniaResourcePath, "logo.png");
         public static readonly string CogAvaloniaResourceFilePath = Path.Join(BaseAvaloniaResourcePath, "cog.png");
         public static readonly string PowerAvaloniaResourceFilePath = Path.Join(BaseAvaloniaResourcePath, "power.png");
+        public static readonly string CheckAvaloniaResourceFilePath = Path.Join(BaseAvaloniaResourcePath, "check.png");
+        public static readonly string CrossAvaloniaResourceFilePath = Path.Join(BaseAvaloniaResourcePath, "cross.png");
+        public static readonly string PencilAvaloniaResourceFilePath = Path.Join(BaseAvaloniaResourcePath, "pencil.png");
 
         public static readonly string LocalAppDataPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Stonebot");
         public static readonly string LogsPath = Path.Join(LocalAppDataPath, "logs");

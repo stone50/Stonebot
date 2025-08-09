@@ -66,10 +66,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<AvaloniaResource Include="Resources\check.png" />
+		<AvaloniaResource Include="Resources\cross.png" />
 		<AvaloniaResource Include="Resources\JetBrainsMono-Regular.ttf" />
 		<AvaloniaResource Include="Resources\logo.png" />
 		<AvaloniaResource Include="Resources\cog.png" />
 		<AvaloniaResource Include="Resources\power.png" />
+		<AvaloniaResource Include="Resources\pencil.png" />
 	</ItemGroup>
 
 	<ItemGroup>

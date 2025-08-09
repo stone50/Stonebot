@@ -1,6 +1,8 @@
 ﻿namespace Stonebot.UI {
     using Avalonia.Controls;
     using Avalonia.Input;
+    using Avalonia.Layout;
+    using Avalonia.Media;
     using Buttons;
     using Scripting;
 
@@ -18,11 +20,20 @@
             var nameTextBlock = GetNameTextBlock(command.Name);
             var nameEditButton = GetNameEditButton();
             var staticNameGroup = GetStaticNameGroup(nameTextBlock, nameEditButton);
-            var nameTextBox = GetNameTextBox(command.Name);
+            var nameTextBox = GetNameTextBox(command);
+            var nameCancelButton = GetNameCancelButton();
             var nameSubmitButton = GetNameSubmitButton();
-            var editableNameGroup = GetEditableNameGroup(nameTextBox, nameSubmitButton);
+            var editableNameGroup = GetEditableNameGroup(nameTextBox, nameCancelButton, nameSubmitButton);
             var swappableName = new Swappable(staticNameGroup, editableNameGroup);
-            nameEditButton.Click += (_, _) => swappableName.Swap();
+            nameEditButton.Click += (_, _) => {
+                swappableName.Swap();
+                _ = nameTextBox.Focus();
+                nameTextBox.CaretIndex = nameTextBox.Text!.Length;
+            };
+            nameCancelButton.Click += (_, _) => {
+                nameTextBox.Text = command.Name;
+                swappableName.Swap();
+            };
             nameSubmitButton.Click += (_, _) => OnNameSubmit(command, nameTextBlock, nameTextBox, swappableName);
             nameTextBox.KeyUp += (_, e) => {
                 if (e.Key == Key.Enter) {
@@ -50,7 +61,7 @@
                 // TODO
                 new STextBlock(){
                     Text = "Aliases",
-                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left,
+                    HorizontalAlignment = HorizontalAlignment.Left,
                 },
                 permissionRow,
                 cooldownRow,
@@ -67,11 +78,13 @@
                 ], [
                     swappableName,
                     enableToggleButton,
-                ]),
-                Focusable = true,
+                ]) {
+                    VerticalAlignment = VerticalAlignment.Center,
+                },
                 BorderBrush = enableToggleButton.State ? MainTheme.SuccessBrush2 : MainTheme.DangerBrush2,
                 BorderThickness = new(2d),
                 CornerRadius = new(5d),
+                Height = 70d,
             };
             enableToggleButton.Click += (_, _) => nameRow.BorderBrush = enableToggleButton.State ? MainTheme.SuccessBrush2 : MainTheme.DangerBrush2;
             return nameRow;
@@ -80,12 +93,14 @@
         private static STextBlock GetNameTextBlock(string name) => new() {
             Text = $"!{name}",
             FontSize = 24d,
-            FontWeight = Avalonia.Media.FontWeight.Bold,
-            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left,
+            FontWeight = FontWeight.Bold,
+            HorizontalAlignment = HorizontalAlignment.Left,
         };
 
         private static InfoButton GetNameEditButton() => new() {
-            Content = "Edit",
+            Content = UIUtils.GetPencilIcon(),
+            Padding = new(7d),
+            Height = 30d,
         };
 
         private static SGrid GetStaticNameGroup(STextBlock textBlock, InfoButton editButton) => new([
@@ -98,24 +113,66 @@
                 editButton,
             ]);
 
-        private static STextBox GetNameTextBox(string name) => new() {
-            Text = name,
-            FontSize = 24d,
-            FontWeight = Avalonia.Media.FontWeight.Bold,
-            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left,
+        private static STextBox GetNameTextBox(Command command) {
+            var nameTextBox = new STextBox() {
+                Text = command.Name,
+                FontSize = 24d,
+                FontWeight = FontWeight.Bold,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Width = 230d,
+            };
+            nameTextBox.TextChanging += (_, _) => {
+                var newName = nameTextBox.Text!;
+                if (newName == command.Name) {
+                    nameTextBox.Background = null;
+                    return;
+                }
+
+                if (newName.Length is 0 or > Constants.NumMaxCommandNameChars) {
+                    nameTextBox.Background = MainTheme.DangerBrush1;
+                    return;
+                }
+
+                if (!newName.All(char.IsLetter)) {
+                    nameTextBox.Background = MainTheme.DangerBrush1;
+                    return;
+                }
+
+                foreach (var otherCommand in CommandManager.Commands) {
+                    if (newName == otherCommand.Name) {
+                        nameTextBox.Background = MainTheme.DangerBrush1;
+                        return;
+                    }
+                }
+
+                nameTextBox.Background = null;
+            };
+            return nameTextBox;
+        }
+
+        private static DangerButton GetNameCancelButton() => new() {
+            Content = UIUtils.GetCrossIcon(),
+            Padding = new(7d),
+            Margin = new(5d),
+            Height = 30d,
         };
 
         private static SuccessButton GetNameSubmitButton() => new() {
-            Content = "Submit",
+            Content = UIUtils.GetCheckIcon(),
+            Padding = new(7d),
+            Margin = new(5d),
+            Height = 30d,
         };
 
-        private static SGrid GetEditableNameGroup(STextBox textBox, SuccessButton submitButton) => new([
+        private static SGrid GetEditableNameGroup(STextBox textBox, DangerButton cancelButton, SuccessButton submitButton) => new([
                 GridLength.Auto,
             ], [
+                GridLength.Auto,
                 GridLength.Auto,
                 GridLength.Auto,
             ], [
                 textBox,
+                cancelButton,
                 submitButton,
             ]);
 
@@ -125,30 +182,51 @@
             STextBox nameTextBox,
             Swappable swappableName
         ) {
-            swappableName.Swap();
-            if (nameTextBox.Text == command.Name) {
+            var newName = nameTextBox.Text!;
+            if (newName == command.Name) {
+                swappableName.Swap();
                 return;
             }
 
-            nameTextBlock.Text = $"!{nameTextBox.Text}";
+            if (newName.Length is 0 or > Constants.NumMaxCommandNameChars) {
+                return;
+            }
+
+            if (!newName.All(char.IsLetter)) {
+                nameTextBox.Background = MainTheme.DangerBrush1;
+                return;
+            }
+
+            foreach (var otherCommand in CommandManager.Commands) {
+                if (newName == otherCommand.Name) {
+                    return;
+                }
+            }
+
+            swappableName.Swap();
+            nameTextBlock.Text = $"!{newName}";
             var oldScriptFilePath = command.GetScriptFilePath();
-            command.Name = nameTextBox.Text!;
+            command.Name = newName;
             _ = Utils.FireTryElseError(() => {
                 File.Move(oldScriptFilePath, command.GetScriptFilePath());
                 command.ReloadScriptFile();
+                CommandManager.Save();
             }, CancellationToken.None);
         }
 
         private static ToggleButton GetEnableToggleButton(Command command) {
             var enableToggleButton = new ToggleButton(command.Enabled) {
                 Content = UIUtils.GetPowerIcon(),
-                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
                 CornerRadius = new(20d),
                 Width = 30d,
                 Height = 30d,
                 Padding = new(7d),
             };
-            enableToggleButton.Click += (_, _) => command.Enabled = !command.Enabled;
+            enableToggleButton.Click += (_, _) => {
+                command.Enabled = !command.Enabled;
+                _ = Utils.FireTryElseError(CommandManager.Save, CancellationToken.None);
+            };
             return enableToggleButton;
         }
 
@@ -193,6 +271,7 @@
                 command.PermissionLevel = permissionLevel;
                 permissionInput.Content = $"{command.PermissionLevel} ▼";
                 permissionInput.Flyout!.Hide();
+                _ = Utils.FireTryElseError(CommandManager.Save, CancellationToken.None);
             };
             return dropDownOption;
         }
@@ -214,7 +293,10 @@
                 Value = command.CooldownSeconds,
                 Width = 75d,
             };
-            cooldownInput.ValueChanged += (_, _) => command.CooldownSeconds = (int)cooldownInput.Value!;
+            cooldownInput.ValueChanged += (_, _) => {
+                command.CooldownSeconds = (int)cooldownInput.Value!;
+                _ = Utils.FireTryElseError(CommandManager.Save, CancellationToken.None);
+            };
             return cooldownInput;
         }
     }
