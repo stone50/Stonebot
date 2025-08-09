@@ -12,6 +12,7 @@
                 foreach (var command in CommandManager.Commands) {
                     if (command.GetScriptFilePath() == scriptFilePath) {
                         Utils.TryElseError(command.ReloadScriptFile);
+                        return;
                     }
                 }
 

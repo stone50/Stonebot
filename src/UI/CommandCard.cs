@@ -1,5 +1,6 @@
 ﻿namespace Stonebot.UI {
     using Avalonia.Controls;
+    using Avalonia.Input;
     using Buttons;
     using Scripting;
 
@@ -15,8 +16,21 @@
             Width = 400d;
 
             var nameTextBlock = GetNameTextBlock(command.Name);
+            var nameEditButton = GetNameEditButton();
+            var staticNameGroup = GetStaticNameGroup(nameTextBlock, nameEditButton);
+            var nameTextBox = GetNameTextBox(command.Name);
+            var nameSubmitButton = GetNameSubmitButton();
+            var editableNameGroup = GetEditableNameGroup(nameTextBox, nameSubmitButton);
+            var swappableName = new Swappable(staticNameGroup, editableNameGroup);
+            nameEditButton.Click += (_, _) => swappableName.Swap();
+            nameSubmitButton.Click += (_, _) => OnNameSubmit(command, nameTextBlock, nameTextBox, swappableName);
+            nameTextBox.KeyUp += (_, e) => {
+                if (e.Key == Key.Enter) {
+                    OnNameSubmit(command, nameTextBlock, nameTextBox, swappableName);
+                }
+            };
             var enableToggleButton = GetEnableToggleButton(command);
-            var nameRow = GetNameRow(nameTextBlock, enableToggleButton);
+            var nameRow = GetNameRow(swappableName, enableToggleButton);
             var permissionInput = GetPermissionInput(command);
             var permissionRow = GetPermissionRow(permissionInput);
             var cooldownInput = GetCooldownInput(command);
@@ -40,19 +54,21 @@
                 },
                 permissionRow,
                 cooldownRow,
-            ]);
+            ]) {
+        };
 
-        private static Border GetNameRow(STextBlock nameTextBlock, ToggleButton enableToggleButton) {
+        private static Border GetNameRow(Swappable swappableName, ToggleButton enableToggleButton) {
             var nameRow = new Border() {
                 Child = new SGrid([
-                GridLength.Auto,
-            ], [
-                GridLength.Star,
-                GridLength.Auto,
-            ], [
-                nameTextBlock,
-                enableToggleButton,
-            ]),
+                    GridLength.Auto,
+                ], [
+                    GridLength.Star,
+                    GridLength.Auto,
+                ], [
+                    swappableName,
+                    enableToggleButton,
+                ]),
+                Focusable = true,
                 BorderBrush = enableToggleButton.State ? MainTheme.SuccessBrush2 : MainTheme.DangerBrush2,
                 BorderThickness = new(2d),
                 CornerRadius = new(5d),
@@ -61,14 +77,66 @@
             return nameRow;
         }
 
-        private static STextBlock GetNameTextBlock(string name) {
-            var displayName = Utils.GetCutoffText(name, Constants.NumMaxCommandNameChars);
-            return new STextBlock() {
-                Text = $"!{displayName}",
-                FontSize = 24d,
-                FontWeight = Avalonia.Media.FontWeight.Bold,
-                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left,
-            };
+        private static STextBlock GetNameTextBlock(string name) => new() {
+            Text = $"!{name}",
+            FontSize = 24d,
+            FontWeight = Avalonia.Media.FontWeight.Bold,
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left,
+        };
+
+        private static InfoButton GetNameEditButton() => new() {
+            Content = "Edit",
+        };
+
+        private static SGrid GetStaticNameGroup(STextBlock textBlock, InfoButton editButton) => new([
+                GridLength.Auto,
+            ], [
+                GridLength.Auto,
+                GridLength.Auto,
+            ], [
+                textBlock,
+                editButton,
+            ]);
+
+        private static STextBox GetNameTextBox(string name) => new() {
+            Text = name,
+            FontSize = 24d,
+            FontWeight = Avalonia.Media.FontWeight.Bold,
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left,
+        };
+
+        private static SuccessButton GetNameSubmitButton() => new() {
+            Content = "Submit",
+        };
+
+        private static SGrid GetEditableNameGroup(STextBox textBox, SuccessButton submitButton) => new([
+                GridLength.Auto,
+            ], [
+                GridLength.Auto,
+                GridLength.Auto,
+            ], [
+                textBox,
+                submitButton,
+            ]);
+
+        private static void OnNameSubmit(
+            Command command,
+            STextBlock nameTextBlock,
+            STextBox nameTextBox,
+            Swappable swappableName
+        ) {
+            swappableName.Swap();
+            if (nameTextBox.Text == command.Name) {
+                return;
+            }
+
+            nameTextBlock.Text = $"!{nameTextBox.Text}";
+            var oldScriptFilePath = command.GetScriptFilePath();
+            command.Name = nameTextBox.Text!;
+            _ = Utils.FireTryElseError(() => {
+                File.Move(oldScriptFilePath, command.GetScriptFilePath());
+                command.ReloadScriptFile();
+            }, CancellationToken.None);
         }
 
         private static ToggleButton GetEnableToggleButton(Command command) {

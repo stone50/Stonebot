@@ -9,6 +9,7 @@
             Title = "Stonebot";
             Width = 1000d;
             Height = 800d;
+            Focusable = true;
             MainPanel = new(this);
             ConfigPanel = GetConfigPanel();
             Content = GetContent(MainPanel, ConfigPanel);

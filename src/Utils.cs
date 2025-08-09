@@ -86,8 +86,6 @@
 
         public static Task FireTryElseErrorAfter(Action action, CancellationToken cancellationToken, params Task[] tasks) => FireDoAfter(() => TryElseError(action), cancellationToken, tasks);
 
-        public static string GetCutoffText(string text, int maxLength) => text.Length > maxLength ? $"{text[..(maxLength - 3)]}..." : text;
-
         private static HttpResponseMessage InnerSendPostRequest<T>(HttpClient client, string url, T body, JsonTypeInfo<T> bodyJsonTypeInfo, CancellationToken cancellationToken) where T : struct {
             var contentString = JsonSerializer.Serialize(body, bodyJsonTypeInfo);
             var content = new StringContent(contentString, Encoding.UTF8, "application/json");
