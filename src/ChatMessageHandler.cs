@@ -4,7 +4,7 @@
 
     internal static class ChatMessageHandler {
         public static void HandleChatMessage(EventSubNotificationMessagePayloadEvent channelChatMessageEvent) {
-            if (channelChatMessageEvent.ChatterId == Cache.ChatterAuthorizationData!.UserId) {
+            if (channelChatMessageEvent.ChatterId == Cache.ChatterId) {
                 return;
             }
 
@@ -13,7 +13,7 @@
             }
 
             // TODO: handle chat message
-            Logger.Debug(channelChatMessageEvent.ChatterLogin, channelChatMessageEvent.Message.Text);
+            Logger.Debug(channelChatMessageEvent.ChatterUserName, channelChatMessageEvent.Message.Text);
         }
     }
 }

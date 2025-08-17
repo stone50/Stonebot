@@ -1,30 +1,32 @@
 ﻿namespace Stonebot.UI {
     using Avalonia.Controls;
+    using CustomControls;
 
     internal class MainWindow : Window {
-        public readonly MainPanel MainPanel;
-        public readonly ConfigPanel ConfigPanel;
-
         public MainWindow() {
+            Focusable = true;
+            Height = 800d;
             Title = "Stonebot";
             Width = 1000d;
-            Height = 800d;
-            Focusable = true;
-            MainPanel = new(this);
-            ConfigPanel = GetConfigPanel();
-            Content = GetContent(MainPanel, ConfigPanel);
             WindowState = WindowState.Maximized;
+
+            var swappableContent = new Swappable();
+            mainPanel = new(swappableContent);
+            configPanel = new(swappableContent, mainPanel);
+            swappableContent.Init(mainPanel, configPanel);
+            Content = swappableContent;
         }
 
-        private ConfigPanel GetConfigPanel() => new(this) {
-            IsVisible = false
-        };
+        public void UpdateMainPanelUserButtons() {
+            mainPanel.UpdateBroadcasterButton();
+            mainPanel.UpdateChatterButton();
+        }
 
-        private static Panel GetContent(MainPanel mainPanel, ConfigPanel configPanel) => new() {
-            Children = {
-                mainPanel,
-                configPanel,
-            }
-        };
+        public void UpdateMainPanelInteractionGrid() => mainPanel.InitInteractionGrid();
+
+        public void InitConfigPanel() => configPanel.Init();
+
+        private readonly MainPanel mainPanel;
+        private readonly ConfigPanel configPanel;
     }
 }

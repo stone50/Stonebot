@@ -5,7 +5,6 @@
     using Avalonia.Threading;
     using Resources;
     using Scripting;
-    using System.Threading;
     using UI;
 
     internal class App : Application {
@@ -13,33 +12,34 @@
 
         public override void OnFrameworkInitializationCompleted() {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
-                desktop.Startup += (_, _) => Startup(CancellationToken.None);
-                desktop.Exit += (_, _) => Shutdown(CancellationToken.None);
+                desktop.Startup += (_, _) => Startup();
+                desktop.Exit += (_, _) => Shutdown();
                 Utils.TryElseConsoleError(() => desktop.MainWindow = new MainWindow());
             }
 
             base.OnFrameworkInitializationCompleted();
         }
 
-        private void Startup(CancellationToken cancellationToken) {
-            var loggerInitTask = Utils.FireTryElseConsoleError(Logger.Init, cancellationToken);
-            var configInitTask = Utils.FireTryElseErrorAfter(Config.Init, cancellationToken, loggerInitTask);
-            var deleteExcessLogFilesTask = Utils.FireTryElseErrorAfter(Logger.DeleteExcessFiles, cancellationToken, configInitTask);
-            var cacheInitTask = Utils.FireTryElseErrorAfter(() => Cache.Init(cancellationToken), cancellationToken, configInitTask);
-            FireUpdateMainPanelAfter(mainPanel => mainPanel.UpdateUsers(), cancellationToken, cacheInitTask);
-            var customDataInitTask = Utils.FireTryElseErrorAfter(CustomData.Init, cancellationToken, loggerInitTask);
-            var commandManagerInitTask = Utils.FireTryElseErrorAfter(CommandManager.Init, cancellationToken, loggerInitTask);
-            FireUpdateMainPanelAfter(mainPanel => mainPanel.UpdateInteractionGrid(), cancellationToken, commandManagerInitTask);
-            var copyScriptsTypeHintsFileTask = Utils.FireTryElseErrorAfter(CopyScriptsTypeHintsFile, cancellationToken, loggerInitTask);
-            var scriptFilesWatcherInitTask = Utils.FireTryElseErrorAfter(ScriptFilesWatcher.Init, cancellationToken, commandManagerInitTask);
+        private void Startup() {
+            var loggerInitTask = Utils.FireTryElseConsoleError(Logger.Init);
+            var configInitTask = Utils.FireTryElseErrorAfter(Config.Init, loggerInitTask);
+            FireUpdateMainWindowAfter(mainWindow => mainWindow.InitConfigPanel(), configInitTask);
+            var deleteExcessLogFilesTask = Utils.FireTryElseErrorAfter(Logger.DeleteExcessFiles, configInitTask);
+            var cacheInitTask = Utils.FireTryElseErrorAfter(Cache.Init, configInitTask);
+            FireUpdateMainWindowAfter(mainWindow => mainWindow.UpdateMainPanelUserButtons(), cacheInitTask);
+            var customDataInitTask = Utils.FireTryElseErrorAfter(CustomData.Init, loggerInitTask);
+            var commandManagerInitTask = Utils.FireTryElseErrorAfter(CommandManager.Init, loggerInitTask);
+            FireUpdateMainWindowAfter(mainWindow => mainWindow.UpdateMainPanelInteractionGrid(), commandManagerInitTask);
+            var copyScriptsTypeHintsFileTask = Utils.FireTryElseErrorAfter(CopyScriptsTypeHintsFile, loggerInitTask);
+            var scriptFilesWatcherInitTask = Utils.FireTryElseErrorAfter(ScriptFilesWatcher.Init, commandManagerInitTask);
         }
 
-        private static void Shutdown(CancellationToken cancellationToken) {
-            var webSocketClientCloseTask = Utils.FireTryElseError(() => WebSocketClient.Close(cancellationToken), cancellationToken);
-            var customDataSaveTask = Utils.FireTryElseErrorAfter(CustomData.Save, cancellationToken, webSocketClientCloseTask);
-            var commandManaderSaveTask = Utils.FireTryElseError(CommandManager.Save, cancellationToken);
-            var cacheSaveTask = Utils.FireTryElseError(Cache.Save, cancellationToken);
-            var configSaveTask = Utils.FireTryElseError(Config.Save, cancellationToken);
+        private static void Shutdown() {
+            var webSocketClientCloseTask = Utils.FireTryElseError(WebSocketClient.Close);
+            var customDataSaveTask = Utils.FireTryElseErrorAfter(CustomData.Save, webSocketClientCloseTask);
+            var commandManaderSaveTask = Utils.FireTryElseError(CommandManager.Save);
+            var cacheSaveTask = Utils.FireTryElseError(Cache.Save);
+            var configSaveTask = Utils.FireTryElseError(Config.Save);
             Utils.TryElseErrorAfter(Logger.Shutdown, webSocketClientCloseTask, customDataSaveTask, commandManaderSaveTask, cacheSaveTask, configSaveTask);
         }
 
@@ -48,20 +48,16 @@
             File.WriteAllText(Constants.ScriptsTypeHintsFilePath, Embedded.ScriptsTypeHintsPyi);
         }
 
-        private void FireUpdateMainPanelAfter(
-            Action<MainPanel> update,
-            CancellationToken cancellationToken,
-            params Task[] tasks
-        ) {
+        private void FireUpdateMainWindowAfter(Action<MainWindow> update, params Task[] tasks) {
             void updateMainPanel() {
                 var desktopApplicationLifetime = (IClassicDesktopStyleApplicationLifetime)ApplicationLifetime!;
                 var mainWindow = (MainWindow)desktopApplicationLifetime.MainWindow!;
-                update(mainWindow.MainPanel);
+                update(mainWindow);
             }
 
             void updateOnUIThread() => Dispatcher.UIThread.Invoke(updateMainPanel);
             void tryElseErrorUpdateOnUIThread() => Utils.TryElseError(updateOnUIThread);
-            _ = Utils.FireDoAfter(tryElseErrorUpdateOnUIThread, cancellationToken, tasks);
+            _ = Utils.FireDoAfter(tryElseErrorUpdateOnUIThread, tasks);
         }
     }
 }

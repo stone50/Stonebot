@@ -20,12 +20,12 @@
             PermissionLevel = permissionLevel;
             CooldownSeconds = cooldownSeconds;
             lastProcTime = DateTime.UtcNow.AddSeconds(-CooldownSeconds);
-            scriptSource = GetReloadedScriptSource();
+            scriptSource = GetScriptSource();
         }
 
         public string GetScriptFilePath() => Path.Join(Constants.CommandScriptsPath, $"{Name}.py");
 
-        public void ReloadScriptFile() => scriptSource = GetReloadedScriptSource();
+        public void ReloadScriptFile() => scriptSource = GetScriptSource();
 
         public bool TryProc(EventSubNotificationMessagePayloadEvent channelChatMessageEvent) {
             if (!Enabled) {
@@ -49,7 +49,7 @@
         private DateTime lastProcTime;
         private ScriptSource scriptSource;
 
-        private ScriptSource GetReloadedScriptSource() {
+        private ScriptSource GetScriptSource() {
             var scriptFilePath = GetScriptFilePath();
             if (!File.Exists(scriptFilePath)) {
                 File.WriteAllText(scriptFilePath, Embedded.ScriptsTemplatePy);

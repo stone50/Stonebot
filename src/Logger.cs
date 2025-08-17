@@ -22,7 +22,7 @@
         public static void Error(params object?[]? messages) => Log(LogType.Error, messages);
 
         public static void Log(LogType logType, params object?[]? messages) {
-            if (flushingTask is not null && flushingTask.IsCompleted) {
+            if (flushingTask != null && flushingTask.IsCompleted) {
                 return;
             }
 
@@ -33,7 +33,7 @@
             _ = Directory.CreateDirectory(Constants.LogsPath);
             filePath = Path.Join(Constants.LogsPath, $"{GetFormattedDateTime()}.txt");
             File.Create(filePath).Close();
-            flushingTask = Task.Run(FlushingTaskAction, CancellationToken.None);
+            flushingTask = Task.Run(FlushingTaskAction);
         }
 
         public static void DeleteExcessFiles() {
@@ -54,7 +54,7 @@
 
         public static void Shutdown() {
             flushingTaskCancellationTokenSource.Cancel();
-            if (flushingTask is not null) {
+            if (flushingTask != null) {
                 Utils.Sync(flushingTask);
             }
 
@@ -97,12 +97,12 @@
             var logs = new StringBuilder();
             while (logQueue.TryDequeue(out var log)) {
                 LogToConsole(log);
-                if (filePath is not null) {
+                if (filePath != null) {
                     _ = logs.AppendLine(log);
                 }
             }
 
-            if (filePath is not null) {
+            if (filePath != null) {
                 File.AppendAllText(filePath, logs.ToString());
             }
         }

@@ -1,54 +1,83 @@
 ﻿namespace Stonebot {
-    using Models.Data;
-    using System.Text.Json;
+    using Stonebot.Twitch;
 
     internal static class Cache {
-        public static readonly HttpClient DefaultClient = new();
-        public static AuthorizationData? BroadcasterAuthorizationData { get; private set; }
-        public static AuthorizationData? ChatterAuthorizationData { get; private set; }
+        public static readonly HttpClient DefaultHttpClient = new();
+        public static AccessToken AccessToken => GetAccessToken();
+        public static HttpClient AuthorizedHttpClient => GetAuthorizedHttpClient();
+        public static string BroadcasterId => GetBroadcasterId();
+        public static string ChatterId => GetChatterId();
+        public static string ChatterDisplayName => GetChatterDisplayName();
 
-        public static void Init(CancellationToken cancellationToken) {
-            if (!File.Exists(Constants.CacheFilePath)) {
-                return;
-            }
-
-            var cacheFileContents = File.ReadAllText(Constants.CacheFilePath);
-            var cacheData = JsonSerializer.Deserialize(cacheFileContents, JsonContext.Default.CacheData);
-            if (cacheData.BroadcasterRefreshToken is not null) {
-                BroadcasterAuthorizationData = AuthorizationData.CreateFromRefreshToken(Config.BroadcasterClientId, Config.BroadcasterClientSecret, cacheData.BroadcasterRefreshToken, cancellationToken);
-            }
-
-            if (cacheData.ChatterRefreshToken is not null) {
-                ChatterAuthorizationData = AuthorizationData.CreateFromRefreshToken(Config.ChatterClientId, Config.ChatterClientSecret, cacheData.ChatterRefreshToken, cancellationToken);
-            }
-        }
-
-        public static void CreateBroadcasterAuthorizationData(CancellationToken cancellationToken) {
-            ClearBroadcasterAuthorizationData();
-            BroadcasterAuthorizationData = AuthorizationData.CreateFromScopes(Config.BroadcasterClientId, Config.BroadcasterClientSecret, Constants.BroadcasterScopes, cancellationToken);
-        }
-
-        public static void CreateChatterAccessToken(CancellationToken cancellationToken) {
-            ClearChatterAuthorizationData();
-            ChatterAuthorizationData = AuthorizationData.CreateFromScopes(Config.ChatterClientId, Config.ChatterClientSecret, Constants.ChatterScopes, cancellationToken);
-        }
-
-        public static void ClearBroadcasterAuthorizationData() {
-            BroadcasterAuthorizationData?.Dispose();
-            BroadcasterAuthorizationData = null;
-        }
-
-        public static void ClearChatterAuthorizationData() {
-            ChatterAuthorizationData?.Dispose();
-            ChatterAuthorizationData = null;
+        public static void Init() {
+            // TODO
         }
 
         public static void Save() {
-            var contents = JsonSerializer.Serialize(new CacheData() {
-                BroadcasterRefreshToken = BroadcasterAuthorizationData?.AccessToken.RefreshToken,
-                ChatterRefreshToken = ChatterAuthorizationData?.AccessToken.RefreshToken,
-            }, JsonContext.Default.CacheData);
-            File.WriteAllText(Constants.CacheFilePath, contents);
+            // TODO
         }
+
+        private static AccessToken GetAccessToken() {
+            if (accessToken == null) {
+                accessToken = new();
+                return accessToken;
+            }
+
+            if (GetAccessTokenShouldBeRefreshed()) {
+                accessToken.Refresh();
+            }
+
+            return accessToken;
+        }
+
+        private static HttpClient GetAuthorizedHttpClient() {
+            if (authorizedHttpClient == null) {
+                authorizedHttpClient = new HttpClient();
+                authorizedHttpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {AccessToken.Value}");
+                authorizedHttpClient.DefaultRequestHeaders.Add("Client-Id", Config.ClientId);
+                return authorizedHttpClient;
+            }
+
+            if (GetAccessTokenShouldBeRefreshed()) {
+                accessToken!.Refresh();
+                _ = authorizedHttpClient.DefaultRequestHeaders.Remove("Authorization");
+                authorizedHttpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken.Value}");
+            }
+
+            return authorizedHttpClient;
+        }
+
+        private static string GetBroadcasterId() {
+            broadcasterId ??= User.GetBroadcaster().Id;
+            return broadcasterId;
+        }
+
+        private static string GetChatterId() {
+            if (chatterId == null) {
+                var chatter = User.GetChatter();
+                chatterId = chatter.Id;
+                chatterDisplayName = chatter.DisplayName;
+            }
+
+            return chatterId;
+        }
+
+        private static string GetChatterDisplayName() {
+            if (chatterDisplayName == null) {
+                var chatter = User.GetChatter();
+                chatterDisplayName = chatter.DisplayName;
+                chatterId = chatter.Id;
+            }
+
+            return chatterDisplayName;
+        }
+
+        private static AccessToken? accessToken;
+        private static HttpClient? authorizedHttpClient;
+        private static string? broadcasterId;
+        private static string? chatterId;
+        private static string? chatterDisplayName;
+
+        private static bool GetAccessTokenShouldBeRefreshed() => DateTime.UtcNow.AddSeconds(Constants.AccessTokenExpirationMarginSecs) > accessToken!.ExpirationDate;
     }
 }

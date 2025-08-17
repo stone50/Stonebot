@@ -1,0 +1,110 @@
+﻿namespace Stonebot.UI.CustomControls.Buttons {
+    using Avalonia.Interactivity;
+    using Avalonia.Threading;
+    using System;
+
+    internal class ConnectButton : SButtonBase {
+        public enum ConnectState {
+            Connected,
+            Disconnected,
+            Connecting,
+            Disconnecting,
+        }
+
+        public ConnectState State { get => state; private set => SetState(value); }
+
+        public ConnectButton() {
+            CornerRadius = new(50d);
+            MaxHeight = 50d;
+            MinWidth = 220d;
+
+            State = ConnectState.Disconnected;
+            Click += OnClick;
+            WebSocketClient.ClosedUnexpectedly += OnWebSocketClientClosedUnexpectedly;
+        }
+
+        protected override void UpdateBackground() => Background =
+            State == ConnectState.Disconnected
+                ? IsPressed
+                    ? MainTheme.SuccessBrush3
+                : IsPointerOver
+                    ? MainTheme.SuccessBrush1
+                    : MainTheme.SuccessBrush2
+            : IsPressed
+                ? MainTheme.DangerBrush3
+            : IsPointerOver
+                ? MainTheme.DangerBrush1
+                : MainTheme.DangerBrush2;
+
+        private ConnectState state;
+
+        private void SetState(ConnectState newState) {
+            if (State == newState) {
+                return;
+            }
+
+            state = newState;
+            switch (State) {
+                case ConnectState.Connected:
+                    Content = "Disconnect";
+                    break;
+                case ConnectState.Disconnected:
+                    Content = "Connect";
+                    break;
+                case ConnectState.Connecting:
+                    Content = "Connecting...";
+                    break;
+                case ConnectState.Disconnecting:
+                    Content = "Disconnecting...";
+                    break;
+            }
+
+            UpdateBackground();
+        }
+
+        private void OnClick(object? sender, RoutedEventArgs e) {
+            switch (State) {
+                case ConnectState.Connected:
+                    Disconnect();
+                    break;
+                case ConnectState.Disconnected:
+                    Connect();
+                    break;
+            }
+        }
+
+        private void Connect() {
+            if (Cache.BroadcasterAuthorizationData is null) {
+                return;
+            }
+
+            if (Cache.ChatterAuthorizationData is null) {
+                return;
+            }
+
+            State = ConnectState.Connecting;
+            var cancellationToken = Utils.GetCancellationTokenFromSeconds(Config.WebSocketConnectTimeoutSeconds);
+            _ = Utils.FireTryElse(() => {
+                WebSocketClient.Connect(cancellationToken);
+                _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Connected);
+            }, e => {
+                _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Disconnected);
+                Logger.Error(e);
+            }, cancellationToken);
+        }
+
+        private void Disconnect() {
+            State = ConnectState.Disconnecting;
+            var cancellationToken = Utils.GetCancellationTokenFromSeconds(Constants.WebSocketClientDisconnectTimeoutSeconds);
+            _ = Utils.FireTryElse(() => {
+                WebSocketClient.Close(cancellationToken);
+                _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Disconnected);
+            }, e => {
+                _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Connected);
+                Logger.Error(e);
+            }, cancellationToken);
+        }
+
+        private void OnWebSocketClientClosedUnexpectedly(object? sender, EventArgs args) => Dispatcher.UIThread.Invoke(() => SetState(ConnectState.Disconnected));
+    }
+}

@@ -13,15 +13,15 @@
         public readonly EventMessage message = new(eventSubNotificationMessagePayloadEvent.Message);
         public readonly string message_type = eventSubNotificationMessagePayloadEvent.MessageType;
         public readonly EventBadge[] badges = [.. eventSubNotificationMessagePayloadEvent.Badges.Select(badge => new EventBadge(badge))];
-        public readonly EventCheer? cheer = eventSubNotificationMessagePayloadEvent.Cheer is null ? null : new((EventSubNotificationMessagePayloadEventCheer)eventSubNotificationMessagePayloadEvent.Cheer);
+        public readonly EventCheer? cheer = eventSubNotificationMessagePayloadEvent.Cheer == null ? null : new((EventSubNotificationMessagePayloadEventCheer)eventSubNotificationMessagePayloadEvent.Cheer);
         public readonly string color = eventSubNotificationMessagePayloadEvent.Color;
-        public readonly EventReply? reply = eventSubNotificationMessagePayloadEvent.Reply is null ? null : new((EventSubNotificationMessagePayloadEventReply)eventSubNotificationMessagePayloadEvent.Reply);
+        public readonly EventReply? reply = eventSubNotificationMessagePayloadEvent.Reply == null ? null : new((EventSubNotificationMessagePayloadEventReply)eventSubNotificationMessagePayloadEvent.Reply);
         public readonly string? channel_points_custom_reward_id = eventSubNotificationMessagePayloadEvent.ChannelPointsCustomRewardId;
         public readonly string? source_broadcaster_id = eventSubNotificationMessagePayloadEvent.SourceBroadcasterId;
         public readonly string? source_broadcaster_user_name = eventSubNotificationMessagePayloadEvent.SourceBroadcasterUserName;
         public readonly string? source_broadcaster_login = eventSubNotificationMessagePayloadEvent.SourceBroadcasterLogin;
         public readonly string? source_message_id = eventSubNotificationMessagePayloadEvent.SourceMessageId;
-        public readonly EventSourceBadges? source_badges = eventSubNotificationMessagePayloadEvent.SourceBadges is null ? null : new((EventSubNotificationMessagePayloadEventSourceBadges)eventSubNotificationMessagePayloadEvent.SourceBadges);
+        public readonly EventSourceBadges? source_badges = eventSubNotificationMessagePayloadEvent.SourceBadges == null ? null : new((EventSubNotificationMessagePayloadEventSourceBadges)eventSubNotificationMessagePayloadEvent.SourceBadges);
         public readonly bool? is_source_only = eventSubNotificationMessagePayloadEvent.IsSourceOnly;
 
         public class EventMessage(EventSubNotificationMessagePayloadEventMessage eventSubNotificationMessagePayloadEventMessage) {
@@ -32,9 +32,9 @@
         public class EventMessageFragment(EventSubNotificationMessagePayloadEventMessageFragment eventSubNotificationMessagePayloadEventMessageFragment) {
             public readonly string type = eventSubNotificationMessagePayloadEventMessageFragment.Type;
             public readonly string text = eventSubNotificationMessagePayloadEventMessageFragment.Text;
-            public readonly EventMessageFragmentCheermote? cheermote = eventSubNotificationMessagePayloadEventMessageFragment.Cheermote is null ? null : new((EventSubNotificationMessagePayloadEventMessageFragmentCheermote)eventSubNotificationMessagePayloadEventMessageFragment.Cheermote);
-            public readonly EventMessageFragmentEmote? emote = eventSubNotificationMessagePayloadEventMessageFragment.Emote is null ? null : new((EventSubNotificationMessagePayloadEventMessageFragmentEmote)eventSubNotificationMessagePayloadEventMessageFragment.Emote);
-            public readonly EventMessageFragmentMention? mention = eventSubNotificationMessagePayloadEventMessageFragment.Mention is null ? null : new((EventSubNotificationMessagePayloadEventMessageFragmentMention)eventSubNotificationMessagePayloadEventMessageFragment.Mention);
+            public readonly EventMessageFragmentCheermote? cheermote = eventSubNotificationMessagePayloadEventMessageFragment.Cheermote == null ? null : new((EventSubNotificationMessagePayloadEventMessageFragmentCheermote)eventSubNotificationMessagePayloadEventMessageFragment.Cheermote);
+            public readonly EventMessageFragmentEmote? emote = eventSubNotificationMessagePayloadEventMessageFragment.Emote == null ? null : new((EventSubNotificationMessagePayloadEventMessageFragmentEmote)eventSubNotificationMessagePayloadEventMessageFragment.Emote);
+            public readonly EventMessageFragmentMention? mention = eventSubNotificationMessagePayloadEventMessageFragment.Mention == null ? null : new((EventSubNotificationMessagePayloadEventMessageFragmentMention)eventSubNotificationMessagePayloadEventMessageFragment.Mention);
         }
 
         public class EventMessageFragmentCheermote(EventSubNotificationMessagePayloadEventMessageFragmentCheermote eventSubNotificationMessagePayloadEventMessageFragmentCheermote) {

@@ -1,30 +1,13 @@
 ﻿namespace Stonebot.Scripting {
-    using Models.Data;
     using Models.EventSubMessages;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text.Json;
 
     internal static class CommandManager {
         public static readonly List<Command> Commands = [];
 
         public static void Init() {
             _ = Directory.CreateDirectory(Constants.CommandScriptsPath);
-            if (!File.Exists(Constants.CommandManagerFilePath)) {
-                return;
-            }
-
-            var fileContents = File.ReadAllText(Constants.CommandManagerFilePath);
-            var data = JsonSerializer.Deserialize(fileContents, JsonContext.Default.CommandManagerData);
-            foreach (var commandData in data.Commands) {
-                Utils.TryElseWarn(() => Commands.Add(new(
-                    commandData.Name,
-                    commandData.Aliases,
-                    commandData.Enabled,
-                    commandData.PermissionLevel,
-                    commandData.CooldownSeconds
-                )));
-            }
+            Load();
         }
 
         public static bool TryUseCommand(EventSubNotificationMessagePayloadEvent channelChatMessageEvent) {
@@ -50,17 +33,14 @@
             return false;
         }
 
+
+
         public static void Save() {
-            var contents = JsonSerializer.Serialize(new CommandManagerData() {
-                Commands = [.. Commands.Select(command => new CommandManagerDataCommand() {
-                    Name = command.Name,
-                    Aliases = [.. command.Aliases],
-                    Enabled = command.Enabled,
-                    PermissionLevel = command.PermissionLevel,
-                    CooldownSeconds = command.CooldownSeconds,
-                })],
-            }, JsonContext.Default.CommandManagerData);
-            File.WriteAllText(Constants.CommandManagerFilePath, contents);
+            // TODO
+        }
+
+        private static void Load() {
+            // TODO
         }
 
         private static string GetCommandKeyword(string text) {

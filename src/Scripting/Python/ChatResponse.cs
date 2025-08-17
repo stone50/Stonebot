@@ -1,5 +1,5 @@
 ﻿namespace Stonebot.Scripting.Python {
-    using Models;
+    using Models.Responses;
     using System.Linq;
 
     public class ChatResponse(SendChatMessageResponse response) {

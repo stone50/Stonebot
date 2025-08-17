@@ -1,7 +1,6 @@
 ﻿namespace Stonebot.Scripting.Python {
     using Models.EventSubMessages;
     using Stonebot;
-    using System;
     using System.Diagnostics.CodeAnalysis;
     using Twitch;
 
@@ -17,10 +16,7 @@
 
         public static void log_error(params object?[] messages) => Logger.Error(messages);
 
-        public static ChatResponse chat(string message, string? reply_parent_message_id = null) {
-            var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(Constants.SendChatMessageFromScriptTimeoutSeconds));
-            return new(Chat.Send(message, reply_parent_message_id, cancellationTokenSource.Token));
-        }
+        public static ChatResponse chat(string message, string? reply_parent_message_id = null) => new(Chat.Send(message, reply_parent_message_id));
 
         public static object? get(string key) => CustomData.Get(key);
 

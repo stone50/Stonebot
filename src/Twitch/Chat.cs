@@ -1,16 +1,16 @@
 ﻿namespace Stonebot.Twitch {
-    using Models;
+    using Models.Bodies;
+    using Models.Responses;
 
     internal static class Chat {
-        public static SendChatMessageResponse Send(string message, string? replyParentMessageId, CancellationToken cancellationToken) {
-            var client = Cache.ChatterAuthorizationData!.AccessToken.GetHttpClient(cancellationToken);
-            var body = new SendChatMessage {
-                BroadcasterId = Cache.BroadcasterAuthorizationData!.UserId,
-                SenderId = Cache.ChatterAuthorizationData!.UserId,
+        public static SendChatMessageResponse Send(string message, string? replyParentMessageId) {
+            var body = new SendChatMessageBody {
+                BroadcasterId = Cache.BroadcasterId,
+                SenderId = Cache.ChatterId,
                 Message = message,
                 ReplyParentMessageId = replyParentMessageId,
             };
-            return Utils.SendPostRequest(client, "https://api.twitch.tv/helix/chat/messages", body, JsonContext.Default.SendChatMessage, JsonContext.Default.SendChatMessageResponse, cancellationToken);
+            return Utils.SendAuthorizedPostRequest("https://api.twitch.tv/helix/chat/messages", body, JsonContext.Default.SendChatMessageBody, JsonContext.Default.SendChatMessageResponse);
         }
     }
 }

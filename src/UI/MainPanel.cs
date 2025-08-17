@@ -1,56 +1,52 @@
 ﻿namespace Stonebot.UI {
     using Avalonia.Controls;
     using Avalonia.Layout;
-    using Buttons;
-    using Buttons.UserButtons;
-    using Popups;
+    using CustomControls;
+    using CustomControls.Buttons;
+    using CustomControls.Buttons.UserButtons;
+    using CustomControls.Popups;
 
     internal class MainPanel : Panel {
-        public readonly MainWindow MainWindow;
-        public readonly ConnectButton ConnectButton;
-        public readonly BroadcasterButton BroadcasterButton;
-        public readonly ChatterButton ChatterButton;
-        public readonly AuthorizePopup AuthorizePopup;
-        public readonly RemoveAuthorizationPopup RemoveAuthorizationPopup;
-        public readonly InteractionGrid InteractionGrid;
-
-        public MainPanel(MainWindow mainWindow) {
-            MainWindow = mainWindow;
+        public MainPanel(Swappable swappableContent) {
             Background = MainTheme.PrimaryBrush1;
 
-            RemoveAuthorizationPopup = RemoveAuthorizationPopup.Create();
-            AuthorizePopup = AuthorizePopup.Create();
+            var removeAuthorizationPopup = RemoveAuthorizationPopup.Create();
+            var cancelAuthorizationPopup = CancelPopup.Create("Please Authorize in your Browser");
             var logo = GetLogo();
-            ConnectButton = new(this);
-            BroadcasterButton = new(this);
-            ChatterButton = new(this);
-            var users = GetUsers(BroadcasterButton, ChatterButton);
-            var configButton = GetConfigButton();
-            var header = GetHeader(logo, ConnectButton, users, configButton);
-            InteractionGrid = new InteractionGrid();
-            var mainGrid = GetMainGrid(header, InteractionGrid);
+            var connectButton = new ConnectButton();
+            broadcasterButton = new(removeAuthorizationPopup, cancelAuthorizationPopup);
+            chatterButton = new(removeAuthorizationPopup, cancelAuthorizationPopup);
+            var broadcasterLabel = GetUserLabel("Broadcaster:");
+            var chatterLabel = GetUserLabel("Chatter:");
+            var users = GetUsers(broadcasterLabel, chatterLabel);
+            var configButton = GetConfigButton(swappableContent);
+            var header = GetHeader(logo, connectButton, users, configButton);
+            interactionGrid = new InteractionGrid();
+            var body = GetBody();
+            var mainGrid = GetMainGrid(header, body);
             Children.Add(mainGrid);
-            Children.Add(RemoveAuthorizationPopup);
-            Children.Add(AuthorizePopup);
+            Children.Add(removeAuthorizationPopup);
+            Children.Add(cancelAuthorizationPopup);
         }
 
-        public void UpdateUsers() {
-            BroadcasterButton.UpdateState();
-            ChatterButton.UpdateState();
-        }
+        public void UpdateBroadcasterButton() => broadcasterButton.Update();
 
-        public void UpdateInteractionGrid() => InteractionGrid.Update();
+        public void UpdateChatterButton() => chatterButton.Update();
 
-        private static SGrid GetMainGrid(SGrid header, InteractionGrid body) => new([
+        public void InitInteractionGrid() => interactionGrid.Init();
+
+        private readonly BroadcasterButton broadcasterButton;
+        private readonly ChatterButton chatterButton;
+        private readonly InteractionGrid interactionGrid;
+
+        private static SGrid GetMainGrid(SGrid header, ScrollViewer body) => new([
                 GridLength.Auto,
                 GridLength.Star,
             ], [
                 GridLength.Star,
             ], [
                 header,
-                new ScrollViewer() {
-                    Content = body,
-                }
+                body,
             ]);
 
         private static SGrid GetHeader(Image logo, ConnectButton connectButton, SGrid users, InfoButton configButton) => new([
@@ -76,37 +72,38 @@
             return logo;
         }
 
-        private static SGrid GetUsers(BroadcasterButton broadcasterButton, ChatterButton chatterButton) => new([
+        private SGrid GetUsers(STextBlock broadcasterLabel, STextBlock chatterLabel) => new([
             GridLength.Star,
             GridLength.Star,
         ], [
             GridLength.Auto,
             GridLength.Auto,
         ], [
-            GetUserLabel("Broadcaster:"),
+            broadcasterLabel,
             broadcasterButton,
-            GetUserLabel("Chatter:"),
+            chatterLabel,
             chatterButton,
         ]) {
             VerticalAlignment = VerticalAlignment.Center,
         };
 
-        private InfoButton GetConfigButton() {
+        private static InfoButton GetConfigButton(Swappable swappableContent) {
             var configButton = new InfoButton() {
                 Content = UIUtils.GetConfigIcon(),
-                VerticalAlignment = VerticalAlignment.Center,
                 Height = 75d,
+                VerticalAlignment = VerticalAlignment.Center,
             };
-            configButton.Click += (_, _) => {
-                IsVisible = false;
-                MainWindow.ConfigPanel.Show();
-            };
+            configButton.Click += (_, _) => swappableContent.Swap();
             return configButton;
         }
 
         private static STextBlock GetUserLabel(string text) => new() {
-            Text = text,
             HorizontalAlignment = HorizontalAlignment.Right,
+            Text = text,
+        };
+
+        private ScrollViewer GetBody() => new() {
+            Content = interactionGrid,
         };
     }
 }
