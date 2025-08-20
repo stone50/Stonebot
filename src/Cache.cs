@@ -1,5 +1,5 @@
 ﻿namespace Stonebot {
-    using Stonebot.Twitch;
+    using Twitch;
 
     internal static class Cache {
         public static readonly HttpClient DefaultHttpClient = new();
@@ -9,25 +9,14 @@
         public static string ChatterId => GetChatterId();
         public static string ChatterDisplayName => GetChatterDisplayName();
 
-        public static void Init() {
-            // TODO
-        }
-
-        public static void Save() {
-            // TODO
-        }
+        public static void LoadNewAccessToken(string deviceCode) => accessToken = Auth.GetAccessToken(deviceCode);
 
         private static AccessToken GetAccessToken() {
-            if (accessToken == null) {
-                accessToken = new();
-                return accessToken;
+            if (accessToken == null || GetAccessTokenShouldBeRefreshed()) {
+                accessToken = Auth.GetRefreshedAccessToken();
             }
 
-            if (GetAccessTokenShouldBeRefreshed()) {
-                accessToken.Refresh();
-            }
-
-            return accessToken;
+            return (AccessToken)accessToken!;
         }
 
         private static HttpClient GetAuthorizedHttpClient() {
@@ -39,7 +28,7 @@
             }
 
             if (GetAccessTokenShouldBeRefreshed()) {
-                accessToken!.Refresh();
+                accessToken = Auth.GetRefreshedAccessToken();
                 _ = authorizedHttpClient.DefaultRequestHeaders.Remove("Authorization");
                 authorizedHttpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken.Value}");
             }
@@ -78,6 +67,6 @@
         private static string? chatterId;
         private static string? chatterDisplayName;
 
-        private static bool GetAccessTokenShouldBeRefreshed() => DateTime.UtcNow.AddSeconds(Constants.AccessTokenExpirationMarginSecs) > accessToken!.ExpirationDate;
+        private static bool GetAccessTokenShouldBeRefreshed() => DateTime.UtcNow.AddSeconds(Constants.AccessTokenExpirationMarginSecs) > ((AccessToken)accessToken!).ExpirationDate;
     }
 }

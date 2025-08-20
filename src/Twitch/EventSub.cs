@@ -16,7 +16,7 @@
         }
 
         public static void SubscribeToChannelChatMessage() {
-            var body = new AddChannelChatMessageEventSubBody() {
+            var body = new PostAddChannelChatMessageEventSubBody() {
                 Type = "channel.chat.message",
                 Version = "1",
                 Condition = new() {
@@ -28,7 +28,7 @@
                     SessionId = WebSocketClient.Id!,
                 }
             };
-            Utils.SendAuthorizedPostRequest("https://api.twitch.tv/helix/eventsub/subscriptions", body, JsonContext.Default.AddChannelChatMessageEventSubBody);
+            Utils.SendAuthorizedPostRequest("https://api.twitch.tv/helix/eventsub/subscriptions", body, (System.Text.Json.Serialization.Metadata.JsonTypeInfo<PostAddChannelChatMessageEventSubBody>)JsonContext.Default.AddChannelChatMessageEventSubBody);
         }
     }
 }

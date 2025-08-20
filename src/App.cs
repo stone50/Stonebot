@@ -25,8 +25,7 @@
             var configInitTask = Utils.FireTryElseErrorAfter(Config.Init, loggerInitTask);
             FireUpdateMainWindowAfter(mainWindow => mainWindow.InitConfigPanel(), configInitTask);
             var deleteExcessLogFilesTask = Utils.FireTryElseErrorAfter(Logger.DeleteExcessFiles, configInitTask);
-            var cacheInitTask = Utils.FireTryElseErrorAfter(Cache.Init, configInitTask);
-            FireUpdateMainWindowAfter(mainWindow => mainWindow.UpdateMainPanelUserButtons(), cacheInitTask);
+            FireUpdateMainWindowAfter(mainWindow => mainWindow.UpdateMainPanelUserButtons(), configInitTask);
             var customDataInitTask = Utils.FireTryElseErrorAfter(CustomData.Init, loggerInitTask);
             var commandManagerInitTask = Utils.FireTryElseErrorAfter(CommandManager.Init, loggerInitTask);
             FireUpdateMainWindowAfter(mainWindow => mainWindow.UpdateMainPanelInteractionGrid(), commandManagerInitTask);
@@ -38,9 +37,8 @@
             var webSocketClientCloseTask = Utils.FireTryElseError(WebSocketClient.Close);
             var customDataSaveTask = Utils.FireTryElseErrorAfter(CustomData.Save, webSocketClientCloseTask);
             var commandManaderSaveTask = Utils.FireTryElseError(CommandManager.Save);
-            var cacheSaveTask = Utils.FireTryElseError(Cache.Save);
             var configSaveTask = Utils.FireTryElseError(Config.Save);
-            Utils.TryElseErrorAfter(Logger.Shutdown, webSocketClientCloseTask, customDataSaveTask, commandManaderSaveTask, cacheSaveTask, configSaveTask);
+            Utils.TryElseErrorAfter(Logger.Shutdown, webSocketClientCloseTask, customDataSaveTask, commandManaderSaveTask, configSaveTask);
         }
 
         private static void CopyScriptsTypeHintsFile() {

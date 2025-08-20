@@ -1,25 +1,25 @@
 ﻿namespace Stonebot.Models.Bodies {
     using System.Text.Json.Serialization;
 
-    internal struct AddChannelChatMessageEventSubBody {
+    internal struct PostAddChannelChatMessageEventSubBody {
         [JsonPropertyName("type")]
         public string Type { get; set; }
         [JsonPropertyName("version")]
         public string Version { get; set; }
         [JsonPropertyName("condition")]
-        public AddChannelChatMessageEventSubBodyCondition Condition { get; set; }
+        public PostAddChannelChatMessageEventSubBodyCondition Condition { get; set; }
         [JsonPropertyName("transport")]
-        public AddChannelChatMessageEventSubBodyTransport Transport { get; set; }
+        public PostAddChannelChatMessageEventSubBodyTransport Transport { get; set; }
     }
 
-    internal struct AddChannelChatMessageEventSubBodyCondition {
+    internal struct PostAddChannelChatMessageEventSubBodyCondition {
         [JsonPropertyName("broadcaster_user_id")]
         public string BroadcasterId { get; set; }
         [JsonPropertyName("user_id")]
         public string UserId { get; set; }
     }
 
-    internal struct AddChannelChatMessageEventSubBodyTransport {
+    internal struct PostAddChannelChatMessageEventSubBodyTransport {
         [JsonPropertyName("method")]
         public string Method { get; set; }
         [JsonPropertyName("session_id")]

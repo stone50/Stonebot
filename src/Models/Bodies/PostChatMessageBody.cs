@@ -1,7 +1,7 @@
 ﻿namespace Stonebot.Models.Bodies {
     using System.Text.Json.Serialization;
 
-    internal struct SendChatMessageBody {
+    internal struct PostChatMessageBody {
         [JsonPropertyName("broadcaster_id")]
         public string BroadcasterId { get; set; }
         [JsonPropertyName("sender_id")]

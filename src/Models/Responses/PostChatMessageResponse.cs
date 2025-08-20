@@ -1,7 +1,7 @@
 ﻿namespace Stonebot.Models.Responses {
     using System.Text.Json.Serialization;
 
-    public struct SendChatMessageResponse {
+    public struct PostChatMessageResponse {
         [JsonPropertyName("data")]
         public SendChatMessageResponseDataPoint[] Data { get; set; }
         [JsonPropertyName("drop_reason")]

@@ -14,8 +14,8 @@
         // Stonebot config paths
         public static readonly string LocalAppDataPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Stonebot");
         public static readonly string LogsPath = Path.Join(LocalAppDataPath, "logs");
+        public static readonly string RefreshTokenFilePath = Path.Join(LocalAppDataPath, "refresh_token.bin");
         public static readonly string ConfigFilePath = Path.Join(LocalAppDataPath, "config.bin");
-        public static readonly string CacheFilePath = Path.Join(LocalAppDataPath, "cache.bin");
         public static readonly string CustomDataFilePath = Path.Join(LocalAppDataPath, "custom_data.json");
         public static readonly string CommandManagerFilePath = Path.Join(LocalAppDataPath, "command_manager.bin");
 

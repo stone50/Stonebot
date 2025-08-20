@@ -5,8 +5,8 @@
     using System.Collections.Concurrent;
     using System.Text.Json.Serialization;
 
-    [JsonSerializable(typeof(AddChannelChatMessageEventSubBody))]
-    [JsonSerializable(typeof(SendChatMessageBody))]
+    [JsonSerializable(typeof(PostAddChannelChatMessageEventSubBody))]
+    [JsonSerializable(typeof(PostChatMessageBody))]
     [JsonSerializable(typeof(EventSubKeepaliveMessage))]
     [JsonSerializable(typeof(EventSubNotificationMessage))]
     [JsonSerializable(typeof(EventSubReconnectMessage))]
@@ -15,7 +15,8 @@
     [JsonSerializable(typeof(GetAccessTokenResponse))]
     [JsonSerializable(typeof(GetEventSubsResponse))]
     [JsonSerializable(typeof(GetUsersResponse))]
-    [JsonSerializable(typeof(SendChatMessageResponse))]
+    [JsonSerializable(typeof(PostChatMessageResponse))]
+    [JsonSerializable(typeof(PostDeviceCodeResponse))]
     [JsonSerializable(typeof(ConcurrentDictionary<string, object>))]
     internal partial class JsonContext : JsonSerializerContext { }
 }

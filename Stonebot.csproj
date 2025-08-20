@@ -52,9 +52,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Avalonia" Version="11.3.3" />
-		<PackageReference Include="Avalonia.Desktop" Version="11.3.3" />
-		<PackageReference Include="Avalonia.Themes.Simple" Version="11.3.3" />
+		<PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="9.0.8" />
+		<PackageReference Include="Microsoft.AspNetCore.DataProtection.Extensions" Version="9.0.8" />
+		<PackageReference Include="Avalonia" Version="11.3.4" />
+		<PackageReference Include="Avalonia.Desktop" Version="11.3.4" />
+		<PackageReference Include="Avalonia.Themes.Simple" Version="11.3.4" />
 		<PackageReference Include="IronPython" Version="3.4.2" />
 		<PackageReference Include="IronPython.StdLib" Version="3.4.2" />
 	</ItemGroup>

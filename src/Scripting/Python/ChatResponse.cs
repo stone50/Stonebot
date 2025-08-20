@@ -2,7 +2,7 @@
     using Models.Responses;
     using System.Linq;
 
-    public class ChatResponse(SendChatMessageResponse response) {
+    public class ChatResponse(PostChatMessageResponse response) {
         public readonly DataPoint[] data = [.. response.Data.Select(dataPoint => new DataPoint(dataPoint))];
         public readonly DropReason drop_reason = new(response.DropReason);
 

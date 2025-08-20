@@ -3,14 +3,14 @@
     using Models.Responses;
 
     internal static class Chat {
-        public static SendChatMessageResponse Send(string message, string? replyParentMessageId) {
-            var body = new SendChatMessageBody {
+        public static PostChatMessageResponse Send(string message, string? replyParentMessageId) {
+            var body = new PostChatMessageBody {
                 BroadcasterId = Cache.BroadcasterId,
                 SenderId = Cache.ChatterId,
                 Message = message,
                 ReplyParentMessageId = replyParentMessageId,
             };
-            return Utils.SendAuthorizedPostRequest("https://api.twitch.tv/helix/chat/messages", body, JsonContext.Default.SendChatMessageBody, JsonContext.Default.SendChatMessageResponse);
+            return Utils.SendAuthorizedPostRequest("https://api.twitch.tv/helix/chat/messages", body, JsonContext.Default.PostChatMessageBody, JsonContext.Default.PostChatMessageResponse);
         }
     }
 }
