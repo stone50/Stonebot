@@ -1,4 +1,5 @@
 ﻿namespace Stonebot {
+    using Helpers;
     using System;
     using System.Collections.Concurrent;
     using System.Diagnostics;
@@ -55,7 +56,7 @@
         public static void Shutdown() {
             flushingTaskCancellationTokenSource.Cancel();
             if (flushingTask != null) {
-                Utils.Sync(flushingTask);
+                TaskHelper.Sync(flushingTask);
             }
 
             FlushQueue();

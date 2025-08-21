@@ -1,4 +1,6 @@
 ﻿namespace Stonebot.Scripting {
+    using Helpers;
+
     internal static class ScriptFilesWatcher {
         public static void Init() {
             fileSystemWatcher.Path = Constants.ScriptsPath;
@@ -11,7 +13,7 @@
             if (scriptFilePath.StartsWith(Constants.CommandScriptsPath)) {
                 foreach (var command in CommandManager.Commands) {
                     if (command.GetScriptFilePath() == scriptFilePath) {
-                        Utils.TryElseError(command.ReloadScriptFile);
+                        ExceptionHelper.TryElseError(command.ReloadScriptFile);
                         return;
                     }
                 }

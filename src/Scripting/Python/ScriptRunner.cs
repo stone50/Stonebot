@@ -1,4 +1,5 @@
 ﻿namespace Stonebot.Scripting.Python {
+    using Helpers;
     using IronPython.Hosting;
     using Microsoft.Scripting.Hosting;
     using Models.EventSubMessages;
@@ -8,7 +9,7 @@
 
         public static void Run(ScriptSource script, EventSubNotificationMessagePayloadEvent channelChatMessageEvent, UserPermission.Level permissionLevel) {
             scope.SetVariable("Stonebot", new ScriptInterface(channelChatMessageEvent, permissionLevel));
-            Utils.TryElseError(() => script.Execute(scope));
+            ExceptionHelper.TryElseError(() => script.Execute(scope));
         }
 
         private static readonly ScriptScope scope = Engine.CreateScope();

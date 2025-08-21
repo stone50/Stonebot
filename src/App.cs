@@ -3,6 +3,7 @@
     using Avalonia.Controls.ApplicationLifetimes;
     using Avalonia.Themes.Simple;
     using Avalonia.Threading;
+    using Helpers;
     using Resources;
     using Scripting;
     using UI;
@@ -14,31 +15,31 @@
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
                 desktop.Startup += (_, _) => Startup();
                 desktop.Exit += (_, _) => Shutdown();
-                Utils.TryElseConsoleError(() => desktop.MainWindow = new MainWindow());
+                ExceptionHelper.TryElseConsoleError(() => desktop.MainWindow = new MainWindow());
             }
 
             base.OnFrameworkInitializationCompleted();
         }
 
         private void Startup() {
-            var loggerInitTask = Utils.FireTryElseConsoleError(Logger.Init);
-            var configInitTask = Utils.FireTryElseErrorAfter(Config.Init, loggerInitTask);
+            var loggerInitTask = TaskHelper.FireTryElseConsoleError(Logger.Init);
+            var configInitTask = TaskHelper.FireTryElseErrorAfter(Config.Init, loggerInitTask);
             FireUpdateMainWindowAfter(mainWindow => mainWindow.InitConfigPanel(), configInitTask);
-            var deleteExcessLogFilesTask = Utils.FireTryElseErrorAfter(Logger.DeleteExcessFiles, configInitTask);
+            var deleteExcessLogFilesTask = TaskHelper.FireTryElseErrorAfter(Logger.DeleteExcessFiles, configInitTask);
             FireUpdateMainWindowAfter(mainWindow => mainWindow.UpdateMainPanelUserButtons(), configInitTask);
-            var customDataInitTask = Utils.FireTryElseErrorAfter(CustomData.Init, loggerInitTask);
-            var commandManagerInitTask = Utils.FireTryElseErrorAfter(CommandManager.Init, loggerInitTask);
+            var customDataInitTask = TaskHelper.FireTryElseErrorAfter(CustomData.Init, loggerInitTask);
+            var commandManagerInitTask = TaskHelper.FireTryElseErrorAfter(CommandManager.Init, loggerInitTask);
             FireUpdateMainWindowAfter(mainWindow => mainWindow.UpdateMainPanelInteractionGrid(), commandManagerInitTask);
-            var copyScriptsTypeHintsFileTask = Utils.FireTryElseErrorAfter(CopyScriptsTypeHintsFile, loggerInitTask);
-            var scriptFilesWatcherInitTask = Utils.FireTryElseErrorAfter(ScriptFilesWatcher.Init, commandManagerInitTask);
+            var copyScriptsTypeHintsFileTask = TaskHelper.FireTryElseErrorAfter(CopyScriptsTypeHintsFile, loggerInitTask);
+            var scriptFilesWatcherInitTask = TaskHelper.FireTryElseErrorAfter(ScriptFilesWatcher.Init, commandManagerInitTask);
         }
 
         private static void Shutdown() {
-            var webSocketClientCloseTask = Utils.FireTryElseError(WebSocketClient.Close);
-            var customDataSaveTask = Utils.FireTryElseErrorAfter(CustomData.Save, webSocketClientCloseTask);
-            var commandManaderSaveTask = Utils.FireTryElseError(CommandManager.Save);
-            var configSaveTask = Utils.FireTryElseError(Config.Save);
-            Utils.TryElseErrorAfter(Logger.Shutdown, webSocketClientCloseTask, customDataSaveTask, commandManaderSaveTask, configSaveTask);
+            var webSocketClientCloseTask = TaskHelper.FireTryElseError(WebSocketClient.Close);
+            var customDataSaveTask = TaskHelper.FireTryElseErrorAfter(CustomData.Save, webSocketClientCloseTask);
+            var commandManaderSaveTask = TaskHelper.FireTryElseError(CommandManager.Save);
+            var configSaveTask = TaskHelper.FireTryElseError(Config.Save);
+            TaskHelper.TryElseErrorAfter(Logger.Shutdown, webSocketClientCloseTask, customDataSaveTask, commandManaderSaveTask, configSaveTask);
         }
 
         private static void CopyScriptsTypeHintsFile() {
@@ -54,8 +55,8 @@
             }
 
             void updateOnUIThread() => Dispatcher.UIThread.Invoke(updateMainPanel);
-            void tryElseErrorUpdateOnUIThread() => Utils.TryElseError(updateOnUIThread);
-            _ = Utils.FireDoAfter(tryElseErrorUpdateOnUIThread, tasks);
+            void tryElseErrorUpdateOnUIThread() => ExceptionHelper.TryElseError(updateOnUIThread);
+            _ = TaskHelper.FireDoAfter(tryElseErrorUpdateOnUIThread, tasks);
         }
     }
 }

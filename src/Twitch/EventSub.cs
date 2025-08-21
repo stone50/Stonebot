@@ -1,15 +1,16 @@
 ﻿namespace Stonebot.Twitch {
+    using Helpers;
     using Models.Bodies;
 
     internal static class EventSub {
         public static void DeleteEventSub(string id) {
-            var url = Utils.GetUrl("https://api.twitch.tv/helix/eventsub/subscriptions", new() { { "id", id } });
-            var cancellationToken = Utils.GetDefaultCancellationToken();
-            _ = Utils.Sync(Cache.AuthorizedHttpClient.DeleteAsync(url, cancellationToken)).EnsureSuccessStatusCode();
+            var url = HttpHelper.GetUrl("https://api.twitch.tv/helix/eventsub/subscriptions", new() { { "id", id } });
+            var cancellationToken = TaskHelper.GetDefaultCancellationToken();
+            _ = TaskHelper.Sync(Cache.AuthorizedHttpClient.DeleteAsync(url, cancellationToken)).EnsureSuccessStatusCode();
         }
 
         public static void DeleteEventSubs() {
-            var eventSubs = Utils.SendAuthorizedGetRequest("https://api.twitch.tv/helix/eventsub/subscriptions", JsonContext.Default.GetEventSubsResponse);
+            var eventSubs = HttpHelper.SendAuthorizedGetRequest("https://api.twitch.tv/helix/eventsub/subscriptions", JsonContext.Default.GetEventSubsResponse);
             foreach (var eventSub in eventSubs.Data) {
                 DeleteEventSub(eventSub.Id);
             }
@@ -28,7 +29,7 @@
                     SessionId = WebSocketClient.Id!,
                 }
             };
-            Utils.SendAuthorizedPostRequest("https://api.twitch.tv/helix/eventsub/subscriptions", body, (System.Text.Json.Serialization.Metadata.JsonTypeInfo<PostAddChannelChatMessageEventSubBody>)JsonContext.Default.AddChannelChatMessageEventSubBody);
+            HttpHelper.SendAuthorizedPostRequest("https://api.twitch.tv/helix/eventsub/subscriptions", body, JsonContext.Default.PostAddChannelChatMessageEventSubBody);
         }
     }
 }

@@ -6,6 +6,7 @@
     using Avalonia.Media;
     using CustomControls;
     using CustomControls.Buttons;
+    using Helpers;
     using Scripting;
 
     internal class CommandCard : Border {
@@ -214,7 +215,7 @@
             nameTextBlock.Text = $"!{newName}";
             var oldScriptFilePath = Command.GetScriptFilePath();
             Command.Name = newName;
-            _ = Utils.FireTryElseError(() => {
+            _ = TaskHelper.FireTryElseError(() => {
                 File.Move(oldScriptFilePath, Command.GetScriptFilePath());
                 Command.ReloadScriptFile();
                 CommandManager.Save();
@@ -232,7 +233,7 @@
             };
             enableToggleButton.Click += (_, _) => {
                 Command.Enabled = !Command.Enabled;
-                _ = Utils.FireTryElseError(CommandManager.Save, CancellationToken.None);
+                _ = TaskHelper.FireTryElseError(CommandManager.Save, CancellationToken.None);
             };
             return enableToggleButton;
         }
@@ -272,7 +273,7 @@
             Command.PermissionLevel = permissionLevel;
             permissionInput.Content = $"{Command.PermissionLevel} ▼";
             permissionInput.Flyout!.Hide();
-            _ = Utils.FireTryElseError(CommandManager.Save, CancellationToken.None);
+            _ = TaskHelper.FireTryElseError(CommandManager.Save, CancellationToken.None);
         };
 
         private static SGrid GetCooldownRow(STextBlock cooldownRowLabel, NumericUpDown cooldownInput) => new([

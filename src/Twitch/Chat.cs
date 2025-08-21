@@ -1,4 +1,5 @@
 ﻿namespace Stonebot.Twitch {
+    using Helpers;
     using Models.Bodies;
     using Models.Responses;
 
@@ -10,7 +11,7 @@
                 Message = message,
                 ReplyParentMessageId = replyParentMessageId,
             };
-            return Utils.SendAuthorizedPostRequest("https://api.twitch.tv/helix/chat/messages", body, JsonContext.Default.PostChatMessageBody, JsonContext.Default.PostChatMessageResponse);
+            return HttpHelper.SendAuthorizedPostRequest("https://api.twitch.tv/helix/chat/messages", body, JsonContext.Default.PostChatMessageBody, JsonContext.Default.PostChatMessageResponse);
         }
     }
 }
