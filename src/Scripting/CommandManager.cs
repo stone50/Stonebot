@@ -7,7 +7,9 @@
 
         public static void Init() {
             _ = Directory.CreateDirectory(Constants.CommandScriptsPath);
-            Load();
+            if (File.Exists(Constants.CommandManagerFilePath)) {
+                Load();
+            }
         }
 
         public static bool TryUseCommand(EventSubNotificationMessagePayloadEvent channelChatMessageEvent) {
@@ -33,14 +35,44 @@
             return false;
         }
 
-
-
         public static void Save() {
-            // TODO
+            using var writer = new BinaryWriter(File.Open(Constants.CommandManagerFilePath, FileMode.Create));
+            writer.Write(Commands.Count);
+            foreach (var command in Commands) {
+                writer.Write(command.Name);
+                writer.Write(command.Aliases.Count);
+                foreach (var alias in command.Aliases) {
+                    writer.Write(alias);
+                }
+
+                writer.Write(command.Enabled);
+                writer.Write((int)command.PermissionLevel);
+                writer.Write(command.CooldownSeconds);
+            }
         }
 
         private static void Load() {
-            // TODO
+            using var reader = new BinaryReader(File.Open(Constants.CommandManagerFilePath, FileMode.Open));
+            var numCommands = reader.ReadInt32();
+            for (var c = 0; c < numCommands; ++c) {
+                var name = reader.ReadString();
+                var numAliases = reader.ReadInt32();
+                var aliases = new string[numAliases];
+                for (var a = 0; a < numAliases; ++a) {
+                    aliases[a] = reader.ReadString();
+                }
+
+                var enabled = reader.ReadBoolean();
+                var permissionLevel = (UserPermission.Level)reader.ReadInt32();
+                var cooldownSeconds = reader.ReadInt32();
+                Commands.Add(new(
+                    name,
+                    aliases,
+                    enabled,
+                    permissionLevel,
+                    cooldownSeconds
+                ));
+            }
         }
 
         private static string GetCommandKeyword(string text) {

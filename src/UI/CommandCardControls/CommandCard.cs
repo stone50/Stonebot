@@ -67,8 +67,7 @@
                 },
                 permissionRow,
                 cooldownRow,
-            ]) {
-        };
+            ]);
 
         private Border GetNameRowBorder(SGrid nameRow) => new() {
             Child = nameRow,
@@ -219,7 +218,7 @@
                 File.Move(oldScriptFilePath, Command.GetScriptFilePath());
                 Command.ReloadScriptFile();
                 CommandManager.Save();
-            }, CancellationToken.None);
+            });
         }
 
         private ToggleButton GetEnableToggleButton() {
@@ -233,7 +232,7 @@
             };
             enableToggleButton.Click += (_, _) => {
                 Command.Enabled = !Command.Enabled;
-                _ = TaskHelper.FireTryElseError(CommandManager.Save, CancellationToken.None);
+                _ = TaskHelper.FireTryElseError(CommandManager.Save);
             };
             return enableToggleButton;
         }
@@ -273,7 +272,7 @@
             Command.PermissionLevel = permissionLevel;
             permissionInput.Content = $"{Command.PermissionLevel} ▼";
             permissionInput.Flyout!.Hide();
-            _ = TaskHelper.FireTryElseError(CommandManager.Save, CancellationToken.None);
+            _ = TaskHelper.FireTryElseError(CommandManager.Save);
         };
 
         private static SGrid GetCooldownRow(STextBlock cooldownRowLabel, NumericUpDown cooldownInput) => new([
@@ -291,13 +290,13 @@
         };
 
         private SNumericUpDown GetCooldownInput() {
-            var cooldownInput = new SNumericUpDown(0, Constants.CommandCooldownSecondsMax, true) {
+            var cooldownInput = new SNumericUpDown(0, Constants.CommandCooldownSecsMax, true) {
                 Value = Command.CooldownSeconds,
                 Width = 75d,
             };
             cooldownInput.ValueChanged += (_, _) => {
                 Command.CooldownSeconds = (int)cooldownInput.Value!;
-                _ = Utils.FireTryElseError(CommandManager.Save, CancellationToken.None);
+                _ = TaskHelper.FireTryElseError(CommandManager.Save);
             };
             return cooldownInput;
         }

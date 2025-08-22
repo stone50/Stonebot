@@ -3,6 +3,7 @@
     using Avalonia.Interactivity;
     using Avalonia.Layout;
     using Avalonia.Media;
+    using Helpers;
     using System.Diagnostics;
 
     internal abstract class LinkBase : InfoButton {
@@ -31,7 +32,7 @@
                 ? HoveredBrush
                 : DefaultBrush;
 
-        private void OnClick(object? sender, RoutedEventArgs e) => Utils.TryElseError(() => Process.Start(GetProcessStartInfo()));
+        private void OnClick(object? sender, RoutedEventArgs e) => ExceptionHelper.TryElseError(() => Process.Start(GetProcessStartInfo()));
 
         private static STextBlock GetContent() => new() {
             Foreground = MainTheme.InfoBrush2,

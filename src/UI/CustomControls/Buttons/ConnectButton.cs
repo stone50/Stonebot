@@ -1,6 +1,7 @@
 ﻿namespace Stonebot.UI.CustomControls.Buttons {
     using Avalonia.Interactivity;
     using Avalonia.Threading;
+    using Helpers;
     using System;
 
     internal class ConnectButton : SButtonBase {
@@ -65,44 +66,34 @@
         private void OnClick(object? sender, RoutedEventArgs e) {
             switch (State) {
                 case ConnectState.Connected:
-                    Disconnect();
+                    TryDisconnect();
                     break;
                 case ConnectState.Disconnected:
-                    Connect();
+                    TryConnect();
                     break;
             }
         }
 
-        private void Connect() {
-            if (Cache.BroadcasterAuthorizationData is null) {
-                return;
-            }
-
-            if (Cache.ChatterAuthorizationData is null) {
-                return;
-            }
-
+        private void TryConnect() {
             State = ConnectState.Connecting;
-            var cancellationToken = Utils.GetCancellationTokenFromSeconds(Config.WebSocketConnectTimeoutSeconds);
-            _ = Utils.FireTryElse(() => {
-                WebSocketClient.Connect(cancellationToken);
+            _ = TaskHelper.FireTryElse(() => {
+                WebSocketClient.Connect();
                 _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Connected);
             }, e => {
-                _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Disconnected);
                 Logger.Error(e);
-            }, cancellationToken);
+                _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Disconnected);
+            });
         }
 
-        private void Disconnect() {
+        private void TryDisconnect() {
             State = ConnectState.Disconnecting;
-            var cancellationToken = Utils.GetCancellationTokenFromSeconds(Constants.WebSocketClientDisconnectTimeoutSeconds);
-            _ = Utils.FireTryElse(() => {
-                WebSocketClient.Close(cancellationToken);
+            _ = TaskHelper.FireTryElse(() => {
+                WebSocketClient.Close();
                 _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Disconnected);
             }, e => {
-                _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Connected);
                 Logger.Error(e);
-            }, cancellationToken);
+                _ = Dispatcher.UIThread.Invoke(() => State = ConnectState.Connected);
+            });
         }
 
         private void OnWebSocketClientClosedUnexpectedly(object? sender, EventArgs args) => Dispatcher.UIThread.Invoke(() => SetState(ConnectState.Disconnected));

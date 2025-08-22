@@ -55,7 +55,7 @@
                         _ = Utils.FireTryElseError(() => {
                             Cache.Save();
                             _ = Dispatcher.UIThread.Invoke(() => State = AuthorizationState.Unauthorized);
-                        }, CancellationToken.None);
+                        });
                     });
                     break;
                 case AuthorizationState.Unauthorized:

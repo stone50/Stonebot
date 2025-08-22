@@ -3,7 +3,6 @@
     using Avalonia.Layout;
     using CustomControls;
     using CustomControls.Buttons;
-    using CustomControls.Buttons.UserButtons;
     using CustomControls.Popups;
 
     internal class MainPanel : Panel {

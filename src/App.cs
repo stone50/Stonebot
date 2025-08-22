@@ -24,14 +24,17 @@
         private void Startup() {
             var loggerInitTask = TaskHelper.FireTryElseConsoleError(Logger.Init);
             var configInitTask = TaskHelper.FireTryElseErrorAfter(Config.Init, loggerInitTask);
-            FireUpdateMainWindowAfter(mainWindow => mainWindow.InitConfigPanel(), configInitTask);
             var deleteExcessLogFilesTask = TaskHelper.FireTryElseErrorAfter(Logger.DeleteExcessFiles, configInitTask);
             FireUpdateMainWindowAfter(mainWindow => mainWindow.UpdateMainPanelUserButtons(), configInitTask);
-            var customDataInitTask = TaskHelper.FireTryElseErrorAfter(CustomData.Init, loggerInitTask);
             var commandManagerInitTask = TaskHelper.FireTryElseErrorAfter(CommandManager.Init, loggerInitTask);
             FireUpdateMainWindowAfter(mainWindow => mainWindow.UpdateMainPanelInteractionGrid(), commandManagerInitTask);
+            var customDataInitTask = TaskHelper.FireTryElseErrorAfter(CustomData.Init, loggerInitTask);
             var copyScriptsTypeHintsFileTask = TaskHelper.FireTryElseErrorAfter(CopyScriptsTypeHintsFile, loggerInitTask);
             var scriptFilesWatcherInitTask = TaskHelper.FireTryElseErrorAfter(ScriptFilesWatcher.Init, commandManagerInitTask);
+            TaskHelper.Sync(configInitTask);
+            var desktopApplicationLifetime = (IClassicDesktopStyleApplicationLifetime)ApplicationLifetime!;
+            var mainWindow = (MainWindow)desktopApplicationLifetime.MainWindow!;
+            mainWindow.UpdateConfigPanel();
         }
 
         private static void Shutdown() {

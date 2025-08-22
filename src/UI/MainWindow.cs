@@ -24,7 +24,7 @@
 
         public void UpdateMainPanelInteractionGrid() => mainPanel.InitInteractionGrid();
 
-        public void InitConfigPanel() => configPanel.Init();
+        public void UpdateConfigPanel() => configPanel.Update();
 
         private readonly MainPanel mainPanel;
         private readonly ConfigPanel configPanel;

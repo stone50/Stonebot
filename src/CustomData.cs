@@ -4,12 +4,9 @@
 
     internal static class CustomData {
         public static void Init() {
-            if (!File.Exists(Constants.CustomDataFilePath)) {
-                return;
+            if (File.Exists(Constants.CustomDataFilePath)) {
+                Load();
             }
-
-            var customDataFileContents = File.ReadAllText(Constants.CustomDataFilePath);
-            data = JsonSerializer.Deserialize(customDataFileContents, JsonContext.Default.ConcurrentDictionaryStringObject)!;
         }
 
         public static object? Get(string key) => data.GetValueOrDefault(key);
@@ -26,5 +23,10 @@
         }
 
         private static ConcurrentDictionary<string, object> data = new();
+
+        private static void Load() {
+            var customDataFileContents = File.ReadAllText(Constants.CustomDataFilePath);
+            data = JsonSerializer.Deserialize(customDataFileContents, JsonContext.Default.ConcurrentDictionaryStringObject)!;
+        }
     }
 }
