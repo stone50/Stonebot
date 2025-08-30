@@ -3,17 +3,16 @@
     using Avalonia.Controls.Documents;
     using Avalonia.Interactivity;
     using Buttons;
-    using Buttons.Links;
 
-    internal class RemoveAuthorizationPopup : SPopup {
-        public static RemoveAuthorizationPopup Create() {
+    internal class CancelOkPopup : SPopup {
+        public static CancelOkPopup Create(string title, InlineCollection? bodyInlines) {
             var cancelButton = GetCancelButton();
             var okButton = GetOkButton();
             var footer = GetFooter(cancelButton, okButton);
-            var removeAuthorizationPopup = new RemoveAuthorizationPopup(footer);
-            cancelButton.Click += removeAuthorizationPopup.OnCancelButtonClick;
-            okButton.Click += removeAuthorizationPopup.OnOkButtonClick;
-            return removeAuthorizationPopup;
+            var cancelOkPopup = new CancelOkPopup(title, bodyInlines, footer);
+            cancelButton.Click += cancelOkPopup.OnCancelButtonClick;
+            okButton.Click += cancelOkPopup.OnOkButtonClick;
+            return cancelOkPopup;
         }
 
         public void Show(Action onCancel, Action onOk) {
@@ -25,11 +24,7 @@
         private Action? onCancel;
         private Action? onOk;
 
-        private RemoveAuthorizationPopup(Control footer) : base("Remove Cached Authorization?", [
-            new Run("This will only remove cached authorization data.\nTo disconnect Stonebot from Twitch, go to:\n"),
-            new UrlLink("https://www.twitch.tv/settings/connections").GetInline(),
-            new Run("\nMake sure you are logged into the correct user."),
-        ], footer) { }
+        private CancelOkPopup(string title, InlineCollection? bodyInlines, Control footer) : base(title, bodyInlines, footer) { }
 
         private static SGrid GetFooter(DangerButton cancelButton, InfoButton okButton) => new([
                 GridLength.Auto,

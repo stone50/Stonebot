@@ -13,11 +13,13 @@
 
             var headerTextBlock = GetHeaderTextBlock(title);
             var header = GetHeader(headerTextBlock);
-            var body = GetBody(bodyInlines);
+            body = GetBody(bodyInlines);
             var mainBorderChild = GetMainBorderChild(header, body, footer);
             var mainBorder = GetMainBorder(mainBorderChild);
             Children.Add(mainBorder);
         }
+
+        protected readonly STextBlock body;
 
         private static Border GetMainBorder(SGrid mainBorderChild) => new() {
             Background = MainTheme.PrimaryBrush2,
@@ -29,16 +31,16 @@
         };
 
         private static SGrid GetMainBorderChild(Border header, STextBlock body, Control footer) => new([
-                GridLength.Auto,
-                GridLength.Auto,
-                GridLength.Auto,
-            ], [
-                GridLength.Star,
-            ], [
-                header,
-                body,
-                footer,
-            ]);
+            GridLength.Auto,
+            GridLength.Auto,
+            GridLength.Auto,
+        ], [
+            GridLength.Star,
+        ], [
+            header,
+            body,
+            footer,
+        ]);
 
         private static Border GetHeader(STextBlock headerTextBlock) => new() {
             Background = MainTheme.PrimaryBrush1,

@@ -8,11 +8,32 @@
         public static string BroadcasterId => GetBroadcasterId();
         public static string ChatterId => GetChatterId();
         public static string ChatterDisplayName => GetChatterDisplayName();
+        public static bool IsAuthorized => accessToken != null;
+
+        public static void Init() {
+            if (File.Exists(Constants.RefreshTokenFilePath)) {
+                accessToken = Auth.GetRefreshedAccessToken();
+            }
+        }
 
         public static void LoadNewAccessToken(string deviceCode) => accessToken = Auth.GetAccessToken(deviceCode);
 
+        public static void ClearAuthData() {
+            if (WebSocketClient.Id != null) {
+                WebSocketClient.Close();
+            }
+
+            accessToken = null;
+            authorizedHttpClient = null;
+            chatterId = null;
+            chatterDisplayName = null;
+            if (File.Exists(Constants.RefreshTokenFilePath)) {
+                File.Delete(Constants.RefreshTokenFilePath);
+            }
+        }
+
         private static AccessToken GetAccessToken() {
-            if (accessToken == null || GetAccessTokenShouldBeRefreshed()) {
+            if (GetAccessTokenShouldBeRefreshed()) {
                 accessToken = Auth.GetRefreshedAccessToken();
             }
 
@@ -22,7 +43,7 @@
         private static HttpClient GetAuthorizedHttpClient() {
             if (authorizedHttpClient == null) {
                 authorizedHttpClient = new HttpClient();
-                authorizedHttpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {AccessToken.Value}");
+                authorizedHttpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {AccessToken!.Value}");
                 authorizedHttpClient.DefaultRequestHeaders.Add("Client-Id", Config.ClientId);
                 return authorizedHttpClient;
             }

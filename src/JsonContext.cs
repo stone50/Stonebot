@@ -1,7 +1,7 @@
 ﻿namespace Stonebot {
+    using Models.Bodies;
     using Models.EventSubMessages;
     using Models.Responses;
-    using Stonebot.Models.Bodies;
     using System.Collections.Concurrent;
     using System.Text.Json.Serialization;
 

@@ -7,7 +7,6 @@
     using CustomControls.Buttons;
     using CustomControls.Buttons.Links;
     using CustomControls.Popups;
-    using Helpers;
 
     internal class ConfigPanel : Panel {
         public ConfigPanel(Swappable swappableContent, MainPanel mainPanel) {
@@ -18,10 +17,10 @@
             var cancelButton = GetCancelButton(swappableContent);
             var saveButton = GetSaveButton(swappableContent, mainPanel);
             var header = GetHeader(configIcon, headerTitle, cancelButton, saveButton);
-            clientIdInput = new STextBox();
+            clientIdInput = GetClientIdInput();
             var clientIdPopupOkButton = GetConfigValueInfoPopupOkButton();
             var clientIdPopup = GetClientIdPopup(clientIdPopupOkButton);
-            numMaxLogFilesInput = GetNumericUpDown(Constants.NumMaxLogFilesMin, Constants.NumMaxLogFilesMax, true);
+            numMaxLogFilesInput = GetNumMaxLogFilesInput();
             var numMaxLogFilesPopupOkButton = GetConfigValueInfoPopupOkButton();
             var numMaxLogFilesPopup = GetNumMaxLogFilesPopup(numMaxLogFilesPopupOkButton);
             var configGrid = GetConfigGrid([
@@ -39,7 +38,7 @@
             Children.Add(numMaxLogFilesPopup);
         }
 
-        public void Update() {
+        public void Init() {
             clientIdInput.Text = Config.ClientId;
             numMaxLogFilesInput.Value = Config.NumMaxLogFiles;
         }
@@ -101,15 +100,30 @@
         private EventHandler<RoutedEventArgs> GetOnSaveButtonClick(Swappable swappableContent, MainPanel mainPanel) => (_, _) => {
             if (clientIdInput.Text != Config.ClientId) {
                 Config.ClientId = clientIdInput.Text!;
-                mainPanel.UpdateBroadcasterButton();
+                try {
+                    Cache.ClearAuthData();
+                } catch (Exception e) {
+                    Logger.Error(e);
+                }
+
+                mainPanel.UpdateAuthorizeButton();
             }
 
             if ((int)numMaxLogFilesInput.Value! != Config.NumMaxLogFiles) {
                 Config.NumMaxLogFiles = (int)numMaxLogFilesInput.Value;
-                _ = TaskHelper.FireTryElseError(Logger.DeleteExcessFiles);
+                try {
+                    Logger.DeleteExcessFiles();
+                } catch (Exception e) {
+                    Logger.Error(e);
+                }
             }
 
-            ExceptionHelper.TryElseError(Config.Save);
+            try {
+                Config.Save();
+            } catch (Exception e) {
+                Logger.Error(e);
+            }
+
             swappableContent.Swap();
         };
 
@@ -142,7 +156,11 @@
             new Run(". If the number of files in the logs folder exceeds this value, logs will be deleted, starting from the oldest."),
         ], Constants.NumMaxLogFilesMin, Constants.NumMaxLogFilesMax, Constants.NumMaxLogFilesDefault, okButton);
 
-        private static SNumericUpDown GetNumericUpDown(decimal min, decimal max, bool showSpinner) => new(min, max, showSpinner) {
+        private static STextBox GetClientIdInput() => new() {
+            Width = 335d,
+        };
+
+        private static SNumericUpDown GetNumMaxLogFilesInput() => new(Constants.NumMaxLogFilesMin, Constants.NumMaxLogFilesMax, true) {
             Width = 75d,
         };
 

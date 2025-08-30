@@ -15,7 +15,7 @@
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
                 desktop.Startup += (_, _) => Startup();
                 desktop.Exit += (_, _) => Shutdown();
-                ExceptionHelper.TryElseConsoleError(() => desktop.MainWindow = new MainWindow());
+                desktop.MainWindow = new MainWindow();
             }
 
             base.OnFrameworkInitializationCompleted();
@@ -25,24 +25,24 @@
             var loggerInitTask = TaskHelper.FireTryElseConsoleError(Logger.Init);
             var configInitTask = TaskHelper.FireTryElseErrorAfter(Config.Init, loggerInitTask);
             var deleteExcessLogFilesTask = TaskHelper.FireTryElseErrorAfter(Logger.DeleteExcessFiles, configInitTask);
-            FireUpdateMainWindowAfter(mainWindow => mainWindow.UpdateMainPanelUserButtons(), configInitTask);
+            var cacheInitTask = TaskHelper.FireTryElseErrorAfter(Cache.Init, configInitTask);
+            FireUpdateMainWindowAfter(mainWindow => mainWindow.UpdateAuthorizeButton(), cacheInitTask);
             var commandManagerInitTask = TaskHelper.FireTryElseErrorAfter(CommandManager.Init, loggerInitTask);
-            FireUpdateMainWindowAfter(mainWindow => mainWindow.UpdateMainPanelInteractionGrid(), commandManagerInitTask);
+            FireUpdateMainWindowAfter(mainWindow => mainWindow.InitMainPanelInteractionGrid(), commandManagerInitTask);
             var customDataInitTask = TaskHelper.FireTryElseErrorAfter(CustomData.Init, loggerInitTask);
             var copyScriptsTypeHintsFileTask = TaskHelper.FireTryElseErrorAfter(CopyScriptsTypeHintsFile, loggerInitTask);
             var scriptFilesWatcherInitTask = TaskHelper.FireTryElseErrorAfter(ScriptFilesWatcher.Init, commandManagerInitTask);
             TaskHelper.Sync(configInitTask);
             var desktopApplicationLifetime = (IClassicDesktopStyleApplicationLifetime)ApplicationLifetime!;
             var mainWindow = (MainWindow)desktopApplicationLifetime.MainWindow!;
-            mainWindow.UpdateConfigPanel();
+            mainWindow.InitConfigPanel();
         }
 
         private static void Shutdown() {
-            var webSocketClientCloseTask = TaskHelper.FireTryElseError(WebSocketClient.Close);
+            var webSocketClientCloseTask = WebSocketClient.Id == null ? Task.CompletedTask : TaskHelper.FireTryElseError(WebSocketClient.Close);
             var customDataSaveTask = TaskHelper.FireTryElseErrorAfter(CustomData.Save, webSocketClientCloseTask);
             var commandManaderSaveTask = TaskHelper.FireTryElseError(CommandManager.Save);
             var configSaveTask = TaskHelper.FireTryElseError(Config.Save);
-            TaskHelper.TryElseErrorAfter(Logger.Shutdown, webSocketClientCloseTask, customDataSaveTask, commandManaderSaveTask, configSaveTask);
         }
 
         private static void CopyScriptsTypeHintsFile() {
@@ -50,16 +50,10 @@
             File.WriteAllText(Constants.ScriptsTypeHintsFilePath, Embedded.ScriptsTypeHintsPyi);
         }
 
-        private void FireUpdateMainWindowAfter(Action<MainWindow> update, params Task[] tasks) {
-            void updateMainPanel() {
-                var desktopApplicationLifetime = (IClassicDesktopStyleApplicationLifetime)ApplicationLifetime!;
-                var mainWindow = (MainWindow)desktopApplicationLifetime.MainWindow!;
-                update(mainWindow);
-            }
-
-            void updateOnUIThread() => Dispatcher.UIThread.Invoke(updateMainPanel);
-            void tryElseErrorUpdateOnUIThread() => ExceptionHelper.TryElseError(updateOnUIThread);
-            _ = TaskHelper.FireDoAfter(tryElseErrorUpdateOnUIThread, tasks);
-        }
+        private void FireUpdateMainWindowAfter(Action<MainWindow> update, params Task[] tasks) => TaskHelper.FireTryElseErrorAfter(() => Dispatcher.UIThread.Invoke(() => {
+            var desktopApplicationLifetime = (IClassicDesktopStyleApplicationLifetime)ApplicationLifetime!;
+            var mainWindow = (MainWindow)desktopApplicationLifetime.MainWindow!;
+            update(mainWindow);
+        }), tasks);
     }
 }

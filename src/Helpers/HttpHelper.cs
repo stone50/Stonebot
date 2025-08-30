@@ -25,7 +25,7 @@
         public static T SendGetRequest<T>(HttpClient client, string url, JsonTypeInfo<T> jsonTypeInfo) where T : struct {
             var cancellationToken = TaskHelper.GetDefaultCancellationToken();
             var getTask = client.GetAsync(url, cancellationToken);
-            var response = TaskHelper.Sync(getTask);
+            var response = TaskHelper.Sync(getTask).EnsureSuccessStatusCode();
             return GetMessageContentAs(response, jsonTypeInfo);
         }
 
@@ -36,7 +36,7 @@
         public static T SendPostRequest<T>(HttpClient client, string url, JsonTypeInfo<T> responseJsonTypeInfo) where T : struct {
             var cancellationToken = TaskHelper.GetDefaultCancellationToken();
             var postTask = client.PostAsync(url, null, cancellationToken);
-            var response = TaskHelper.Sync(postTask);
+            var response = TaskHelper.Sync(postTask).EnsureSuccessStatusCode();
             return GetMessageContentAs(response, responseJsonTypeInfo);
         }
 
@@ -44,7 +44,7 @@
 
         public static void SendAuthorizedPostRequest<T>(string url, T body, JsonTypeInfo<T> bodyJsonTypeInfo) where T : struct => SendPostRequest(Cache.AuthorizedHttpClient, url, body, bodyJsonTypeInfo);
 
-        public static void SendPostRequest<T>(HttpClient client, string url, T body, JsonTypeInfo<T> bodyJsonTypeInfo) where T : struct => InnerSendPostRequest(client, url, body, bodyJsonTypeInfo).EnsureSuccessStatusCode();
+        public static void SendPostRequest<T>(HttpClient client, string url, T body, JsonTypeInfo<T> bodyJsonTypeInfo) where T : struct => InnerSendPostRequest(client, url, body, bodyJsonTypeInfo);
 
         public static TResponse SendUnauthorizedPostRequest<TBody, TResponse>(string url, TBody body, JsonTypeInfo<TBody> bodyJsonTypeInfo, JsonTypeInfo<TResponse> responseJsonTypeInfo) where TBody : struct where TResponse : struct => SendPostRequest(Cache.DefaultHttpClient, url, body, bodyJsonTypeInfo, responseJsonTypeInfo);
 
@@ -66,7 +66,7 @@
             var content = new StringContent(contentString, Encoding.UTF8, "application/json");
             var cancellationToken = TaskHelper.GetDefaultCancellationToken();
             var postTask = client.PostAsync(url, content, cancellationToken);
-            return TaskHelper.Sync(postTask);
+            return TaskHelper.Sync(postTask).EnsureSuccessStatusCode();
         }
     }
 }

@@ -61,56 +61,6 @@ namespace Stonebot.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
-        ///&lt;html lang=&quot;en&quot;&gt;
-        ///&lt;head&gt;
-        ///    &lt;meta charset=&quot;UTF-8&quot;&gt;
-        ///    &lt;title&gt;Authorization Failed&lt;/title&gt;
-        ///    &lt;link href=&quot;https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&amp;display=swap&quot; rel=&quot;stylesheet&quot;&gt;
-        ///    &lt;style&gt;
-        ///        body {
-        ///            font-family: &apos;JetBrains Mono&apos;, monospace;
-        ///            background-color: #242436;
-        ///            display: flex;
-        ///            align-items: center;
-        ///            justify-content: center;
-        ///            height: 100vh;
-        ///            margin: 0;
-        ///        }
-        ///
-        ///        .c [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string AuthFailHtml {
-            get {
-                return ResourceManager.GetString("AuthFailHtml", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
-        ///&lt;html lang=&quot;en&quot;&gt;
-        ///&lt;head&gt;
-        ///    &lt;meta charset=&quot;UTF-8&quot;&gt;
-        ///    &lt;title&gt;Authorization Succeeded&lt;/title&gt;
-        ///    &lt;link href=&quot;https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&amp;display=swap&quot; rel=&quot;stylesheet&quot;&gt;
-        ///    &lt;style&gt;
-        ///        body {
-        ///            font-family: &apos;JetBrains Mono&apos;, monospace;
-        ///            background-color: #242436;
-        ///            display: flex;
-        ///            align-items: center;
-        ///            justify-content: center;
-        ///            height: 100vh;
-        ///            margin: 0;
-        ///        } [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string AuthSuccessHtml {
-            get {
-                return ResourceManager.GetString("AuthSuccessHtml", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to # Type hints
         ///if not Stonebot:
         ///    from stonebot import Stonebot

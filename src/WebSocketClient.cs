@@ -19,7 +19,12 @@
                 { "keepalive_timeout_seconds", Constants.WebSocketKeepaliveTimeoutSecs.ToString() }
             });
             ConnectTo(url);
-            EventSub.SubscribeToChannelChatMessage();
+            try {
+                EventSub.SubscribeToChannelChatMessage();
+            } catch {
+                Close(WebSocketCloseStatus.InternalServerError, "Error while subscribing to event.", true);
+                throw;
+            }
         }
 
         public static void Close() {
@@ -89,50 +94,11 @@
 
             while (!cancellationTokenSource.IsCancellationRequested) {
                 var timeoutCancellationTokenSource = new CancellationTokenSource();
+                var linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationTokenSource.Token, timeoutCancellationTokenSource.Token);
+                timeoutCancellationTokenSource.CancelAfter((Constants.WebSocketKeepaliveTimeoutSecs + Constants.WebSocketKeepaliveTimeoutMarginSecs) * 1000);
+                string? request;
                 try {
-                    var linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationTokenSource.Token, timeoutCancellationTokenSource.Token);
-                    timeoutCancellationTokenSource.CancelAfter((Constants.WebSocketKeepaliveTimeoutSecs + Constants.WebSocketKeepaliveTimeoutMarginSecs) * 1000);
-                    var request = GetRequest(socket, linkedCancellationTokenSource.Token);
-                    if (request == null) {
-                        FireClose(WebSocketCloseStatus.NormalClosure, "Close message received.", true);
-                        return;
-                    }
-
-                    if (
-                        TryParseRequest(request, JsonContext.Default.EventSubKeepaliveMessage, out var keepaliveMessage) &&
-                        keepaliveMessage.Metadata.MessageType == "session_keepalive"
-                    ) {
-                        continue;
-                    }
-
-                    if (
-                        TryParseRequest(request, JsonContext.Default.EventSubNotificationMessage, out var notificationMessage) &&
-                        notificationMessage.Metadata.MessageType == "notification"
-                    ) {
-                        ExceptionHelper.TryElseError(() => ChatMessageHandler.HandleChatMessage(notificationMessage.Payload.Event));
-                        continue;
-                    }
-
-                    if (
-                        TryParseRequest(request, JsonContext.Default.EventSubReconnectMessage, out var reconnectMessage) &&
-                        reconnectMessage.Metadata.MessageType == "session_reconnect"
-                    ) {
-                        FireReconnect(reconnectMessage.Payload.Session.ReconnectUrl);
-                        continue;
-                    }
-
-                    if (
-                        TryParseRequest(request, JsonContext.Default.EventSubRevocationMessage, out var revocationMessage) &&
-                        revocationMessage.Metadata.MessageType == "revocation"
-                    ) {
-                        var subscription = revocationMessage.Payload.Subscription;
-                        EventSub.DeleteEventSub(subscription.Id);
-                        Logger.Warn("Event subscription revoked.", subscription.Status);
-                        continue;
-                    }
-
-                    FireClose(WebSocketCloseStatus.InvalidMessageType, null, true);
-                    return;
+                    request = GetRequest(socket, linkedCancellationTokenSource.Token);
                 } catch (OperationCanceledException) {
                     if (timeoutCancellationTokenSource.IsCancellationRequested) {
                         Logger.Warn("No keepalive message received.");
@@ -143,14 +109,64 @@
 
                     return;
                 } catch (Exception e) {
-                    try {
-                        Logger.Error(e);
-                    } finally {
-                        FireClose(WebSocketCloseStatus.InternalServerError, e.Message, true);
-                    }
-
+                    Logger.Error(e);
+                    FireClose(WebSocketCloseStatus.InternalServerError, e.Message, true);
                     return;
                 }
+
+                if (request == null) {
+                    FireClose(WebSocketCloseStatus.NormalClosure, "Close message received.", true);
+                    return;
+                }
+
+                if (
+                    TryParseRequest(request, JsonContext.Default.EventSubKeepaliveMessage, out var keepaliveMessage) &&
+                    keepaliveMessage.Metadata.MessageType == "session_keepalive"
+                ) {
+                    continue;
+                }
+
+                if (
+                    TryParseRequest(request, JsonContext.Default.EventSubNotificationMessage, out var notificationMessage) &&
+                    notificationMessage.Metadata.MessageType == "notification"
+                ) {
+                    try {
+                        ChatMessageHandler.HandleChatMessage(notificationMessage.Payload.Event);
+                    } catch (Exception e) {
+                        Logger.Error(e);
+                    }
+
+                    continue;
+                }
+
+                if (
+                    TryParseRequest(request, JsonContext.Default.EventSubReconnectMessage, out var reconnectMessage) &&
+                    reconnectMessage.Metadata.MessageType == "session_reconnect"
+                ) {
+                    FireReconnect(reconnectMessage.Payload.Session.ReconnectUrl);
+                    continue;
+                }
+
+                if (
+                    TryParseRequest(request, JsonContext.Default.EventSubRevocationMessage, out var revocationMessage) &&
+                    revocationMessage.Metadata.MessageType == "revocation"
+                ) {
+                    var subscription = revocationMessage.Payload.Subscription;
+                    try {
+                        EventSub.DeleteEventSub(subscription.Id);
+                    } catch (Exception e) {
+                        Logger.Error(e);
+                    }
+
+                    Logger.Warn("Event subscription revoked.", subscription.Status);
+                    FireClose(WebSocketCloseStatus.NormalClosure, "Event subscription revoked.", true);
+                    return;
+                }
+
+                Logger.Warn("Received invalid message type.");
+                FireClose(WebSocketCloseStatus.InvalidMessageType, null, true);
+                return;
+
             }
         }
 

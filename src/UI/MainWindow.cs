@@ -17,14 +17,11 @@
             Content = swappableContent;
         }
 
-        public void UpdateMainPanelUserButtons() {
-            mainPanel.UpdateBroadcasterButton();
-            mainPanel.UpdateChatterButton();
-        }
+        public void UpdateAuthorizeButton() => mainPanel.UpdateAuthorizeButton();
 
-        public void UpdateMainPanelInteractionGrid() => mainPanel.InitInteractionGrid();
+        public void InitMainPanelInteractionGrid() => mainPanel.InitInteractionGrid();
 
-        public void UpdateConfigPanel() => configPanel.Update();
+        public void InitConfigPanel() => configPanel.Init();
 
         private readonly MainPanel mainPanel;
         private readonly ConfigPanel configPanel;

@@ -12,7 +12,7 @@
             var url = HttpHelper.GetUrl("https://api.twitch.tv/helix/users", new() {
                 { "login", Config.BroadcasterUsername.ToLower() },
             });
-            var users = HttpHelper.SendUnauthorizedGetRequest(url, JsonContext.Default.GetUsersResponse);
+            var users = HttpHelper.SendAuthorizedGetRequest(url, JsonContext.Default.GetUsersResponse);
             return users.Data[0];
         }
     }

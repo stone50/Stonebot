@@ -1,9 +1,6 @@
 ﻿namespace Stonebot {
-    using Helpers;
     using System;
-    using System.Collections.Concurrent;
     using System.Diagnostics;
-    using System.Text;
 
     internal static class Logger {
         public enum LogType {
@@ -11,6 +8,12 @@
             Info,
             Warning,
             Error
+        }
+
+        public static void Init() {
+            _ = Directory.CreateDirectory(Constants.LogsPath);
+            filePath = Path.Join(Constants.LogsPath, $"{GetFormattedDateTime()}.txt");
+            File.Create(filePath).Close();
         }
 
         [Conditional("DEBUG")]
@@ -23,18 +26,13 @@
         public static void Error(params object?[]? messages) => Log(LogType.Error, messages);
 
         public static void Log(LogType logType, params object?[]? messages) {
-            if (flushingTask != null && flushingTask.IsCompleted) {
-                return;
+            var log = $"[{GetFormattedDateTime()}] {logType.ToString().ToUpper()}: {string.Join(" | ", messages ?? [])}";
+            LogToConsole(log);
+            try {
+                File.AppendAllText(filePath!, log);
+            } catch (Exception e) {
+                Console.Error.WriteLine($"Error logging \"{log}\": {e}");
             }
-
-            logQueue.Enqueue($"[{GetFormattedDateTime()}] {logType.ToString().ToUpper()}: {string.Join(" | ", messages ?? [])}");
-        }
-
-        public static void Init() {
-            _ = Directory.CreateDirectory(Constants.LogsPath);
-            filePath = Path.Join(Constants.LogsPath, $"{GetFormattedDateTime()}.txt");
-            File.Create(filePath).Close();
-            flushingTask = Task.Run(FlushingTaskAction);
         }
 
         public static void DeleteExcessFiles() {
@@ -53,60 +51,14 @@
             }
         }
 
-        public static void Shutdown() {
-            flushingTaskCancellationTokenSource.Cancel();
-            if (flushingTask != null) {
-                TaskHelper.Sync(flushingTask);
-            }
-
-            FlushQueue();
-        }
-
         private readonly struct FileCreationTime(string filePath, DateTime creationTime) {
             public readonly string FilePath = filePath;
             public readonly DateTime CreationTime = creationTime;
         }
 
-        private static readonly ConcurrentQueue<string> logQueue = new();
         private static string? filePath;
-        private static Task? flushingTask;
-        private static readonly CancellationTokenSource flushingTaskCancellationTokenSource = new();
 
         private static string GetFormattedDateTime() => DateTime.UtcNow.ToString("dd-MM-yyyy_HH.mm.ss.fff");
-
-        private static void FlushingTaskAction() {
-            while (!flushingTaskCancellationTokenSource.IsCancellationRequested) {
-                try {
-                    FlushQueue();
-                } catch (OperationCanceledException) {
-                    return;
-                } catch (Exception e) {
-                    try {
-                        Error(e);
-                    } catch { }
-
-                    return;
-                }
-            }
-        }
-
-        private static void FlushQueue() {
-            if (logQueue.IsEmpty) {
-                return;
-            }
-
-            var logs = new StringBuilder();
-            while (logQueue.TryDequeue(out var log)) {
-                LogToConsole(log);
-                if (filePath != null) {
-                    _ = logs.AppendLine(log);
-                }
-            }
-
-            if (filePath != null) {
-                File.AppendAllText(filePath, logs.ToString());
-            }
-        }
 
         [Conditional("CONSOLE")]
         private static void LogToConsole(string log) => Console.WriteLine(log);

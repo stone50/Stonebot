@@ -1,41 +1,36 @@
 ﻿namespace Stonebot.UI {
     using Avalonia.Controls;
+    using Avalonia.Controls.Documents;
     using Avalonia.Layout;
     using CustomControls;
     using CustomControls.Buttons;
+    using CustomControls.Buttons.Links;
     using CustomControls.Popups;
 
     internal class MainPanel : Panel {
         public MainPanel(Swappable swappableContent) {
             Background = MainTheme.PrimaryBrush1;
 
-            var removeAuthorizationPopup = RemoveAuthorizationPopup.Create();
-            var cancelAuthorizationPopup = CancelPopup.Create("Please Authorize in your Browser");
+            var clearAuthPopup = GetClearAuthPopup();
+            var confirmAuthPopup = GetConfirmAuthPopup();
             var logo = GetLogo();
             var connectButton = new ConnectButton();
-            broadcasterButton = new(removeAuthorizationPopup, cancelAuthorizationPopup);
-            chatterButton = new(removeAuthorizationPopup, cancelAuthorizationPopup);
-            var broadcasterLabel = GetUserLabel("Broadcaster:");
-            var chatterLabel = GetUserLabel("Chatter:");
-            var users = GetUsers(broadcasterLabel, chatterLabel);
+            authorizeButton = new AuthorizeButton(clearAuthPopup, confirmAuthPopup);
             var configButton = GetConfigButton(swappableContent);
-            var header = GetHeader(logo, connectButton, users, configButton);
+            var header = GetHeader(logo, connectButton, authorizeButton, configButton);
             interactionGrid = new InteractionGrid();
             var body = GetBody();
             var mainGrid = GetMainGrid(header, body);
             Children.Add(mainGrid);
-            Children.Add(removeAuthorizationPopup);
-            Children.Add(cancelAuthorizationPopup);
+            Children.Add(clearAuthPopup);
+            Children.Add(confirmAuthPopup);
         }
 
-        public void UpdateBroadcasterButton() => broadcasterButton.Update();
-
-        public void UpdateChatterButton() => chatterButton.Update();
+        public void UpdateAuthorizeButton() => authorizeButton.Update();
 
         public void InitInteractionGrid() => interactionGrid.Init();
 
-        private readonly BroadcasterButton broadcasterButton;
-        private readonly ChatterButton chatterButton;
+        private readonly AuthorizeButton authorizeButton;
         private readonly InteractionGrid interactionGrid;
 
         private static SGrid GetMainGrid(SGrid header, ScrollViewer body) => new([
@@ -48,7 +43,7 @@
                 body,
             ]);
 
-        private static SGrid GetHeader(Image logo, ConnectButton connectButton, SGrid users, InfoButton configButton) => new([
+        private static SGrid GetHeader(Image logo, ConnectButton connectButton, AuthorizeButton authorizeButton, InfoButton configButton) => new([
                 GridLength.Star,
             ], [
                 GridLength.Auto,
@@ -58,7 +53,7 @@
             ], [
                 logo,
                 connectButton,
-                users,
+                authorizeButton,
                 configButton,
             ]) {
             Background = MainTheme.PrimaryBrush2,
@@ -71,20 +66,13 @@
             return logo;
         }
 
-        private SGrid GetUsers(STextBlock broadcasterLabel, STextBlock chatterLabel) => new([
-            GridLength.Star,
-            GridLength.Star,
-        ], [
-            GridLength.Auto,
-            GridLength.Auto,
-        ], [
-            broadcasterLabel,
-            broadcasterButton,
-            chatterLabel,
-            chatterButton,
-        ]) {
-            VerticalAlignment = VerticalAlignment.Center,
-        };
+        private static CancelOkPopup GetClearAuthPopup() => CancelOkPopup.Create("Clear Cached Authorization?", [
+            new Run("This will only remove cached authorization data.\nTo disconnect Stonebot from Twitch, go to:\n"),
+            new UrlLink("https://www.twitch.tv/settings/connections").GetInline(),
+            new Run("\nMake sure you are logged into the correct user."),
+        ]);
+
+        private static ConfirmAuthPopup GetConfirmAuthPopup() => ConfirmAuthPopup.Create("Authorize");
 
         private static InfoButton GetConfigButton(Swappable swappableContent) {
             var configButton = new InfoButton() {
@@ -95,11 +83,6 @@
             configButton.Click += (_, _) => swappableContent.Swap();
             return configButton;
         }
-
-        private static STextBlock GetUserLabel(string text) => new() {
-            HorizontalAlignment = HorizontalAlignment.Right,
-            Text = text,
-        };
 
         private ScrollViewer GetBody() => new() {
             Content = interactionGrid,
