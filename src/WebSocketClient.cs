@@ -10,7 +10,7 @@
     using Twitch;
 
     internal static class WebSocketClient {
-        public static event EventHandler ClosedUnexpectedly = delegate { };
+        public static event EventHandler FullClosure = delegate { };
 
         public static string? Id { get; private set; }
 
@@ -28,7 +28,7 @@
         }
 
         public static void Close() {
-            Close(WebSocketCloseStatus.NormalClosure, null, false);
+            Close(WebSocketCloseStatus.NormalClosure, null, true);
             EventSub.DeleteEventSubs();
         }
 
@@ -43,7 +43,7 @@
             listenTask = Task.Run(ListenAction);
         }
 
-        private static void Close(WebSocketCloseStatus status, string? statusDescription, bool isUnexpectedClose) {
+        private static void Close(WebSocketCloseStatus status, string? statusDescription, bool isFullClosure) {
             cancellationTokenSource?.Cancel();
             if (listenTask != null) {
                 TaskHelper.Sync(listenTask);
@@ -61,9 +61,9 @@
             }
 
             Id = null;
-            if (isUnexpectedClose) {
+            if (isFullClosure) {
                 EventSub.DeleteEventSubs();
-                ClosedUnexpectedly.Invoke(null, new());
+                FullClosure.Invoke(null, new());
             }
         }
 
@@ -103,8 +103,6 @@
                     if (timeoutCancellationTokenSource.IsCancellationRequested) {
                         Logger.Warn("No keepalive message received.");
                         FireClose(WebSocketCloseStatus.NormalClosure, "No keepalive message received.", true);
-                    } else {
-                        FireClose(WebSocketCloseStatus.NormalClosure, "Operation cancelled.", false);
                     }
 
                     return;
@@ -176,7 +174,7 @@
             return result.MessageType == WebSocketMessageType.Close ? null : Encoding.UTF8.GetString(buffer, 0, result.Count);
         }
 
-        private static void FireClose(WebSocketCloseStatus status, string? statusDescription, bool isUnexpectedClose) => TaskHelper.FireTryElseError(() => Close(status, statusDescription, isUnexpectedClose));
+        private static void FireClose(WebSocketCloseStatus status, string? statusDescription, bool isFullClosure) => TaskHelper.FireTryElseError(() => Close(status, statusDescription, isFullClosure));
 
         private static bool TryParseRequest<T>(string request, JsonTypeInfo<T> jsonTypeInfo, out T requestData) where T : struct {
             try {

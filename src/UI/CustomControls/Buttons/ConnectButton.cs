@@ -20,7 +20,7 @@
 
             State = ConnectState.Disconnected;
             Click += OnClick;
-            WebSocketClient.ClosedUnexpectedly += OnWebSocketClientClosedUnexpectedly;
+            WebSocketClient.FullClosure += OnWebSocketClientFullClosure;
         }
 
         protected override void UpdateBackground() => Background =
@@ -114,6 +114,6 @@
             }
         }
 
-        private void OnWebSocketClientClosedUnexpectedly(object? sender, EventArgs args) => Dispatcher.UIThread.Invoke(() => SetState(ConnectState.Disconnected));
+        private void OnWebSocketClientFullClosure(object? sender, EventArgs args) => Dispatcher.UIThread.Invoke(() => SetState(ConnectState.Disconnected));
     }
 }

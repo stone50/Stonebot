@@ -17,6 +17,9 @@
             var cancelButton = GetCancelButton(swappableContent);
             var saveButton = GetSaveButton(swappableContent, mainPanel);
             var header = GetHeader(configIcon, headerTitle, cancelButton, saveButton);
+            broadcasterUsernameInput = GetBroadcasterUsernameInput();
+            var broadcasterUsernamePopupOkButton = GetConfigValueInfoPopupOkButton();
+            var broadcasterUsernamePopup = GetBroadcasterUsernamePopup(broadcasterUsernamePopupOkButton);
             clientIdInput = GetClientIdInput();
             var clientIdPopupOkButton = GetConfigValueInfoPopupOkButton();
             var clientIdPopup = GetClientIdPopup(clientIdPopupOkButton);
@@ -24,6 +27,9 @@
             var numMaxLogFilesPopupOkButton = GetConfigValueInfoPopupOkButton();
             var numMaxLogFilesPopup = GetNumMaxLogFilesPopup(numMaxLogFilesPopupOkButton);
             var configGrid = GetConfigGrid([
+                GetConfigValueLabel("Broadcaster Username"),
+                GetConfigValueInfoButton(broadcasterUsernamePopup),
+                broadcasterUsernameInput,
                 GetConfigValueLabel("Client ID"),
                 GetConfigValueInfoButton(clientIdPopup),
                 clientIdInput,
@@ -34,15 +40,18 @@
             var body = GetBody(configGrid);
             var mainGrid = GetMainGrid(header, body);
             Children.Add(mainGrid);
+            Children.Add(broadcasterUsernamePopup);
             Children.Add(clientIdPopup);
             Children.Add(numMaxLogFilesPopup);
         }
 
         public void Init() {
+            broadcasterUsernameInput.Text = Config.BroadcasterUsername;
             clientIdInput.Text = Config.ClientId;
             numMaxLogFilesInput.Value = Config.NumMaxLogFiles;
         }
 
+        private readonly STextBox broadcasterUsernameInput;
         private readonly STextBox clientIdInput;
         private readonly SNumericUpDown numMaxLogFilesInput;
 
@@ -98,6 +107,17 @@
         }
 
         private EventHandler<RoutedEventArgs> GetOnSaveButtonClick(Swappable swappableContent, MainPanel mainPanel) => (_, _) => {
+            if (broadcasterUsernameInput.Text != Config.BroadcasterUsername) {
+                Config.BroadcasterUsername = broadcasterUsernameInput.Text!;
+                if (WebSocketClient.Id != null) {
+                    try {
+                        WebSocketClient.Close();
+                    } catch (Exception e) {
+                        Logger.Error(e);
+                    }
+                }
+            }
+
             if (clientIdInput.Text != Config.ClientId) {
                 Config.ClientId = clientIdInput.Text!;
                 try {
@@ -143,11 +163,15 @@
             Margin = new(20d, 10d),
         };
 
+        private static SPopup GetBroadcasterUsernamePopup(InfoButton okButton) => GetConfigValueInfoPopup("Broadcaster Username", [
+            new Run($"This is the username (case insensitive) of the broadcaster whose chat Stonebot will connect to."),
+        ], okButton);
+
         private static SPopup GetClientIdPopup(InfoButton okButton) => GetConfigValueInfoPopup("Client ID", [
-            new Run("For full setup instructions, go to:\n"),
-            GetUrlLinkInline("https://github.com/stone50/Stonebot"),
-            new Run($"\nThis is the client ID of your Twitch application, which can be found at:\n"),
+            new Run($"This is the client ID of your Twitch application, which can be found at:\n"),
             GetUrlLinkInline("https://dev.twitch.tv/console"),
+            new Run("\nFor full setup instructions, go to:\n"),
+            GetUrlLinkInline("https://github.com/stone50/Stonebot"),
         ], okButton);
 
         private static SPopup GetNumMaxLogFilesPopup(InfoButton okButton) => GetConfigValueInfoPopup("Max Log Files", [
@@ -156,7 +180,13 @@
             new Run(". If the number of files in the logs folder exceeds this value, logs will be deleted, starting from the oldest."),
         ], Constants.NumMaxLogFilesMin, Constants.NumMaxLogFilesMax, Constants.NumMaxLogFilesDefault, okButton);
 
+        private static STextBox GetBroadcasterUsernameInput() => new() {
+            HorizontalAlignment = HorizontalAlignment.Left,
+            Width = 280d,
+        };
+
         private static STextBox GetClientIdInput() => new() {
+            HorizontalAlignment = HorizontalAlignment.Left,
             Width = 335d,
         };
 

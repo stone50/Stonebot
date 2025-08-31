@@ -81,8 +81,7 @@
         public string ConnectedAt { get; set; }
 
         [JsonPropertyName("disconnected_at")]
-        [JsonRequired]
-        public string DisconnectedAt { get; set; }
+        public string? DisconnectedAt { get; set; }
     }
 
     internal struct GetEventSubsResponsePagination {

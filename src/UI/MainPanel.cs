@@ -15,9 +15,11 @@
             var confirmAuthPopup = GetConfirmAuthPopup();
             var logo = GetLogo();
             var connectButton = new ConnectButton();
-            authorizeButton = new AuthorizeButton(clearAuthPopup, confirmAuthPopup);
+            var authorizeButtonLabel = GetAuthorizeButtonLabel();
+            authorizeButton = GetAuthorizeButton(clearAuthPopup, confirmAuthPopup);
+            var authorizeInput = GetAuthorizeInput(authorizeButtonLabel, authorizeButton);
             var configButton = GetConfigButton(swappableContent);
-            var header = GetHeader(logo, connectButton, authorizeButton, configButton);
+            var header = GetHeader(logo, connectButton, authorizeInput, configButton);
             interactionGrid = new InteractionGrid();
             var body = GetBody();
             var mainGrid = GetMainGrid(header, body);
@@ -43,7 +45,7 @@
                 body,
             ]);
 
-        private static SGrid GetHeader(Image logo, ConnectButton connectButton, AuthorizeButton authorizeButton, InfoButton configButton) => new([
+        private static SGrid GetHeader(Image logo, ConnectButton connectButton, SGrid users, InfoButton configButton) => new([
                 GridLength.Star,
             ], [
                 GridLength.Auto,
@@ -53,7 +55,7 @@
             ], [
                 logo,
                 connectButton,
-                authorizeButton,
+                users,
                 configButton,
             ]) {
             Background = MainTheme.PrimaryBrush2,
@@ -65,6 +67,24 @@
             logo.Margin = new(10d);
             return logo;
         }
+
+        private static SGrid GetAuthorizeInput(STextBlock authorizeButtonLabel, AuthorizeButton authorizeButton) => new([
+            GridLength.Auto,
+        ], [
+            GridLength.Auto,
+            GridLength.Auto,
+        ], [
+            authorizeButtonLabel,
+            authorizeButton,
+        ]) {
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+
+        private static STextBlock GetAuthorizeButtonLabel() => new() {
+            Text = "Chatting as",
+        };
+
+        private static AuthorizeButton GetAuthorizeButton(CancelOkPopup clearAuthPopup, ConfirmAuthPopup confirmAuthPopup) => new(clearAuthPopup, confirmAuthPopup) { };
 
         private static CancelOkPopup GetClearAuthPopup() => CancelOkPopup.Create("Clear Cached Authorization?", [
             new Run("This will only remove cached authorization data.\nTo disconnect Stonebot from Twitch, go to:\n"),
