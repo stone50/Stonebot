@@ -20,7 +20,7 @@
             this.onCancel = onCancel;
             this.onOk = onOk;
             body.Inlines = [
-               new Run($"Please enter this code into your browser:\n{userCode}"),
+                new Run($"Please enter this code into your browser:\n{userCode}"),
                 // TODO: copy button
                 new Run($"\nIf a browser tab did not automatically open, please go to:\n"),
                 new UrlLink(verificationUri).GetInline(),

@@ -3,10 +3,12 @@
     using Avalonia.Controls.Documents;
     using Avalonia.Interactivity;
     using Avalonia.Layout;
+    using Avalonia.Threading;
     using CustomControls;
     using CustomControls.Buttons;
     using CustomControls.Buttons.Links;
     using CustomControls.Popups;
+    using Helpers;
 
     internal class ConfigPanel : Panel {
         public ConfigPanel(Swappable swappableContent, MainPanel mainPanel) {
@@ -107,43 +109,37 @@
         }
 
         private EventHandler<RoutedEventArgs> GetOnSaveButtonClick(Swappable swappableContent, MainPanel mainPanel) => (_, _) => {
+            var updateBroadcasterUsernameTask = Task.CompletedTask;
             if (broadcasterUsernameInput.Text != Config.BroadcasterUsername) {
                 Config.BroadcasterUsername = broadcasterUsernameInput.Text!;
+                WebSocketClient.TryCancelConnectAttempt();
                 if (WebSocketClient.Id != null) {
-                    try {
-                        WebSocketClient.Close();
-                    } catch (Exception e) {
-                        Logger.Error(e);
-                    }
+                    updateBroadcasterUsernameTask = TaskHelper.FireTryElseError(WebSocketClient.Close);
                 }
             }
 
+            var updateClientIdTask = Task.CompletedTask;
             if (clientIdInput.Text != Config.ClientId) {
                 Config.ClientId = clientIdInput.Text!;
-                try {
+                updateClientIdTask = TaskHelper.FireTryElseErrorAfter(() => {
                     Cache.ClearAuthData();
-                } catch (Exception e) {
-                    Logger.Error(e);
-                }
-
-                mainPanel.UpdateAuthorizeButton();
+                    Dispatcher.UIThread.Invoke(mainPanel.UpdateAuthorizeButton);
+                }, updateBroadcasterUsernameTask);
             }
 
+            var updateNumMaxLogFilesTask = Task.CompletedTask;
             if ((int)numMaxLogFilesInput.Value! != Config.NumMaxLogFiles) {
                 Config.NumMaxLogFiles = (int)numMaxLogFilesInput.Value;
-                try {
-                    Logger.DeleteExcessFiles();
-                } catch (Exception e) {
-                    Logger.Error(e);
-                }
+                updateNumMaxLogFilesTask = TaskHelper.FireTryElseError(Logger.DeleteExcessFiles);
             }
 
-            try {
-                Config.Save();
-            } catch (Exception e) {
-                Logger.Error(e);
-            }
-
+            var configSaveTask = TaskHelper.FireTryElseError(Config.Save);
+            Task.WaitAll(
+                updateBroadcasterUsernameTask,
+                updateClientIdTask,
+                updateNumMaxLogFilesTask,
+                configSaveTask
+            );
             swappableContent.Swap();
         };
 
@@ -182,11 +178,12 @@
 
         private static STextBox GetBroadcasterUsernameInput() => new() {
             HorizontalAlignment = HorizontalAlignment.Left,
-            Width = 280d,
+            Width = 335d,
         };
 
         private static STextBox GetClientIdInput() => new() {
             HorizontalAlignment = HorizontalAlignment.Left,
+            PasswordChar = '*',
             Width = 335d,
         };
 

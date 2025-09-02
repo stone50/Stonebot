@@ -83,37 +83,47 @@
             }
 
             State = ConnectState.Connecting;
-            try {
-                if (string.IsNullOrEmpty(Cache.BroadcasterId)) {
-                    State = ConnectState.Disconnected;
+            _ = Task.Run(() => {
+                try {
+                    if (string.IsNullOrEmpty(Cache.GetBroadcasterId())) {
+                        SetStateOnUIThread(ConnectState.Disconnected);
+                        return;
+                    }
+                } catch (Exception e) {
+                    Logger.Warn(e);
+                    SetStateOnUIThread(ConnectState.Disconnected);
                     return;
                 }
-            } catch (Exception e) {
-                Logger.Warn(e);
-                State = ConnectState.Disconnected;
-                return;
-            }
 
-            try {
-                WebSocketClient.Connect();
-                State = ConnectState.Connected;
-            } catch (Exception e) {
-                Logger.Error(e);
-                State = ConnectState.Disconnected;
-            }
+                try {
+                    if (!WebSocketClient.TryConnect()) {
+                        SetStateOnUIThread(ConnectState.Disconnected);
+                        return;
+                    }
+
+                    SetStateOnUIThread(ConnectState.Connected);
+                } catch (Exception e) {
+                    Logger.Error(e);
+                    SetStateOnUIThread(ConnectState.Disconnected);
+                }
+            });
         }
 
         private void TryDisconnect() {
             State = ConnectState.Disconnecting;
-            try {
-                WebSocketClient.Close();
-                State = ConnectState.Disconnected;
-            } catch (Exception e) {
-                Logger.Error(e);
-                State = ConnectState.Connected;
-            }
+            _ = Task.Run(() => {
+                try {
+                    WebSocketClient.Close();
+                    SetStateOnUIThread(ConnectState.Disconnected);
+                } catch (Exception e) {
+                    Logger.Error(e);
+                    SetStateOnUIThread(ConnectState.Connected);
+                }
+            });
         }
 
-        private void OnWebSocketClientFullClosure(object? sender, EventArgs args) => Dispatcher.UIThread.Invoke(() => SetState(ConnectState.Disconnected));
+        private void OnWebSocketClientFullClosure(object? sender, EventArgs args) => SetStateOnUIThread(ConnectState.Disconnected);
+
+        private void SetStateOnUIThread(ConnectState newState) => Dispatcher.UIThread.Invoke(() => SetState(newState));
     }
 }

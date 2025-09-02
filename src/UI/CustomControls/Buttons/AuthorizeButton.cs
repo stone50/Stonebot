@@ -37,7 +37,7 @@
             state = newState;
             switch (State) {
                 case AuthState.Authorized:
-                    Content = Cache.ChatterDisplayName;
+                    Content = Cache.GetChatterDisplayName();
                     break;
                 case AuthState.Unauthorized:
                     Content = "Click to Authorize";

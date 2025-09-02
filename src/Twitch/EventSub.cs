@@ -6,7 +6,7 @@
         public static void DeleteEventSub(string id) {
             var url = HttpHelper.GetUrl("https://api.twitch.tv/helix/eventsub/subscriptions", new() { { "id", id } });
             var cancellationToken = TaskHelper.GetDefaultCancellationToken();
-            _ = TaskHelper.Sync(Cache.AuthorizedHttpClient.DeleteAsync(url, cancellationToken)).EnsureSuccessStatusCode();
+            _ = TaskHelper.Sync(Cache.GetAuthorizedHttpClient().DeleteAsync(url, cancellationToken)).EnsureSuccessStatusCode();
         }
 
         public static void DeleteEventSubs() {
@@ -16,13 +16,13 @@
             }
         }
 
-        public static void SubscribeToChannelChatMessage() {
+        public static void SubscribeToChannelChatMessage(CancellationToken cancellationToken) {
             var body = new PostAddChannelChatMessageEventSubBody() {
                 Type = "channel.chat.message",
                 Version = "1",
                 Condition = new() {
-                    BroadcasterId = Cache.BroadcasterId,
-                    UserId = Cache.ChatterId,
+                    BroadcasterId = Cache.GetBroadcasterId(),
+                    UserId = Cache.GetChatterId(),
                 },
                 Transport = new() {
                     Method = "websocket",

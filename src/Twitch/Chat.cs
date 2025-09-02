@@ -6,8 +6,8 @@
     internal static class Chat {
         public static PostChatMessageResponse Send(string message, string? replyParentMessageId) {
             var body = new PostChatMessageBody {
-                BroadcasterId = Cache.BroadcasterId,
-                SenderId = Cache.ChatterId,
+                BroadcasterId = Cache.GetBroadcasterId(),
+                SenderId = Cache.GetChatterId(),
                 Message = message,
                 ReplyParentMessageId = replyParentMessageId,
             };

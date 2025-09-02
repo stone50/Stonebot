@@ -14,17 +14,37 @@
 
         public static string? Id { get; private set; }
 
-        public static void Connect() {
+        public static bool TryConnect() {
+            connectCancellationTokenSource = new();
             var url = HttpHelper.GetUrl("wss://eventsub.wss.twitch.tv/ws", new() {
                 { "keepalive_timeout_seconds", Constants.WebSocketKeepaliveTimeoutSecs.ToString() }
             });
-            ConnectTo(url);
             try {
-                EventSub.SubscribeToChannelChatMessage();
-            } catch {
-                Close(WebSocketCloseStatus.InternalServerError, "Error while subscribing to event.", true);
+                ConnectTo(url);
+            } catch (Exception e) {
+                if (e is OperationCanceledException && connectCancellationTokenSource.IsCancellationRequested) {
+                    connectCancellationTokenSource = null;
+                    return false;
+                }
+
+                connectCancellationTokenSource = null;
                 throw;
             }
+
+            try {
+                EventSub.SubscribeToChannelChatMessage(connectCancellationTokenSource.Token);
+            } catch (Exception e) {
+                Close(WebSocketCloseStatus.InternalServerError, "Error while subscribing to event.", true);
+                if (e is OperationCanceledException && connectCancellationTokenSource.IsCancellationRequested) {
+                    return false;
+                }
+
+                throw;
+            } finally {
+                connectCancellationTokenSource = null;
+            }
+
+            return true;
         }
 
         public static void Close() {
@@ -32,9 +52,12 @@
             EventSub.DeleteEventSubs();
         }
 
+        public static void TryCancelConnectAttempt() => connectCancellationTokenSource?.Cancel();
+
         private static ClientWebSocket? socket;
         private static Task? listenTask;
         private static CancellationTokenSource? cancellationTokenSource;
+        private static CancellationTokenSource? connectCancellationTokenSource;
 
         private static void ConnectTo(string url) {
             socket = new();
@@ -69,18 +92,23 @@
 
         private static string ConnectSocketTo(ClientWebSocket socket, string url) {
             var socketUri = new Uri(url);
-            var cancellationToken = TaskHelper.GetDefaultCancellationToken();
+            var cancellationToken = GetLinkedConnectCancellationToken();
             TaskHelper.Sync(socket.ConnectAsync(socketUri, cancellationToken));
             try {
-                var requestCancellationToken = TaskHelper.GetDefaultCancellationToken();
-                var request = GetRequest(socket, requestCancellationToken);
+                var welcomeCancellationToken = GetLinkedConnectCancellationToken();
+                var request = GetRequest(socket, welcomeCancellationToken);
                 var welcomeMessage = JsonSerializer.Deserialize(request!, JsonContext.Default.EventSubWelcomeMessage);
                 return welcomeMessage.Payload.Session.Id;
-            } catch (Exception e) {
+            } catch {
                 var closeCancellationToken = TaskHelper.GetDefaultCancellationToken();
-                TaskHelper.Sync(socket.CloseAsync(WebSocketCloseStatus.InternalServerError, e.Message, closeCancellationToken));
+                TaskHelper.Sync(socket.CloseAsync(WebSocketCloseStatus.InternalServerError, "Error while receiving welcome message.", closeCancellationToken));
                 throw;
             }
+        }
+
+        private static CancellationToken GetLinkedConnectCancellationToken() {
+            var defaultCancellationToken = TaskHelper.GetDefaultCancellationToken();
+            return connectCancellationTokenSource == null ? defaultCancellationToken : CancellationTokenSource.CreateLinkedTokenSource(defaultCancellationToken, connectCancellationTokenSource.Token).Token;
         }
 
         private static void ListenAction() {

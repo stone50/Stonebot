@@ -4,7 +4,7 @@
 
     internal static class ChatMessageHandler {
         public static void HandleChatMessage(EventSubNotificationMessagePayloadEvent channelChatMessageEvent) {
-            if (channelChatMessageEvent.ChatterId == Cache.ChatterId) {
+            if (channelChatMessageEvent.ChatterId == Cache.GetChatterId()) {
                 return;
             }
 
