@@ -123,7 +123,7 @@
                 Config.ClientId = clientIdInput.Text!;
                 updateClientIdTask = TaskHelper.FireTryElseErrorAfter(() => {
                     Cache.ClearAuthData();
-                    Dispatcher.UIThread.Invoke(mainPanel.UpdateAuthorizeButton);
+                    Dispatcher.UIThread.Invoke(mainPanel.UpdateAuth);
                 }, updateBroadcasterUsernameTask);
             }
 

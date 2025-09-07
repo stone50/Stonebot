@@ -29,7 +29,7 @@
                     SessionId = WebSocketClient.Id!,
                 }
             };
-            HttpHelper.SendAuthorizedPostRequest("https://api.twitch.tv/helix/eventsub/subscriptions", body, JsonContext.Default.PostAddChannelChatMessageEventSubBody);
+            HttpHelper.SendAuthorizedPostRequest("https://api.twitch.tv/helix/eventsub/subscriptions", body, JsonContext.Default.PostAddChannelChatMessageEventSubBody, cancellationToken);
         }
     }
 }

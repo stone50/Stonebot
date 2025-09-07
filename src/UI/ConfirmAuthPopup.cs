@@ -1,16 +1,18 @@
-﻿namespace Stonebot.UI.CustomControls.Popups {
+﻿namespace Stonebot.UI {
     using Avalonia.Controls;
     using Avalonia.Controls.Documents;
     using Avalonia.Interactivity;
-    using Buttons;
-    using Buttons.Links;
+    using CustomControls;
+    using CustomControls.Buttons;
+    using CustomControls.Buttons.Links;
+    using CustomControls.Popups;
 
     internal class ConfirmAuthPopup : SPopup {
-        public static ConfirmAuthPopup Create(string title) {
+        public static ConfirmAuthPopup Create() {
             var cancelButton = GetCancelButton();
             var okButton = GetOkButton();
             var footer = GetFooter(cancelButton, okButton);
-            var cancelOkPopup = new ConfirmAuthPopup(title, footer);
+            var cancelOkPopup = new ConfirmAuthPopup("Authorize", footer);
             cancelButton.Click += cancelOkPopup.OnCancelButtonClick;
             okButton.Click += cancelOkPopup.OnOkButtonClick;
             return cancelOkPopup;

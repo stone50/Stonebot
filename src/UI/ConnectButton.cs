@@ -1,6 +1,7 @@
-﻿namespace Stonebot.UI.CustomControls.Buttons {
+﻿namespace Stonebot.UI {
     using Avalonia.Interactivity;
     using Avalonia.Threading;
+    using CustomControls.Buttons;
     using System;
 
     internal class ConnectButton : SButtonBase {

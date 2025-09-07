@@ -26,9 +26,9 @@
             var configInitTask = TaskHelper.FireTryElseErrorAfter(Config.Init, loggerInitTask);
             var deleteExcessLogFilesTask = TaskHelper.FireTryElseErrorAfter(Logger.DeleteExcessFiles, configInitTask);
             var cacheInitTask = TaskHelper.FireTryElseErrorAfter(Cache.Init, configInitTask);
-            FireUpdateMainWindowAfter(mainWindow => mainWindow.UpdateAuthorizeButton(), cacheInitTask);
+            FireUpdateMainWindowAfter(mainWindow => mainWindow.LoadMainPanelAuth(), cacheInitTask);
             var commandManagerInitTask = TaskHelper.FireTryElseErrorAfter(CommandManager.Init, loggerInitTask);
-            FireUpdateMainWindowAfter(mainWindow => mainWindow.InitMainPanelInteractionGrid(), commandManagerInitTask);
+            FireUpdateMainWindowAfter(mainWindow => mainWindow.LoadMainPanelInteractionGrid(), commandManagerInitTask);
             var customDataInitTask = TaskHelper.FireTryElseErrorAfter(CustomData.Init, loggerInitTask);
             var copyScriptsTypeHintsFileTask = TaskHelper.FireTryElseErrorAfter(CopyScriptsTypeHintsFile, loggerInitTask);
             var scriptFilesWatcherInitTask = TaskHelper.FireTryElseErrorAfter(ScriptFilesWatcher.Init, commandManagerInitTask);

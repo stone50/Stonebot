@@ -17,9 +17,11 @@
             Content = swappableContent;
         }
 
-        public void UpdateAuthorizeButton() => mainPanel.UpdateAuthorizeButton();
+        public void LoadMainPanelAuth() => mainPanel.LoadAuth();
 
-        public void InitMainPanelInteractionGrid() => mainPanel.InitInteractionGrid();
+        public void UpdateMainPanelAuth() => mainPanel.UpdateAuth();
+
+        public void LoadMainPanelInteractionGrid() => mainPanel.LoadInteractionGrid();
 
         public void InitConfigPanel() => configPanel.Init();
 
