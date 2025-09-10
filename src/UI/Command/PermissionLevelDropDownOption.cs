@@ -1,4 +1,4 @@
-﻿namespace Stonebot.UI.CommandCardControls {
+﻿namespace Stonebot.UI.Command {
     using CustomControls.Buttons;
 
     internal class PermissionLevelDropDownOption : InfoButton {

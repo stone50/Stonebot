@@ -3,6 +3,7 @@
     using Avalonia.Controls.Documents;
     using Avalonia.Interactivity;
     using Avalonia.Layout;
+    using Command.CommandCardControls;
     using CustomControls;
     using CustomControls.Buttons;
     using CustomControls.Buttons.Links;
@@ -18,7 +19,7 @@
             var logo = GetLogo();
             var connectButton = new ConnectButton();
             swappableAuthButtons = GetSwappableAuthButtons();
-            var confirmAuthPopup = ConfirmAuthPopup.Create();
+            var confirmAuthPopup = new ConfirmAuthPopup();
             var authButton = GetAuthButton(confirmAuthPopup);
             authorizedLabel = GetAuthorizedLabel();
             var clearAuthPopup = GetClearAuthPopup();
@@ -28,12 +29,15 @@
             loadableAuthButtons = GetLoadableAuthButtons(swappableAuthButtons);
             var configButton = GetConfigButton(swappableContent);
             var header = GetHeader(logo, connectButton, loadableAuthButtons, configButton);
-            loadableInteractionGrid = GetLoadableInteractionGrid();
+            var interactionGrid = new InteractionGrid();
+            var newCommandPopup = new NewCommandPopup(interactionGrid);
+            loadableInteractionGrid = GetLoadableInteractionGrid(interactionGrid, newCommandPopup);
             var body = GetBody(loadableInteractionGrid);
             var mainGrid = GetMainGrid(header, body);
             Children.Add(mainGrid);
             Children.Add(clearAuthPopup);
             Children.Add(confirmAuthPopup);
+            Children.Add(newCommandPopup);
         }
 
         public void LoadAuth() => loadableAuthButtons.Load();
@@ -128,7 +132,6 @@
             }
 
             confirmAuthPopup.Show(deviceCodeResponse.UserCode, deviceCodeResponse.VerificationUri,
-                () => { },
                 () => {
                     try {
                         Cache.LoadNewAccessToken(deviceCodeResponse.DeviceCode);
@@ -144,30 +147,25 @@
             FontSize = 24d,
         };
 
-        private DangerButton GetClearAuthButton(CancelOkPopup clearAuthPopup) {
+        private static DangerButton GetClearAuthButton(ActionPopup clearAuthPopup) {
             var clearAuthButton = new DangerButton() {
                 Content = "Clear", // TODO: make this a trash can icon
             };
-            clearAuthButton.Click += GetOnClearAuthButtonClick(clearAuthPopup);
+            clearAuthButton.Click += (_, _) => clearAuthPopup.IsVisible = true;
             return clearAuthButton;
         }
 
-        private static CancelOkPopup GetClearAuthPopup() => CancelOkPopup.Create("Clear Cached Authorization?", [
+        private ActionPopup GetClearAuthPopup() => new("Clear Cached Authorization?", [
             new Run("This will only remove cached authorization data.\nTo disconnect Stonebot from Twitch, go to:\n"),
             new UrlLink("https://www.twitch.tv/settings/connections").GetInline(),
-        ]);
-
-        private EventHandler<RoutedEventArgs> GetOnClearAuthButtonClick(CancelOkPopup clearAuthPopup) => (_, _) => clearAuthPopup.Show(
-            () => { },
-            () => {
-                try {
-                    Cache.ClearAuthData();
-                    UpdateAuth();
-                } catch (Exception e) {
-                    Logger.Error(e);
-                }
+        ], () => {
+            try {
+                Cache.ClearAuthData();
+                UpdateAuth();
+            } catch (Exception e) {
+                Logger.Error(e);
             }
-        );
+        });
 
         private static SGrid GetAuthorizedGrid(STextBlock authorizedLabel, DangerButton clearAuthButton) => new([
             GridLength.Auto,
@@ -193,10 +191,7 @@
             return configButton;
         }
 
-        private static Loadable GetLoadableInteractionGrid() {
-            var interactionGrid = new InteractionGrid();
-            return new(interactionGrid, interactionGrid.Init);
-        }
+        private static Loadable GetLoadableInteractionGrid(InteractionGrid interactionGrid, NewCommandPopup newCommandPopup) => new(interactionGrid, () => interactionGrid.Init(newCommandPopup));
 
         private static ScrollViewer GetBody(Loadable loadableInteractionGrid) => new() {
             Content = loadableInteractionGrid,

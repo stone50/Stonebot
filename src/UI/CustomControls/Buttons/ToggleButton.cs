@@ -7,6 +7,7 @@
         public ToggleButton(bool initialState) {
             State = initialState;
             Click += OnClick;
+            UpdateBackground();
         }
 
         protected override void UpdateBackground() => Background =

@@ -5,21 +5,33 @@
     using Avalonia.Media;
 
     internal class SPopup : Panel {
-        public SPopup(string title, InlineCollection? bodyInlines, Control footer) {
+        public readonly Border Header;
+        public readonly Panel Body;
+        public readonly Panel Footer;
+
+        public SPopup() {
             Background = new SolidColorBrush(Color.FromArgb(100, 0, 0, 0));
             HorizontalAlignment = HorizontalAlignment.Stretch;
             IsVisible = false;
             VerticalAlignment = VerticalAlignment.Stretch;
 
-            var headerTextBlock = GetHeaderTextBlock(title);
-            var header = GetHeader(headerTextBlock);
-            body = GetBody(bodyInlines);
-            var mainBorderChild = GetMainBorderChild(header, body, footer);
+            Header = GetHeader();
+            Body = GetBody();
+            Footer = GetFooter();
+            var mainBorderChild = GetMainBorderChild(Header, Body, Footer);
             var mainBorder = GetMainBorder(mainBorderChild);
             Children.Add(mainBorder);
         }
 
-        protected readonly STextBlock body;
+        public SPopup(string title) : this() => Header.Child = new STextBlock() {
+            FontSize = 24d,
+            Text = title,
+        };
+
+        public SPopup(string title, InlineCollection inlines) : this(title) => Body.Children.Add(new STextBlock() {
+            Inlines = inlines,
+            TextWrapping = TextWrapping.Wrap,
+        });
 
         private static Border GetMainBorder(SGrid mainBorderChild) => new() {
             Background = MainTheme.PrimaryBrush2,
@@ -30,7 +42,7 @@
             VerticalAlignment = VerticalAlignment.Center,
         };
 
-        private static SGrid GetMainBorderChild(Border header, STextBlock body, Control footer) => new([
+        private static SGrid GetMainBorderChild(Border header, Panel body, Panel footer) => new([
             GridLength.Auto,
             GridLength.Auto,
             GridLength.Auto,
@@ -42,20 +54,13 @@
             footer,
         ]);
 
-        private static Border GetHeader(STextBlock headerTextBlock) => new() {
+        private static Border GetHeader() => new() {
             Background = MainTheme.PrimaryBrush1,
-            Child = headerTextBlock,
             CornerRadius = new(10d, 0d),
         };
 
-        private static STextBlock GetHeaderTextBlock(string title) => new() {
-            FontSize = 24d,
-            Text = title,
-        };
+        private static Panel GetBody() => new();
 
-        private static STextBlock GetBody(InlineCollection? inlines) => new() {
-            Inlines = inlines,
-            TextWrapping = TextWrapping.Wrap,
-        };
+        private static Panel GetFooter() => new();
     }
 }

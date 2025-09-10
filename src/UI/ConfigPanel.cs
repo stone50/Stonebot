@@ -214,7 +214,8 @@
         ], okButton);
 
         private static SPopup GetConfigValueInfoPopup(string label, InlineCollection inlines, InfoButton okButton) {
-            var popup = new SPopup(label, inlines, okButton);
+            var popup = new SPopup(label, inlines);
+            popup.Footer.Children.Add(okButton);
             okButton.Click += (_, _) => popup.IsVisible = false;
             return popup;
         }

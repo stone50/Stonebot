@@ -1,4 +1,4 @@
-﻿namespace Stonebot.UI.CommandCardControls {
+﻿namespace Stonebot.UI.Command.CommandCardControls {
     using Avalonia.Controls;
     using Avalonia.Input;
     using Avalonia.Interactivity;
@@ -52,22 +52,22 @@
         }
 
         private static SGrid GetMainGrid(Border nameRow, SGrid permissionRow, SGrid cooldownRow) => new([
-                GridLength.Auto,
-                GridLength.Auto,
-                GridLength.Auto,
-                GridLength.Auto,
-            ], [
-                GridLength.Star,
-            ], [
-                nameRow,
-                // TODO
-                new STextBlock(){
-                    Text = "Aliases",
-                    HorizontalAlignment = HorizontalAlignment.Left,
-                },
-                permissionRow,
-                cooldownRow,
-            ]);
+            GridLength.Auto,
+            GridLength.Auto,
+            GridLength.Auto,
+            GridLength.Auto,
+        ], [
+            GridLength.Star,
+        ], [
+            nameRow,
+            // TODO
+            new STextBlock(){
+                Text = "Aliases",
+                HorizontalAlignment = HorizontalAlignment.Left,
+            },
+            permissionRow,
+            cooldownRow,
+        ]);
 
         private Border GetNameRowBorder(SGrid nameRow) => new() {
             Child = nameRow,
@@ -83,14 +83,14 @@
         ) => (_, _) => nameRowBorder.BorderBrush = enableToggleButton.State ? MainTheme.SuccessBrush2 : MainTheme.DangerBrush2;
 
         private static SGrid GetNameRow(Swappable swappableName, ToggleButton enableToggleButton) => new([
-                GridLength.Auto,
-            ], [
-                GridLength.Star,
-                GridLength.Auto,
-            ], [
-                swappableName,
-                enableToggleButton,
-            ]) {
+            GridLength.Auto,
+        ], [
+            GridLength.Star,
+            GridLength.Auto,
+        ], [
+            swappableName,
+            enableToggleButton,
+        ]) {
             VerticalAlignment = VerticalAlignment.Center,
         };
 
@@ -108,14 +108,14 @@
         };
 
         private static SGrid GetStaticNameGroup(STextBlock textBlock, InfoButton editButton) => new([
-                GridLength.Auto,
-            ], [
-                GridLength.Auto,
-                GridLength.Auto,
-            ], [
-                textBlock,
-                editButton,
-            ]);
+            GridLength.Auto,
+        ], [
+            GridLength.Auto,
+            GridLength.Auto,
+        ], [
+            textBlock,
+            editButton,
+        ]);
 
         private STextBox GetNameTextBox() {
             var nameTextBox = new STextBox() {
@@ -157,16 +157,16 @@
         };
 
         private static SGrid GetEditableNameGroup(STextBox textBox, DangerButton cancelButton, SuccessButton submitButton) => new([
-                GridLength.Auto,
-            ], [
-                GridLength.Auto,
-                GridLength.Auto,
-                GridLength.Auto,
-            ], [
-                textBox,
-                cancelButton,
-                submitButton,
-            ]);
+            GridLength.Auto,
+        ], [
+            GridLength.Auto,
+            GridLength.Auto,
+            GridLength.Auto,
+        ], [
+            textBox,
+            cancelButton,
+            submitButton,
+        ]);
 
         private static EventHandler<RoutedEventArgs> GetOnNameEditButtonClick(Swappable swappableName, STextBox nameTextBox) => (_, _) => {
             swappableName.Swap();
@@ -261,10 +261,10 @@
         };
 
         private static SGrid GetPermissionDropDown(InfoButton[] permissionDropDownOptions) => new(
-                [.. Enumerable.Repeat(GridLength.Auto, permissionDropDownOptions.Length)],
-                [GridLength.Auto],
-                [.. permissionDropDownOptions]
-            );
+            [.. Enumerable.Repeat(GridLength.Auto, permissionDropDownOptions.Length)],
+            [GridLength.Auto],
+            [.. permissionDropDownOptions]
+        );
 
         private static PermissionLevelDropDownOption[] GetPermissionDropDownOptions() => [.. Enum.GetValues<UserPermission.Level>().Reverse().Select(permissionLevel => new PermissionLevelDropDownOption(permissionLevel))];
 
@@ -276,21 +276,21 @@
         };
 
         private static SGrid GetCooldownRow(STextBlock cooldownRowLabel, NumericUpDown cooldownInput) => new([
-                GridLength.Auto,
-            ], [
-                GridLength.Auto,
-                GridLength.Auto,
-            ], [
-                cooldownRowLabel,
-                cooldownInput,
-            ]);
+            GridLength.Auto,
+        ], [
+            GridLength.Auto,
+            GridLength.Auto,
+        ], [
+            cooldownRowLabel,
+            cooldownInput,
+        ]);
 
         private static STextBlock GetCooldownRowLabel() => new() {
             Text = "Cooldown Seconds",
         };
 
         private SNumericUpDown GetCooldownInput() {
-            var cooldownInput = new SNumericUpDown(0, Constants.CommandCooldownSecsMax, true) {
+            var cooldownInput = new SNumericUpDown(0M, Constants.CommandCooldownSecsMax, true) {
                 Value = Command.CooldownSeconds,
                 Width = 75d,
             };
