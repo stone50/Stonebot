@@ -206,6 +206,7 @@
             } catch (Exception e) {
                 Logger.Error(e);
             }
+
             interactionGrid.Update();
             IsVisible = false;
         };

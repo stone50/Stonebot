@@ -31,13 +31,15 @@
             var header = GetHeader(logo, connectButton, loadableAuthButtons, configButton);
             var interactionGrid = new InteractionGrid();
             var newCommandPopup = new NewCommandPopup(interactionGrid);
-            loadableInteractionGrid = GetLoadableInteractionGrid(interactionGrid, newCommandPopup);
+            var deleteCommandPopup = new DeleteCommandPopup(interactionGrid);
+            loadableInteractionGrid = GetLoadableInteractionGrid(interactionGrid, newCommandPopup, deleteCommandPopup);
             var body = GetBody(loadableInteractionGrid);
             var mainGrid = GetMainGrid(header, body);
             Children.Add(mainGrid);
             Children.Add(clearAuthPopup);
             Children.Add(confirmAuthPopup);
             Children.Add(newCommandPopup);
+            Children.Add(deleteCommandPopup);
         }
 
         public void LoadAuth() => loadableAuthButtons.Load();
@@ -191,7 +193,7 @@
             return configButton;
         }
 
-        private static Loadable GetLoadableInteractionGrid(InteractionGrid interactionGrid, NewCommandPopup newCommandPopup) => new(interactionGrid, () => interactionGrid.Init(newCommandPopup));
+        private static Loadable GetLoadableInteractionGrid(InteractionGrid interactionGrid, NewCommandPopup newCommandPopup, DeleteCommandPopup deleteCommandPopup) => new(interactionGrid, () => interactionGrid.Init(newCommandPopup, deleteCommandPopup));
 
         private static ScrollViewer GetBody(Loadable loadableInteractionGrid) => new() {
             Content = loadableInteractionGrid,

@@ -6,6 +6,7 @@
     using Avalonia.Media;
     using CustomControls;
     using CustomControls.Buttons;
+    using CustomControls.Popups;
     using Helpers;
     using Scripting;
     using System.Diagnostics;
@@ -13,7 +14,7 @@
     internal class CommandCard : Border {
         public readonly Command Command;
 
-        public CommandCard(Command command) {
+        public CommandCard(Command command, DeleteCommandPopup deleteCommandPopup) {
             Background = MainTheme.PrimaryBrush2;
             CornerRadius = new(5d);
             Margin = new(10d);
@@ -50,7 +51,7 @@
             var cooldownInput = GetCooldownInput();
             var cooldownRow = GetCooldownRow(cooldownRowLabel, cooldownInput);
             var editScriptButton = GetEditScriptButton(command);
-            var deleteButton = GetDeleteButton();
+            var deleteButton = GetDeleteButton(command, deleteCommandPopup);
             Child = GetMainGrid(nameRowBorder, permissionRow, cooldownRow, editScriptButton, deleteButton);
         }
 
@@ -326,14 +327,12 @@
             return editScriptButton;
         }
 
-        private static DangerButton GetDeleteButton() {
+        private static DangerButton GetDeleteButton(Command command, DeleteCommandPopup deleteCommandPopup) {
             var deleteButton = new DangerButton() {
                 Content = "Delete", // TODO: make this a trash can icon
                 HorizontalAlignment = HorizontalAlignment.Right,
             };
-            deleteButton.Click += (_, _) => {
-                // TODO: show popup
-            };
+            deleteButton.Click += (_, _) => deleteCommandPopup.Show(command);
             return deleteButton;
         }
 

@@ -4,6 +4,7 @@
     using Avalonia.Layout;
     using Command.CommandCardControls;
     using CustomControls.Buttons;
+    using CustomControls.Popups;
     using Scripting;
 
     internal class InteractionGrid : WrapPanel {
@@ -13,12 +14,13 @@
             VerticalAlignment = VerticalAlignment.Top;
         }
 
-        public void Init(NewCommandPopup newCommandPopup) {
+        public void Init(NewCommandPopup newCommandPopup, DeleteCommandPopup deleteCommandPopup) {
+            this.deleteCommandPopup = deleteCommandPopup;
             addCommandButton = GetAddCommandButton(newCommandPopup);
             Children.Add(addCommandButton);
             var sortedCommands = CommandManager.Commands.OrderBy(x => x.Name);
             foreach (var command in sortedCommands) {
-                Children.Add(new CommandCard(command));
+                Children.Add(new CommandCard(command, deleteCommandPopup));
             }
         }
 
@@ -27,11 +29,12 @@
             Children.Add(addCommandButton!);
             var sortedCommands = CommandManager.Commands.OrderBy(x => x.Name);
             foreach (var command in sortedCommands) {
-                Children.Add(new CommandCard(command));
+                Children.Add(new CommandCard(command, deleteCommandPopup!));
             }
         }
 
         private SuccessButton? addCommandButton;
+        private DeleteCommandPopup? deleteCommandPopup;
 
         private static SuccessButton GetAddCommandButton(NewCommandPopup newCommandPopup) {
             var addCommandButton = new SuccessButton() {
