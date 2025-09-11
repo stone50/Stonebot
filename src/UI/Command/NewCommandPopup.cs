@@ -156,28 +156,6 @@
             Width = 75d,
         };
 
-        private static bool IsNewNameValid(string newName) {
-            if (newName.Length is 0 or > Constants.NumMaxCommandNameChars) {
-                return false;
-            }
-
-            if (!newName.All(char.IsLetter)) {
-                return false;
-            }
-
-            foreach (var command in CommandManager.Commands) {
-                if (newName == command.Name) {
-                    return false;
-                }
-
-                if (command.Aliases.Contains(newName)) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
         private static SGrid GetFooterButtons(DangerButton cancelButton, SuccessButton createButton) => new([
             GridLength.Auto,
         ], [
@@ -223,9 +201,35 @@
                 (int)cooldownInput.Value!
             );
             CommandManager.Commands.Add(newCommand);
-            CommandManager.Save();
+            try {
+                CommandManager.Save();
+            } catch (Exception e) {
+                Logger.Error(e);
+            }
             interactionGrid.Update();
             IsVisible = false;
         };
+
+        private static bool IsNewNameValid(string newName) {
+            if (newName.Length is 0 or > Constants.NumMaxCommandNameChars) {
+                return false;
+            }
+
+            if (!newName.All(c => char.IsLetterOrDigit(c) && !char.IsWhiteSpace(c))) {
+                return false;
+            }
+
+            foreach (var command in CommandManager.Commands) {
+                if (newName == command.Name) {
+                    return false;
+                }
+
+                if (command.Aliases.Contains(newName)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 }
