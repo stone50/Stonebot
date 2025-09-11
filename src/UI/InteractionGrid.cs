@@ -16,7 +16,8 @@
         public void Init(NewCommandPopup newCommandPopup) {
             addCommandButton = GetAddCommandButton(newCommandPopup);
             Children.Add(addCommandButton);
-            foreach (var command in CommandManager.Commands) {
+            var sortedCommands = CommandManager.Commands.OrderBy(x => x.Name);
+            foreach (var command in sortedCommands) {
                 Children.Add(new CommandCard(command));
             }
         }
@@ -24,7 +25,8 @@
         public void Update() {
             Children.Clear();
             Children.Add(addCommandButton!);
-            foreach (var command in CommandManager.Commands) {
+            var sortedCommands = CommandManager.Commands.OrderBy(x => x.Name);
+            foreach (var command in sortedCommands) {
                 Children.Add(new CommandCard(command));
             }
         }
@@ -34,8 +36,7 @@
         private static SuccessButton GetAddCommandButton(NewCommandPopup newCommandPopup) {
             var addCommandButton = new SuccessButton() {
                 Content = "New Command",
-                Height = 70d,
-                VerticalAlignment = VerticalAlignment.Top,
+                BorderThickness = new(100d),
                 Width = 400d,
             };
             addCommandButton.Click += GetOnAddCommandButtonClick(newCommandPopup);
