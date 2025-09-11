@@ -8,6 +8,7 @@
     using CustomControls.Buttons;
     using Helpers;
     using Scripting;
+    using System.Diagnostics;
 
     internal class CommandCard : Border {
         public readonly Command Command;
@@ -48,10 +49,14 @@
             var cooldownRowLabel = GetCooldownRowLabel();
             var cooldownInput = GetCooldownInput();
             var cooldownRow = GetCooldownRow(cooldownRowLabel, cooldownInput);
-            Child = GetMainGrid(nameRowBorder, permissionRow, cooldownRow);
+            var editScriptButton = GetEditScriptButton(command);
+            var deleteButton = GetDeleteButton();
+            Child = GetMainGrid(nameRowBorder, permissionRow, cooldownRow, editScriptButton, deleteButton);
         }
 
-        private static SGrid GetMainGrid(Border nameRow, SGrid permissionRow, SGrid cooldownRow) => new([
+        private static SGrid GetMainGrid(Border nameRow, SGrid permissionRow, SGrid cooldownRow, InfoButton editScriptButton, DangerButton deleteButton) => new([
+            GridLength.Auto,
+            GridLength.Auto,
             GridLength.Auto,
             GridLength.Auto,
             GridLength.Auto,
@@ -67,6 +72,8 @@
             },
             permissionRow,
             cooldownRow,
+            editScriptButton,
+            deleteButton,
         ]);
 
         private Border GetNameRowBorder(SGrid nameRow) => new() {
@@ -301,12 +308,41 @@
             return cooldownInput;
         }
 
+        private static InfoButton GetEditScriptButton(Command command) {
+            var editScriptButton = new InfoButton() {
+                Content = "Edit Script",
+                HorizontalAlignment = HorizontalAlignment.Left,
+            };
+            editScriptButton.Click += (_, _) => {
+                try {
+                    _ = Process.Start(new ProcessStartInfo {
+                        FileName = command.GetScriptFilePath(),
+                        UseShellExecute = true,
+                    });
+                } catch (Exception e) {
+                    Logger.Error(e);
+                }
+            };
+            return editScriptButton;
+        }
+
+        private static DangerButton GetDeleteButton() {
+            var deleteButton = new DangerButton() {
+                Content = "Delete", // TODO: make this a trash can icon
+                HorizontalAlignment = HorizontalAlignment.Right,
+            };
+            deleteButton.Click += (_, _) => {
+                // TODO: show popup
+            };
+            return deleteButton;
+        }
+
         private static bool IsNewNameValid(string newName) {
             if (newName.Length is 0 or > Constants.NumMaxCommandNameChars) {
                 return false;
             }
 
-            if (!newName.All(char.IsLetter)) {
+            if (!newName.All(c => char.IsLetterOrDigit(c) && !char.IsWhiteSpace(c))) {
                 return false;
             }
 
