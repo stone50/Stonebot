@@ -30,6 +30,12 @@
             return pencil;
         }
 
+        public static Image GetTrashIcon() {
+            var trash = GetImage(Constants.TrashAvaloniaResourceFilePath);
+            RenderOptions.SetBitmapInterpolationMode(trash, BitmapInterpolationMode.MediumQuality);
+            return trash;
+        }
+
         private static Image GetImage(string avaloniaResourceFilePath) {
             var uri = new Uri(avaloniaResourceFilePath);
             var assetStream = AssetLoader.Open(uri);

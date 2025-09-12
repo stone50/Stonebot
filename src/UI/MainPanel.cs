@@ -157,7 +157,9 @@
 
         private static DangerButton GetClearAuthButton(ActionPopup clearAuthPopup) {
             var clearAuthButton = new DangerButton() {
-                Content = "Clear", // TODO: make this a trash can icon
+                Content = UIUtils.GetTrashIcon(),
+                Height = 32d,
+                Padding = new(7d),
             };
             clearAuthButton.Click += (_, _) => clearAuthPopup.IsVisible = true;
             return clearAuthButton;

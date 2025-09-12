@@ -345,8 +345,11 @@
 
         private static DangerButton GetDeleteButton(Command command, DeleteCommandPopup deleteCommandPopup) {
             var deleteButton = new DangerButton() {
-                Content = "Delete", // TODO: make this a trash can icon
+                Content = UIUtils.GetTrashIcon(),
+                Height = 32d,
                 HorizontalAlignment = HorizontalAlignment.Right,
+                Padding = new(7d),
+                Width = 32d,
             };
             deleteButton.Click += (_, _) => deleteCommandPopup.Show(command);
             return deleteButton;
