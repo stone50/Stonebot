@@ -173,7 +173,7 @@
 
         private static SPopup GetNumMaxLogFilesPopup(InfoButton okButton) => GetConfigValueInfoPopup("Max Log Files", [
             new Run("Every time Stonebot is launched, it writes a new log file to "),
-            GetFolderLinkInline("this folder in your local app data folder", Constants.LogsPath),
+            GetFolderLinkInline(Constants.LogsPath),
             new Run(". If the number of files in the logs folder exceeds this value, logs will be deleted, starting from the oldest."),
         ], Constants.NumMaxLogFilesMin, Constants.NumMaxLogFilesMax, Constants.NumMaxLogFilesDefault, okButton);
 
@@ -229,6 +229,6 @@
 
         private static InlineUIContainer GetUrlLinkInline(string url) => new UrlLink(url).GetInline();
 
-        private static InlineUIContainer GetFolderLinkInline(string label, string path) => new FolderLink(label, path).GetInline();
+        private static InlineUIContainer GetFolderLinkInline(string path) => new FolderLink(path).GetInline();
     }
 }
