@@ -14,7 +14,7 @@
     internal class CommandCard : Border {
         public readonly Command Command;
 
-        public CommandCard(Command command, DeleteCommandPopup deleteCommandPopup) {
+        public CommandCard(Command command, DeleteCommandPopup deleteCommandPopup, InteractionGrid interactionGrid) {
             Background = MainTheme.PrimaryBrush2;
             CornerRadius = new(5d);
             Margin = new(10d);
@@ -31,8 +31,8 @@
             var swappableName = new Swappable(staticNameGroup, editableNameGroup);
             nameEditButton.Click += GetOnNameEditButtonClick(swappableName, nameTextBox);
             nameCancelButton.Click += GetOnNameCancelButtonClick(swappableName, nameTextBox);
-            nameSubmitButton.Click += GetOnNameSubmitButtonClick(swappableName, nameTextBlock, nameTextBox);
-            nameTextBox.KeyUp += GetOnNameTextBoxKeyUp(swappableName, nameTextBlock, nameTextBox);
+            nameSubmitButton.Click += GetOnNameSubmitButtonClick(swappableName, nameTextBlock, nameTextBox, interactionGrid);
+            nameTextBox.KeyUp += GetOnNameTextBoxKeyUp(swappableName, nameTextBlock, nameTextBox, interactionGrid);
             var enableToggleButton = GetEnableToggleButton();
             var nameRow = GetNameRow(swappableName, enableToggleButton);
             var nameRowBorder = GetNameRowBorder(nameRow);
@@ -52,11 +52,11 @@
             var cooldownRow = GetCooldownRow(cooldownRowLabel, cooldownInput);
             var editScriptButton = GetEditScriptButton(command);
             var deleteButton = GetDeleteButton(command, deleteCommandPopup);
-            Child = GetMainGrid(nameRowBorder, permissionRow, cooldownRow, editScriptButton, deleteButton);
+            var footer = GetFooter(editScriptButton, deleteButton);
+            Child = GetMainGrid(nameRowBorder, permissionRow, cooldownRow, footer);
         }
 
-        private static SGrid GetMainGrid(Border nameRow, SGrid permissionRow, SGrid cooldownRow, InfoButton editScriptButton, DangerButton deleteButton) => new([
-            GridLength.Auto,
+        private static SGrid GetMainGrid(Border nameRow, SGrid permissionRow, SGrid cooldownRow, SGrid footer) => new([
             GridLength.Auto,
             GridLength.Auto,
             GridLength.Auto,
@@ -73,8 +73,7 @@
             },
             permissionRow,
             cooldownRow,
-            editScriptButton,
-            deleteButton,
+            footer,
         ]);
 
         private Border GetNameRowBorder(SGrid nameRow) => new() {
@@ -190,23 +189,26 @@
         private EventHandler<RoutedEventArgs> GetOnNameSubmitButtonClick(
             Swappable swappableName,
             STextBlock nameTextBlock,
-            STextBox nameTextBox
-        ) => (_, _) => OnNameSubmit(swappableName, nameTextBlock, nameTextBox);
+            STextBox nameTextBox,
+            InteractionGrid interactionGrid
+        ) => (_, _) => OnNameSubmit(swappableName, nameTextBlock, nameTextBox, interactionGrid);
 
         private EventHandler<KeyEventArgs> GetOnNameTextBoxKeyUp(
             Swappable swappableName,
             STextBlock nameTextBlock,
-            STextBox nameTextBox
+            STextBox nameTextBox,
+            InteractionGrid interactionGrid
         ) => (_, e) => {
             if (e.Key == Key.Enter) {
-                OnNameSubmit(swappableName, nameTextBlock, nameTextBox);
+                OnNameSubmit(swappableName, nameTextBlock, nameTextBox, interactionGrid);
             }
         };
 
         private void OnNameSubmit(
             Swappable swappableName,
             STextBlock nameTextBlock,
-            STextBox nameTextBox
+            STextBox nameTextBox,
+            InteractionGrid interactionGrid
         ) {
             var newName = nameTextBox.Text!;
             if (newName == Command.Name) {
@@ -222,11 +224,15 @@
             nameTextBlock.Text = $"!{newName}";
             var oldScriptFilePath = Command.GetScriptFilePath();
             Command.Name = newName;
-            _ = TaskHelper.FireTryElseError(() => {
+            try {
                 File.Move(oldScriptFilePath, Command.GetScriptFilePath());
                 Command.ReloadScriptFile();
                 CommandManager.Save();
-            });
+            } catch (Exception e) {
+                Logger.Error(e);
+            }
+
+            interactionGrid.Update();
         }
 
         private ToggleButton GetEnableToggleButton() {
@@ -308,6 +314,16 @@
             };
             return cooldownInput;
         }
+
+        private static SGrid GetFooter(InfoButton editScriptButton, DangerButton deleteButton) => new([
+            GridLength.Auto,
+        ], [
+            GridLength.Auto,
+            GridLength.Star,
+        ], [
+            editScriptButton,
+            deleteButton,
+        ]);
 
         private static InfoButton GetEditScriptButton(Command command) {
             var editScriptButton = new InfoButton() {
