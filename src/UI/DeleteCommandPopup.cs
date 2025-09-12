@@ -22,9 +22,9 @@
         }
 
         private Command? commandToDelete;
-        private readonly STextBlock bodyTextBlock;
+        private readonly SSelectableTextBlock bodyTextBlock;
 
-        private static STextBlock GetBodyTextBlock() => new() {
+        private static SSelectableTextBlock GetBodyTextBlock() => new() {
             TextWrapping = TextWrapping.Wrap,
         };
 

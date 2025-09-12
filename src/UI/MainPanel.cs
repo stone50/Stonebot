@@ -67,7 +67,7 @@
 
         public void LoadInteractionGrid() => loadableInteractionGrid.Load();
 
-        private readonly STextBlock authorizedLabel;
+        private readonly SSelectableTextBlock authorizedLabel;
         private readonly Loadable loadableAuthButtons;
         private readonly Swappable swappableAuthButtons;
         private bool isShowingAuth = false;
@@ -151,7 +151,7 @@
             );
         };
 
-        private static STextBlock GetAuthorizedLabel() => new() {
+        private static SSelectableTextBlock GetAuthorizedLabel() => new() {
             FontSize = 24d,
         };
 
@@ -164,8 +164,9 @@
         }
 
         private ActionPopup GetClearAuthPopup() => new("Clear Cached Authorization?", [
-            new Run("This will only remove cached authorization data.\nTo disconnect Stonebot from Twitch, go to:\n"),
+            new Run("This will only remove cached authorization data. To disconnect your bot from Twitch, go to "),
             new UrlLink("https://www.twitch.tv/settings/connections").GetInline(),
+            new Run("."),
         ], () => {
             try {
                 Cache.ClearAuthData();
@@ -175,7 +176,7 @@
             }
         });
 
-        private static SGrid GetAuthorizedGrid(STextBlock authorizedLabel, DangerButton clearAuthButton) => new([
+        private static SGrid GetAuthorizedGrid(SSelectableTextBlock authorizedLabel, DangerButton clearAuthButton) => new([
             GridLength.Auto,
         ], [
             GridLength.Auto,

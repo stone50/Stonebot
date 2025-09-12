@@ -67,7 +67,7 @@
         ], [
             nameRow,
             // TODO
-            new STextBlock(){
+            new SSelectableTextBlock(){
                 Text = "Aliases",
                 HorizontalAlignment = HorizontalAlignment.Left,
             },
@@ -101,7 +101,7 @@
             VerticalAlignment = VerticalAlignment.Center,
         };
 
-        private STextBlock GetNameTextBlock() => new() {
+        private SSelectableTextBlock GetNameTextBlock() => new() {
             Text = $"!{Command.Name}",
             FontSize = 24d,
             FontWeight = FontWeight.Bold,
@@ -114,7 +114,7 @@
             Height = 30d,
         };
 
-        private static SGrid GetStaticNameGroup(STextBlock textBlock, InfoButton editButton) => new([
+        private static SGrid GetStaticNameGroup(SSelectableTextBlock textBlock, InfoButton editButton) => new([
             GridLength.Auto,
         ], [
             GridLength.Auto,
@@ -188,14 +188,14 @@
 
         private EventHandler<RoutedEventArgs> GetOnNameSubmitButtonClick(
             Swappable swappableName,
-            STextBlock nameTextBlock,
+            SSelectableTextBlock nameTextBlock,
             STextBox nameTextBox,
             InteractionGrid interactionGrid
         ) => (_, _) => OnNameSubmit(swappableName, nameTextBlock, nameTextBox, interactionGrid);
 
         private EventHandler<KeyEventArgs> GetOnNameTextBoxKeyUp(
             Swappable swappableName,
-            STextBlock nameTextBlock,
+            SSelectableTextBlock nameTextBlock,
             STextBox nameTextBox,
             InteractionGrid interactionGrid
         ) => (_, e) => {
@@ -206,7 +206,7 @@
 
         private void OnNameSubmit(
             Swappable swappableName,
-            STextBlock nameTextBlock,
+            SSelectableTextBlock nameTextBlock,
             STextBox nameTextBox,
             InteractionGrid interactionGrid
         ) {
@@ -251,7 +251,7 @@
             return enableToggleButton;
         }
 
-        private static SGrid GetPermissionRow(STextBlock permissionRowLabel, InfoButton permissionInput) => new([
+        private static SGrid GetPermissionRow(SSelectableTextBlock permissionRowLabel, InfoButton permissionInput) => new([
                 GridLength.Auto,
             ], [
                 GridLength.Auto,
@@ -261,7 +261,7 @@
                 permissionInput,
             ]);
 
-        private static STextBlock GetPermissionRowLabel() => new() {
+        private static SSelectableTextBlock GetPermissionRowLabel() => new() {
             Text = "Permission Level",
         };
 
@@ -289,7 +289,7 @@
             _ = TaskHelper.FireTryElseError(CommandManager.Save);
         };
 
-        private static SGrid GetCooldownRow(STextBlock cooldownRowLabel, NumericUpDown cooldownInput) => new([
+        private static SGrid GetCooldownRow(SSelectableTextBlock cooldownRowLabel, NumericUpDown cooldownInput) => new([
             GridLength.Auto,
         ], [
             GridLength.Auto,
@@ -299,7 +299,7 @@
             cooldownInput,
         ]);
 
-        private static STextBlock GetCooldownRowLabel() => new() {
+        private static SSelectableTextBlock GetCooldownRowLabel() => new() {
             Text = "Cooldown Seconds",
         };
 

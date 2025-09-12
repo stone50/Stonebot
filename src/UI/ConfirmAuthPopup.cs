@@ -17,7 +17,7 @@
             Footer.Children.Add(footerButtons);
         }
 
-        private readonly STextBlock bodyTextBlock;
+        private readonly SSelectableTextBlock bodyTextBlock;
         private Action? onDone;
 
         private static SGrid GetFooterButtons(DangerButton cancelButton, SuccessButton doneButton) => new([
@@ -58,7 +58,7 @@
             return doneButton;
         }
 
-        private static STextBlock GetBodyTextBlock() => new() {
+        private static SSelectableTextBlock GetBodyTextBlock() => new() {
             TextWrapping = TextWrapping.Wrap,
         };
 
@@ -67,8 +67,9 @@
             bodyTextBlock.Inlines = [
                 new Run($"Please enter this code into your browser:\n{userCode}"),
                 // TODO: copy button
-                new Run($"\nIf a browser tab did not automatically open, please go to:\n"),
+                new Run("\nIf a browser tab did not automatically open, please go to "),
                 new UrlLink(verificationUri).GetInline(),
+                new Run("."),
             ];
             IsVisible = true;
         }

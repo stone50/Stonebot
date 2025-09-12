@@ -5,7 +5,7 @@
         public Loadable(Control loadedControl, Action onLoad) {
             this.onLoad = onLoad;
             this.loadedControl = loadedControl;
-            Children.Add(new STextBlock() {
+            Children.Add(new SSelectableTextBlock() {
                 Text = "..."
             });
         }

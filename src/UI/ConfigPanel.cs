@@ -67,7 +67,7 @@
                 body,
             ]);
 
-        private static SGrid GetHeader(Image configIcon, STextBlock headerTitle, DangerButton cancelButton, SuccessButton saveButton) => new([
+        private static SGrid GetHeader(Image configIcon, SSelectableTextBlock headerTitle, DangerButton cancelButton, SuccessButton saveButton) => new([
                 GridLength.Star
             ], [
                 GridLength.Auto,
@@ -84,7 +84,7 @@
             Height = 150d,
         };
 
-        private static STextBlock GetHeaderTitle() => new() {
+        private static SSelectableTextBlock GetHeaderTitle() => new() {
             FontSize = 48d,
             HorizontalAlignment = HorizontalAlignment.Left,
             Text = "Config",
@@ -160,14 +160,15 @@
         };
 
         private static SPopup GetBroadcasterUsernamePopup(InfoButton okButton) => GetConfigValueInfoPopup("Broadcaster Username", [
-            new Run($"This is the username (case insensitive) of the broadcaster whose chat Stonebot will connect to."),
+            new Run("This is the username (case insensitive) of the broadcaster whose chat Stonebot will connect to."),
         ], okButton);
 
         private static SPopup GetClientIdPopup(InfoButton okButton) => GetConfigValueInfoPopup("Client ID", [
-            new Run($"This is the client ID of your Twitch application, which can be found at:\n"),
+            new Run("This is the client ID of your Twitch application, which can be found at "),
             GetUrlLinkInline("https://dev.twitch.tv/console"),
-            new Run("\nFor full setup instructions, go to:\n"),
+            new Run(". For full setup instructions, go to "),
             GetUrlLinkInline("https://github.com/stone50/Stonebot"),
+            new Run("."),
         ], okButton);
 
         private static SPopup GetNumMaxLogFilesPopup(InfoButton okButton) => GetConfigValueInfoPopup("Max Log Files", [
@@ -191,7 +192,7 @@
             Width = 75d,
         };
 
-        private static STextBlock GetConfigValueLabel(string text) => new() {
+        private static SSelectableTextBlock GetConfigValueLabel(string text) => new() {
             HorizontalAlignment = HorizontalAlignment.Left,
             Text = text,
         };

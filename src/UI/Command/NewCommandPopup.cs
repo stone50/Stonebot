@@ -56,7 +56,7 @@
         ], [
             nameRow,
             // TODO
-            new STextBlock(){
+            new SSelectableTextBlock(){
                 Text = "Aliases",
                 HorizontalAlignment = HorizontalAlignment.Left,
             },
@@ -66,7 +66,7 @@
             Width = 450d,
         };
 
-        private static SGrid GetNameRow(STextBlock nameLabel, STextBox nameTextBox) => new([
+        private static SGrid GetNameRow(SSelectableTextBlock nameLabel, STextBox nameTextBox) => new([
             GridLength.Auto,
         ], [
             GridLength.Auto,
@@ -76,7 +76,7 @@
             nameTextBox,
         ]);
 
-        private static STextBlock GetNameLabel() => new() {
+        private static SSelectableTextBlock GetNameLabel() => new() {
             Margin = new(10d, 10d, 0d, 10d),
             Text = "Name !",
         };
@@ -100,7 +100,7 @@
             return nameTextBox;
         }
 
-        private static SGrid GetPermissionRow(STextBlock permissionRowLabel, InfoButton permissionInput) => new([
+        private static SGrid GetPermissionRow(SSelectableTextBlock permissionRowLabel, InfoButton permissionInput) => new([
             GridLength.Auto,
         ], [
             GridLength.Auto,
@@ -110,7 +110,7 @@
             permissionInput,
         ]);
 
-        private static STextBlock GetPermissionRowLabel() => new() {
+        private static SSelectableTextBlock GetPermissionRowLabel() => new() {
             Text = "Permission Level",
         };
 
@@ -137,7 +137,7 @@
             permissionInput.Flyout!.Hide();
         };
 
-        private static SGrid GetCooldownRow(STextBlock cooldownRowLabel, NumericUpDown cooldownInput) => new([
+        private static SGrid GetCooldownRow(SSelectableTextBlock cooldownRowLabel, NumericUpDown cooldownInput) => new([
             GridLength.Auto,
         ], [
             GridLength.Auto,
@@ -147,7 +147,7 @@
             cooldownInput,
         ]);
 
-        private static STextBlock GetCooldownRowLabel() => new() {
+        private static SSelectableTextBlock GetCooldownRowLabel() => new() {
             Text = "Cooldown Seconds",
         };
 

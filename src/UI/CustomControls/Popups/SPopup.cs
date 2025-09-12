@@ -23,12 +23,12 @@
             Children.Add(mainBorder);
         }
 
-        public SPopup(string title) : this() => Header.Child = new STextBlock() {
+        public SPopup(string title) : this() => Header.Child = new SSelectableTextBlock() {
             FontSize = 24d,
             Text = title,
         };
 
-        public SPopup(string title, InlineCollection inlines) : this(title) => Body.Children.Add(new STextBlock() {
+        public SPopup(string title, InlineCollection inlines) : this(title) => Body.Children.Add(new SSelectableTextBlock() {
             Inlines = inlines,
             TextWrapping = TextWrapping.Wrap,
         });
