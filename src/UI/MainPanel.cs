@@ -31,10 +31,14 @@
             var header = GetHeader(logo, connectButton, loadableAuthButtons, configButton);
             var interactionGrid = new InteractionGrid();
             var newCommandPopup = new NewCommandPopup(interactionGrid);
+            var addCommandButton = GetAddCommandButton(newCommandPopup);
+            var addPatternButton = GetAddPatternButton(/*TODO: pass in popup*/);
+            var addTimerButton = GetAddTimerButton(/*TODO: pass in popup*/);
+            var subheader = GetSubheader(addCommandButton, addPatternButton, addTimerButton);
             var deleteCommandPopup = new DeleteCommandPopup(interactionGrid);
-            loadableInteractionGrid = GetLoadableInteractionGrid(interactionGrid, newCommandPopup, deleteCommandPopup);
+            loadableInteractionGrid = GetLoadableInteractionGrid(interactionGrid, deleteCommandPopup);
             var body = GetBody(loadableInteractionGrid);
-            var mainGrid = GetMainGrid(header, body);
+            var mainGrid = GetMainGrid(header, subheader, body);
             Children.Add(mainGrid);
             Children.Add(clearAuthPopup);
             Children.Add(confirmAuthPopup);
@@ -69,13 +73,15 @@
         private bool isShowingAuth = false;
         private readonly Loadable loadableInteractionGrid;
 
-        private static SGrid GetMainGrid(SGrid header, ScrollViewer body) => new([
+        private static SGrid GetMainGrid(SGrid header, SGrid subheader, ScrollViewer body) => new([
+            GridLength.Auto,
             GridLength.Auto,
             GridLength.Star,
         ], [
             GridLength.Star,
         ], [
             header,
+            subheader,
             body,
         ]);
 
@@ -193,7 +199,43 @@
             return configButton;
         }
 
-        private static Loadable GetLoadableInteractionGrid(InteractionGrid interactionGrid, NewCommandPopup newCommandPopup, DeleteCommandPopup deleteCommandPopup) => new(interactionGrid, () => interactionGrid.Init(newCommandPopup, deleteCommandPopup));
+        private static SGrid GetSubheader(SuccessButton addCommandButton, SuccessButton addPatternButton, SuccessButton addTimerButton) => new([
+            GridLength.Auto,
+        ], [
+            GridLength.Auto,
+            GridLength.Auto,
+            GridLength.Auto,
+        ], [
+            addCommandButton,
+            addPatternButton,
+            addTimerButton,
+        ]);
+
+        private static SuccessButton GetAddCommandButton(NewCommandPopup newCommandPopup) {
+            var addCommandButton = new SuccessButton() {
+                Content = "New Command",
+            };
+            addCommandButton.Click += (_, _) => newCommandPopup.Show();
+            return addCommandButton;
+        }
+
+        private static SuccessButton GetAddPatternButton(/*TODO: pass in popup*/) {
+            var addPatternButton = new SuccessButton() {
+                Content = "New Pattern",
+            };
+            addPatternButton.Click += (_, _) => {/*TODO: show popup*/};
+            return addPatternButton;
+        }
+
+        private static SuccessButton GetAddTimerButton(/*TODO: pass in popup*/) {
+            var addTimerButton = new SuccessButton() {
+                Content = "New Timer",
+            };
+            addTimerButton.Click += (_, _) => {/*TODO: show popup*/};
+            return addTimerButton;
+        }
+
+        private static Loadable GetLoadableInteractionGrid(InteractionGrid interactionGrid, DeleteCommandPopup deleteCommandPopup) => new(interactionGrid, () => interactionGrid.Init(deleteCommandPopup));
 
         private static ScrollViewer GetBody(Loadable loadableInteractionGrid) => new() {
             Content = loadableInteractionGrid,
