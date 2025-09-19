@@ -3,7 +3,7 @@
 
 class ChatResponse:
     data: List["ChatResponse.DataPoint"]
-    drop_reason: "ChatResponse.DropReason"
+    drop_reason: Optional["ChatResponse.DropReason"]
 
     class DataPoint:
         message_id: str

@@ -7,8 +7,7 @@
         public SendChatMessageResponseDataPoint[] Data { get; set; }
 
         [JsonPropertyName("drop_reason")]
-        [JsonRequired]
-        public SendChatMessageResponseDropReason DropReason { get; set; }
+        public SendChatMessageResponseDropReason? DropReason { get; set; }
     }
 
     public struct SendChatMessageResponseDataPoint {
