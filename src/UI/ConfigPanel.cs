@@ -119,12 +119,10 @@
             }
 
             var updateClientIdTask = Task.CompletedTask;
-            if (clientIdInput.Text != Config.ClientId) {
+            var shouldUpdateAuth = clientIdInput.Text != Config.ClientId;
+            if (shouldUpdateAuth) {
                 Config.ClientId = clientIdInput.Text!;
-                updateClientIdTask = TaskHelper.FireTryElseErrorAfter(() => {
-                    Cache.ClearAuthData();
-                    Dispatcher.UIThread.Invoke(mainPanel.UpdateAuth);
-                }, updateBroadcasterUsernameTask);
+                updateClientIdTask = TaskHelper.FireTryElseErrorAfter(Cache.ClearAuthData, updateBroadcasterUsernameTask);
             }
 
             var updateNumMaxLogFilesTask = Task.CompletedTask;
@@ -140,6 +138,10 @@
                 updateNumMaxLogFilesTask,
                 configSaveTask
             );
+            if (shouldUpdateAuth) {
+                mainPanel.UpdateAuth();
+            }
+
             swappableContent.Swap();
         };
 
