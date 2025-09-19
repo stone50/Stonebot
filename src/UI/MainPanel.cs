@@ -206,12 +206,12 @@
             GridLength.Auto,
         ], [
             GridLength.Auto,
-            GridLength.Auto,
-            GridLength.Auto,
+            //GridLength.Auto,
+            //GridLength.Auto,
         ], [
             addCommandButton,
-            addPatternButton,
-            addTimerButton,
+            //addPatternButton,
+            //addTimerButton,
         ]);
 
         private static SuccessButton GetAddCommandButton(NewCommandPopup newCommandPopup) {

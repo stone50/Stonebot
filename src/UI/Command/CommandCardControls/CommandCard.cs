@@ -58,7 +58,7 @@
 
         private static SGrid GetMainGrid(Border nameRow, SGrid permissionRow, SGrid cooldownRow, SGrid footer) => new([
             GridLength.Auto,
-            GridLength.Auto,
+            //GridLength.Auto,
             GridLength.Auto,
             GridLength.Auto,
             GridLength.Auto,
@@ -67,10 +67,10 @@
         ], [
             nameRow,
             // TODO
-            new SSelectableTextBlock(){
-                Text = "Aliases",
-                HorizontalAlignment = HorizontalAlignment.Left,
-            },
+            //new SSelectableTextBlock(){
+            //    Text = "Aliases",
+            //    HorizontalAlignment = HorizontalAlignment.Left,
+            //},
             permissionRow,
             cooldownRow,
             footer,
