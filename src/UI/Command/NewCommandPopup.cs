@@ -193,13 +193,20 @@
                 return;
             }
 
-            var newCommand = new Command(
-                nameTextBox.Text!,
-                [], // TODO
-                false,
-                selectedPermissionLevel,
-                (int)cooldownInput.Value!
-            );
+            Command newCommand;
+            try {
+                newCommand = new Command(
+                   nameTextBox.Text!,
+                   [], // TODO
+                   false,
+                   selectedPermissionLevel,
+                   (int)cooldownInput.Value!
+               );
+            } catch (Exception e) {
+                Logger.Error(e);
+                return;
+            }
+
             CommandManager.Commands.Add(newCommand);
             try {
                 CommandManager.Save();
