@@ -3,7 +3,6 @@
     using Avalonia.Controls.Documents;
     using Avalonia.Interactivity;
     using Avalonia.Layout;
-    using Avalonia.Threading;
     using CustomControls;
     using CustomControls.Buttons;
     using CustomControls.Buttons.Links;
