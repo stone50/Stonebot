@@ -26,7 +26,7 @@
         public static void Error(params object?[]? messages) => Log(LogType.Error, messages);
 
         public static void Log(LogType logType, params object?[]? messages) {
-            var log = $"[{GetFormattedDateTime()}] {logType.ToString().ToUpper()}: {string.Join(" | ", messages ?? [])}";
+            var log = $"[{GetFormattedDateTime()}] {logType.ToString().ToUpper()}: {string.Join(" | ", messages ?? [])}\n";
             LogToConsole(log);
             try {
                 File.AppendAllText(filePath!, log);
