@@ -17,30 +17,6 @@
         public static void log_error(params object?[] messages) => Logger.Error(messages);
 
         public static ChatResponse chat(string message, string? reply_parent_message_id = null) => new(Chat.Send(message, reply_parent_message_id));
-
-        public static object? get(string key) => CustomData.Get(key);
-
-        public static void set(string key, object value) {
-            set_without_saving(key, value);
-            save();
-        }
-
-        public static void set_without_saving(string key, object value) => CustomData.Set(key, value);
-
-        public static bool delete(string key) {
-            if (!delete_without_saving(key)) {
-                return false;
-            }
-
-            save();
-            return true;
-        }
-
-        public static bool delete_without_saving(string key) => CustomData.Delete(key);
-
-        public static bool has(string key) => CustomData.Contains(key);
-
-        public static void save() => CustomData.Save();
     }
 #pragma warning restore IDE1006 // Naming Styles
 }

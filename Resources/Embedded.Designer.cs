@@ -78,7 +78,7 @@ namespace Stonebot.Resources {
         ///
         ///class ChatResponse:
         ///    data: List[&quot;ChatResponse.DataPoint&quot;]
-        ///    drop_reason: &quot;ChatResponse.DropReason&quot;
+        ///    drop_reason: Optional[&quot;ChatResponse.DropReason&quot;]
         ///
         ///    class DataPoint:
         ///        message_id: str
@@ -99,8 +99,7 @@ namespace Stonebot.Resources {
         ///    broadcaster_user_name: str
         ///    broadcaster_login: str
         ///    chatter_id: str
-        ///    chatter_user_name: str
-        ///     [rest of string was truncated]&quot;;.
+        ///    chatter_user_name: [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ScriptsTypeHintsPyi {
             get {

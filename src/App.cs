@@ -29,7 +29,6 @@
             FireUpdateMainWindowAfter(mainWindow => mainWindow.LoadMainPanelAuth(), cacheInitTask);
             var commandManagerInitTask = TaskHelper.FireTryElseErrorAfter(CommandManager.Init, loggerInitTask);
             FireUpdateMainWindowAfter(mainWindow => mainWindow.LoadMainPanelInteractionGrid(), commandManagerInitTask);
-            var customDataInitTask = TaskHelper.FireTryElseErrorAfter(CustomData.Init, loggerInitTask);
             var copyScriptsTypeHintsFileTask = TaskHelper.FireTryElseErrorAfter(CopyScriptsTypeHintsFile, loggerInitTask);
             var scriptFilesWatcherInitTask = TaskHelper.FireTryElseErrorAfter(ScriptFilesWatcher.Init, commandManagerInitTask);
             TaskHelper.Sync(configInitTask);
@@ -40,7 +39,6 @@
 
         private static void Shutdown() {
             var webSocketClientCloseTask = WebSocketClient.Id == null ? Task.CompletedTask : TaskHelper.FireTryElseError(WebSocketClient.Close);
-            var customDataSaveTask = TaskHelper.FireTryElseErrorAfter(CustomData.Save, webSocketClientCloseTask);
             var commandManaderSaveTask = TaskHelper.FireTryElseError(CommandManager.Save);
             var configSaveTask = TaskHelper.FireTryElseError(Config.Save);
         }
