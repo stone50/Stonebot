@@ -2,6 +2,7 @@
     internal static class Config {
         public static string BroadcasterUsername = "";
         public static string ClientId = "";
+        public static bool ShouldFilterChatMessages = true;
         public static int NumMaxLogFiles = Constants.NumMaxLogFilesDefault;
 
         public static void Init() {
@@ -14,6 +15,7 @@
             using var writer = new BinaryWriter(File.Open(Constants.ConfigFilePath, FileMode.Create));
             writer.Write(BroadcasterUsername);
             writer.Write(ClientId);
+            writer.Write(ShouldFilterChatMessages);
             writer.Write(NumMaxLogFiles);
         }
 
@@ -21,6 +23,7 @@
             using var reader = new BinaryReader(File.Open(Constants.ConfigFilePath, FileMode.Open));
             BroadcasterUsername = reader.ReadString();
             ClientId = reader.ReadString();
+            ShouldFilterChatMessages = reader.ReadBoolean();
             NumMaxLogFiles = reader.ReadInt32();
         }
     }
