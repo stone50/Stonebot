@@ -26,10 +26,10 @@
         public static void Error(params object?[]? messages) => Log(LogType.Error, messages);
 
         public static void Log(LogType logType, params object?[]? messages) {
-            var log = $"[{GetFormattedDateTime()}] {logType.ToString().ToUpper()}: {string.Join(" | ", messages ?? [])}\n";
+            var log = $"[{GetFormattedDateTime()}] {logType.ToString().ToUpper()}: {string.Join(" | ", messages ?? [])}";
             LogToConsole(log);
             try {
-                File.AppendAllText(filePath!, log);
+                File.AppendAllText(filePath!, $"{log}\n");
             } catch (Exception e) {
                 Console.Error.WriteLine($"Error logging \"{log}\": {e}");
             }
