@@ -1,25 +1,20 @@
 ﻿namespace Stonebot.Models.Responses {
     using System.Text.Json.Serialization;
 
-    internal struct PostDeviceCodeResponse {
+    internal class PostDeviceCodeResponse {
         [JsonPropertyName("device_code")]
-        [JsonRequired]
-        public string DeviceCode { get; set; }
+        public required string DeviceCode { get; init; }
 
         [JsonPropertyName("user_code")]
-        [JsonRequired]
-        public string UserCode { get; set; }
+        public required string UserCode { get; init; }
 
         [JsonPropertyName("verification_uri")]
-        [JsonRequired]
-        public string VerificationUri { get; set; }
+        public required string VerificationUri { get; init; }
 
         [JsonPropertyName("expires_in")]
-        [JsonRequired]
-        public int ExpiresIn { get; set; }
+        public required int ExpiresIn { get; init; }
 
         [JsonPropertyName("interval")]
-        [JsonRequired]
-        public int Interval { get; set; }
+        public required int Interval { get; init; }
     }
 }

@@ -1,319 +1,257 @@
 ﻿namespace Stonebot.Models.EventSubMessages {
     using System.Text.Json.Serialization;
 
-    internal struct EventSubNotificationMessage {
+    internal class EventSubNotificationMessage {
         [JsonPropertyName("metadata")]
-        [JsonRequired]
-        public EventSubNotificationMessageMetadata Metadata { get; set; }
+        public required EventSubNotificationMessageMetadata Metadata { get; init; }
 
         [JsonPropertyName("payload")]
-        [JsonRequired]
-        public EventSubNotificationMessagePayload Payload { get; set; }
+        public required EventSubNotificationMessagePayload Payload { get; init; }
     }
 
-    internal struct EventSubNotificationMessageMetadata {
+    internal class EventSubNotificationMessageMetadata {
         [JsonPropertyName("message_id")]
-        [JsonRequired]
-        public string MessageId { get; set; }
+        public required string MessageId { get; init; }
 
         [JsonPropertyName("message_type")]
-        [JsonRequired]
-        public string MessageType { get; set; }
+        public required string MessageType { get; init; }
 
         [JsonPropertyName("message_timestamp")]
-        [JsonRequired]
-        public string MessageTimestamp { get; set; }
+        public required string MessageTimestamp { get; init; }
 
         [JsonPropertyName("subscription_type")]
-        [JsonRequired]
-        public string SubscriptionType { get; set; }
+        public required string SubscriptionType { get; init; }
 
         [JsonPropertyName("subscription_version")]
-        [JsonRequired]
-        public string SubscriptionVersion { get; set; }
+        public required string SubscriptionVersion { get; init; }
     }
 
-    internal struct EventSubNotificationMessagePayload {
+    internal class EventSubNotificationMessagePayload {
         [JsonPropertyName("subscription")]
-        [JsonRequired]
-        public EventSubNotificationMessagePayloadSubscription Subscription { get; set; }
+        public required EventSubNotificationMessagePayloadSubscription Subscription { get; init; }
 
         [JsonPropertyName("event")]
-        [JsonRequired]
-        public EventSubNotificationMessagePayloadEvent Event { get; set; }
+        public required EventSubNotificationMessagePayloadEvent Event { get; init; }
     }
 
-    internal struct EventSubNotificationMessagePayloadSubscription {
+    internal class EventSubNotificationMessagePayloadSubscription {
         [JsonPropertyName("id")]
-        [JsonRequired]
-        public string Id { get; set; }
+        public required string Id { get; init; }
 
         [JsonPropertyName("status")]
-        [JsonRequired]
-        public string Status { get; set; }
+        public required string Status { get; init; }
 
         [JsonPropertyName("type")]
-        [JsonRequired]
-        public string Type { get; set; }
+        public required string Type { get; init; }
 
         [JsonPropertyName("version")]
-        [JsonRequired]
-        public string Version { get; set; }
+        public required string Version { get; init; }
 
         [JsonPropertyName("cost")]
-        [JsonRequired]
-        public int Cost { get; set; }
+        public required int Cost { get; init; }
 
         [JsonPropertyName("condition")]
-        [JsonRequired]
-        public EventSubNotificationMessagePayloadSubscriptionCondition Condition { get; set; }
+        public required EventSubNotificationMessagePayloadSubscriptionCondition Condition { get; init; }
 
         [JsonPropertyName("transport")]
-        [JsonRequired]
-        public EventSubNotificationMessagePayloadSubscriptionTransport Transport { get; set; }
+        public required EventSubNotificationMessagePayloadSubscriptionTransport Transport { get; init; }
 
         [JsonPropertyName("created_at")]
-        [JsonRequired]
-        public string CreatedAt { get; set; }
+        public required string CreatedAt { get; init; }
     }
 
-    internal struct EventSubNotificationMessagePayloadSubscriptionCondition {
+    internal class EventSubNotificationMessagePayloadSubscriptionCondition {
         [JsonPropertyName("broadcaster_user_id")]
-        [JsonRequired]
-        public string BroadcasterId { get; set; }
+        public required string BroadcasterId { get; init; }
 
         [JsonPropertyName("user_id")]
-        [JsonRequired]
-        public string UserId { get; set; }
+        public required string UserId { get; init; }
     }
 
-    internal struct EventSubNotificationMessagePayloadSubscriptionTransport {
+    internal class EventSubNotificationMessagePayloadSubscriptionTransport {
         [JsonPropertyName("method")]
-        [JsonRequired]
-        public string Method { get; set; }
+        public required string Method { get; init; }
 
         [JsonPropertyName("session_id")]
-        [JsonRequired]
-        public string SessionId { get; set; }
+        public required string SessionId { get; init; }
     }
 
-    public struct EventSubNotificationMessagePayloadEvent {
+    public class EventSubNotificationMessagePayloadEvent {
         [JsonPropertyName("broadcaster_user_id")]
-        [JsonRequired]
-        public string BroadcasterId { get; set; }
+        public required string BroadcasterId { get; init; }
 
         [JsonPropertyName("broadcaster_user_name")]
-        [JsonRequired]
-        public string BroadcasterUserName { get; set; }
+        public required string BroadcasterUserName { get; init; }
 
         [JsonPropertyName("broadcaster_user_login")]
-        [JsonRequired]
-        public string BroadcasterLogin { get; set; }
+        public required string BroadcasterLogin { get; init; }
 
         [JsonPropertyName("chatter_user_id")]
-        [JsonRequired]
-        public string ChatterId { get; set; }
+        public required string ChatterId { get; init; }
 
         [JsonPropertyName("chatter_user_name")]
-        [JsonRequired]
-        public string ChatterUserName { get; set; }
+        public required string ChatterUserName { get; init; }
 
         [JsonPropertyName("chatter_user_login")]
-        [JsonRequired]
-        public string ChatterLogin { get; set; }
+        public required string ChatterLogin { get; init; }
 
         [JsonPropertyName("message_id")]
-        [JsonRequired]
-        public string MessageId { get; set; }
+        public required string MessageId { get; init; }
 
         [JsonPropertyName("message")]
-        [JsonRequired]
-        public EventSubNotificationMessagePayloadEventMessage Message { get; set; }
+        public required EventSubNotificationMessagePayloadEventMessage Message { get; init; }
 
         [JsonPropertyName("message_type")]
-        [JsonRequired]
-        public string MessageType { get; set; }
+        public required string MessageType { get; init; }
 
         [JsonPropertyName("badges")]
-        [JsonRequired]
-        public EventSubNotificationMessagePayloadEventBadge[] Badges { get; set; }
+        public required EventSubNotificationMessagePayloadEventBadge[] Badges { get; init; }
 
         [JsonPropertyName("cheer")]
-        public EventSubNotificationMessagePayloadEventCheer? Cheer { get; set; }
+        public EventSubNotificationMessagePayloadEventCheer? Cheer { get; init; }
 
         [JsonPropertyName("color")]
-        [JsonRequired]
-        public string Color { get; set; }
+        public required string Color { get; init; }
 
         [JsonPropertyName("reply")]
-        public EventSubNotificationMessagePayloadEventReply? Reply { get; set; }
+        public EventSubNotificationMessagePayloadEventReply? Reply { get; init; }
 
         [JsonPropertyName("channel_points_custom_reward_id")]
-        public string? ChannelPointsCustomRewardId { get; set; }
+        public string? ChannelPointsCustomRewardId { get; init; }
 
         [JsonPropertyName("source_broadcaster_user_id")]
-        public string? SourceBroadcasterId { get; set; }
+        public string? SourceBroadcasterId { get; init; }
 
         [JsonPropertyName("source_broadcaster_user_name")]
-        public string? SourceBroadcasterUserName { get; set; }
+        public string? SourceBroadcasterUserName { get; init; }
 
         [JsonPropertyName("source_broadcaster_user_login")]
-        public string? SourceBroadcasterLogin { get; set; }
+        public string? SourceBroadcasterLogin { get; init; }
 
         [JsonPropertyName("source_message_id")]
-        public string? SourceMessageId { get; set; }
+        public string? SourceMessageId { get; init; }
 
         [JsonPropertyName("source_badges")]
-        public EventSubNotificationMessagePayloadEventSourceBadges? SourceBadges { get; set; }
+        public EventSubNotificationMessagePayloadEventSourceBadges? SourceBadges { get; init; }
 
         [JsonPropertyName("is_source_only")]
-        public bool? IsSourceOnly { get; set; }
+        public bool? IsSourceOnly { get; init; }
     }
 
-    public struct EventSubNotificationMessagePayloadEventMessage {
+    public class EventSubNotificationMessagePayloadEventMessage {
         [JsonPropertyName("text")]
-        [JsonRequired]
-        public string Text { get; set; }
+        public required string Text { get; set; }
 
         [JsonPropertyName("fragments")]
-        [JsonRequired]
-        public EventSubNotificationMessagePayloadEventMessageFragment[] Fragments { get; set; }
+        public required EventSubNotificationMessagePayloadEventMessageFragment[] Fragments { get; set; }
     }
 
-    public struct EventSubNotificationMessagePayloadEventMessageFragment {
+    public class EventSubNotificationMessagePayloadEventMessageFragment {
         [JsonPropertyName("type")]
-        [JsonRequired]
-        public string Type { get; set; }
+        public required string Type { get; init; }
 
         [JsonPropertyName("text")]
-        [JsonRequired]
-        public string Text { get; set; }
+        public required string Text { get; set; }
 
         [JsonPropertyName("cheermote")]
-        public EventSubNotificationMessagePayloadEventMessageFragmentCheermote? Cheermote { get; set; }
+        public EventSubNotificationMessagePayloadEventMessageFragmentCheermote? Cheermote { get; init; }
 
         [JsonPropertyName("emote")]
-        public EventSubNotificationMessagePayloadEventMessageFragmentEmote? Emote { get; set; }
+        public EventSubNotificationMessagePayloadEventMessageFragmentEmote? Emote { get; init; }
 
         [JsonPropertyName("mention")]
-        public EventSubNotificationMessagePayloadEventMessageFragmentMention? Mention { get; set; }
+        public EventSubNotificationMessagePayloadEventMessageFragmentMention? Mention { get; init; }
     }
 
-    public struct EventSubNotificationMessagePayloadEventMessageFragmentCheermote {
+    public class EventSubNotificationMessagePayloadEventMessageFragmentCheermote {
         [JsonPropertyName("prefix")]
-        [JsonRequired]
-        public string Prefix { get; set; }
+        public required string Prefix { get; init; }
 
         [JsonPropertyName("bits")]
-        [JsonRequired]
-        public int Bits { get; set; }
+        public required int Bits { get; init; }
 
         [JsonPropertyName("tier")]
-        [JsonRequired]
-        public int Tier { get; set; }
+        public required int Tier { get; init; }
     }
 
-    public struct EventSubNotificationMessagePayloadEventMessageFragmentEmote {
+    public class EventSubNotificationMessagePayloadEventMessageFragmentEmote {
         [JsonPropertyName("id")]
-        [JsonRequired]
-        public string Id { get; set; }
+        public required string Id { get; init; }
 
         [JsonPropertyName("emote_set_id")]
-        [JsonRequired]
-        public string EmoteSetId { get; set; }
+        public required string EmoteSetId { get; init; }
 
         [JsonPropertyName("owner_id")]
-        [JsonRequired]
-        public string OwnerId { get; set; }
+        public required string OwnerId { get; init; }
 
         [JsonPropertyName("format")]
-        [JsonRequired]
-        public string[] Format { get; set; }
+        public required string[] Format { get; init; }
     }
 
-    public struct EventSubNotificationMessagePayloadEventMessageFragmentMention {
+    public class EventSubNotificationMessagePayloadEventMessageFragmentMention {
         [JsonPropertyName("user_id")]
-        [JsonRequired]
-        public string UserId { get; set; }
+        public required string UserId { get; init; }
 
         [JsonPropertyName("user_name")]
-        [JsonRequired]
-        public string UserName { get; set; }
+        public required string UserName { get; init; }
 
         [JsonPropertyName("user_login")]
-        [JsonRequired]
-        public string UserLogin { get; set; }
+        public required string UserLogin { get; init; }
     }
 
-    public struct EventSubNotificationMessagePayloadEventBadge {
+    public class EventSubNotificationMessagePayloadEventBadge {
         [JsonPropertyName("set_id")]
-        [JsonRequired]
-        public string SetId { get; set; }
+        public required string SetId { get; init; }
 
         [JsonPropertyName("id")]
-        [JsonRequired]
-        public string Id { get; set; }
+        public required string Id { get; init; }
 
         [JsonPropertyName("info")]
-        [JsonRequired]
-        public string Info { get; set; }
+        public required string Info { get; init; }
     }
 
-    public struct EventSubNotificationMessagePayloadEventCheer {
+    public class EventSubNotificationMessagePayloadEventCheer {
         [JsonPropertyName("bits")]
-        [JsonRequired]
-        public int Bits { get; set; }
+        public required int Bits { get; init; }
     }
 
-    public struct EventSubNotificationMessagePayloadEventReply {
+    public class EventSubNotificationMessagePayloadEventReply {
         [JsonPropertyName("parent_message_id")]
-        [JsonRequired]
-        public string ParentMessageId { get; set; }
+        public required string ParentMessageId { get; init; }
 
         [JsonPropertyName("parent_message_body")]
-        [JsonRequired]
-        public string ParentMessageBody { get; set; }
+        public required string ParentMessageBody { get; init; }
 
         [JsonPropertyName("parent_user_id")]
-        [JsonRequired]
-        public string ParentUserId { get; set; }
+        public required string ParentUserId { get; init; }
 
         [JsonPropertyName("parent_user_name")]
-        [JsonRequired]
-        public string ParentUserName { get; set; }
+        public required string ParentUserName { get; init; }
 
         [JsonPropertyName("parent_user_login")]
-        [JsonRequired]
-        public string ParentUserLogin { get; set; }
+        public required string ParentUserLogin { get; init; }
 
         [JsonPropertyName("thread_message_id")]
-        [JsonRequired]
-        public string ThreadMessageId { get; set; }
+        public required string ThreadMessageId { get; init; }
 
         [JsonPropertyName("thread_user_id")]
-        [JsonRequired]
-        public string ThreadUserId { get; set; }
+        public required string ThreadUserId { get; init; }
 
         [JsonPropertyName("thread_user_name")]
-        [JsonRequired]
-        public string ThreadUserName { get; set; }
+        public required string ThreadUserName { get; init; }
 
         [JsonPropertyName("thread_user_login")]
-        [JsonRequired]
-        public string ThreadUserLogin { get; set; }
+        public required string ThreadUserLogin { get; init; }
     }
 
-    public struct EventSubNotificationMessagePayloadEventSourceBadges {
+    public class EventSubNotificationMessagePayloadEventSourceBadges {
         [JsonPropertyName("set_id")]
-        [JsonRequired]
-        public string SetId { get; set; }
+        public required string SetId { get; init; }
 
         [JsonPropertyName("id")]
-        [JsonRequired]
-        public string Id { get; set; }
+        public required string Id { get; init; }
 
         [JsonPropertyName("info")]
-        [JsonRequired]
-        public string Info { get; set; }
+        public required string Info { get; init; }
     }
 }

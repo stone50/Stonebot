@@ -1,32 +1,27 @@
 ﻿namespace Stonebot.Models.Responses {
     using System.Text.Json.Serialization;
 
-    public struct PostChatMessageResponse {
+    public class PostChatMessageResponse {
         [JsonPropertyName("data")]
-        [JsonRequired]
-        public SendChatMessageResponseDataPoint[] Data { get; set; }
+        public required SendChatMessageResponseDataPoint[] Data { get; init; }
 
         [JsonPropertyName("drop_reason")]
-        public SendChatMessageResponseDropReason? DropReason { get; set; }
+        public SendChatMessageResponseDropReason? DropReason { get; init; }
     }
 
-    public struct SendChatMessageResponseDataPoint {
+    public class SendChatMessageResponseDataPoint {
         [JsonPropertyName("message_id")]
-        [JsonRequired]
-        public string MessageId { get; set; }
+        public required string MessageId { get; init; }
 
         [JsonPropertyName("is_sent")]
-        [JsonRequired]
-        public bool IsSent { get; set; }
+        public required bool IsSent { get; init; }
     }
 
-    public struct SendChatMessageResponseDropReason {
+    public class SendChatMessageResponseDropReason {
         [JsonPropertyName("code")]
-        [JsonRequired]
-        public string Code { get; set; }
+        public required string Code { get; init; }
 
         [JsonPropertyName("message")]
-        [JsonRequired]
-        public string Message { get; set; }
+        public required string Message { get; init; }
     }
 }

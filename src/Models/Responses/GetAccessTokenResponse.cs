@@ -1,25 +1,20 @@
 ﻿namespace Stonebot.Models.Responses {
     using System.Text.Json.Serialization;
 
-    internal struct GetAccessTokenResponse {
+    internal class GetAccessTokenResponse {
         [JsonPropertyName("access_token")]
-        [JsonRequired]
-        public string AccessToken { get; set; }
+        public required string AccessToken { get; init; }
 
         [JsonPropertyName("expires_in")]
-        [JsonRequired]
-        public int ExpiresIn { get; set; }
+        public required int ExpiresIn { get; init; }
 
         [JsonPropertyName("refresh_token")]
-        [JsonRequired]
-        public string RefreshToken { get; set; }
+        public required string RefreshToken { get; set; }
 
         [JsonPropertyName("scope")]
-        [JsonRequired]
-        public string[] Scope { get; set; }
+        public required string[] Scope { get; init; }
 
         [JsonPropertyName("token_type")]
-        [JsonRequired]
-        public string TokenType { get; set; }
+        public required string TokenType { get; init; }
     }
 }

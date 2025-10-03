@@ -1,29 +1,24 @@
 ﻿namespace Stonebot.Models.EventSubMessages {
     using System.Text.Json.Serialization;
 
-    internal struct EventSubKeepaliveMessage {
+    internal class EventSubKeepaliveMessage {
         [JsonPropertyName("metadata")]
-        [JsonRequired]
-        public EventSubKeepaliveMessageMetadata Metadata { get; set; }
+        public required EventSubKeepaliveMessageMetadata Metadata { get; init; }
 
         [JsonPropertyName("payload")]
-        [JsonRequired]
-        public EventSubKeepaliveMessagePayload Payload { get; set; }
+        public required EventSubKeepaliveMessagePayload Payload { get; init; }
     }
 
-    internal struct EventSubKeepaliveMessageMetadata {
+    internal class EventSubKeepaliveMessageMetadata {
         [JsonPropertyName("message_id")]
-        [JsonRequired]
-        public string MessageId { get; set; }
+        public required string MessageId { get; init; }
 
         [JsonPropertyName("message_type")]
-        [JsonRequired]
-        public string MessageType { get; set; }
+        public required string MessageType { get; init; }
 
         [JsonPropertyName("message_timestamp")]
-        [JsonRequired]
-        public string MessageTimestamp { get; set; }
+        public required string MessageTimestamp { get; init; }
     }
 
-    internal struct EventSubKeepaliveMessagePayload { }
+    internal class EventSubKeepaliveMessagePayload { }
 }

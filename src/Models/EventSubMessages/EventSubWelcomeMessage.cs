@@ -1,54 +1,44 @@
 ﻿namespace Stonebot.Models.EventSubMessages {
     using System.Text.Json.Serialization;
 
-    internal struct EventSubWelcomeMessage {
+    internal class EventSubWelcomeMessage {
         [JsonPropertyName("metadata")]
-        [JsonRequired]
-        public EventSubWelcomeMessageMetadata Metadata { get; set; }
+        public required EventSubWelcomeMessageMetadata Metadata { get; init; }
 
         [JsonPropertyName("payload")]
-        [JsonRequired]
-        public EventSubWelcomeMessagePayload Payload { get; set; }
+        public required EventSubWelcomeMessagePayload Payload { get; init; }
     }
 
-    internal struct EventSubWelcomeMessageMetadata {
+    internal class EventSubWelcomeMessageMetadata {
         [JsonPropertyName("message_id")]
-        [JsonRequired]
-        public string MessageId { get; set; }
+        public required string MessageId { get; init; }
 
         [JsonPropertyName("message_type")]
-        [JsonRequired]
-        public string MessageType { get; set; }
+        public required string MessageType { get; init; }
 
         [JsonPropertyName("message_timestamp")]
-        [JsonRequired]
-        public string MessageTimestamp { get; set; }
+        public required string MessageTimestamp { get; init; }
     }
 
-    internal struct EventSubWelcomeMessagePayload {
+    internal class EventSubWelcomeMessagePayload {
         [JsonPropertyName("session")]
-        [JsonRequired]
-        public EventSubWelcomeMessagePayloadSession Session { get; set; }
+        public required EventSubWelcomeMessagePayloadSession Session { get; init; }
     }
 
-    internal struct EventSubWelcomeMessagePayloadSession {
+    internal class EventSubWelcomeMessagePayloadSession {
         [JsonPropertyName("id")]
-        [JsonRequired]
-        public string Id { get; set; }
+        public required string Id { get; init; }
 
         [JsonPropertyName("status")]
-        [JsonRequired]
-        public string Status { get; set; }
+        public required string Status { get; init; }
 
         [JsonPropertyName("keepalive_timeout_seconds")]
-        [JsonRequired]
-        public int KeepaliveTimeoutSeconds { get; set; }
+        public required int KeepaliveTimeoutSeconds { get; init; }
 
         [JsonPropertyName("reconnect_url")]
-        public string? ReconnectUrl { get; set; }
+        public string? ReconnectUrl { get; init; }
 
         [JsonPropertyName("connected_at")]
-        [JsonRequired]
-        public string ConnectedAt { get; set; }
+        public required string ConnectedAt { get; init; }
     }
 }

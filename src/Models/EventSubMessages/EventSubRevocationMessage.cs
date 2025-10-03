@@ -1,95 +1,75 @@
 ﻿namespace Stonebot.Models.EventSubMessages {
     using System.Text.Json.Serialization;
 
-    internal struct EventSubRevocationMessage {
+    internal class EventSubRevocationMessage {
         [JsonPropertyName("metadata")]
-        [JsonRequired]
-        public EventSubRevocationMessageMetadata Metadata { get; set; }
+        public required EventSubRevocationMessageMetadata Metadata { get; init; }
 
         [JsonPropertyName("payload")]
-        [JsonRequired]
-        public EventSubRevocationMessagePayload Payload { get; set; }
+        public required EventSubRevocationMessagePayload Payload { get; init; }
     }
 
-    internal struct EventSubRevocationMessageMetadata {
+    internal class EventSubRevocationMessageMetadata {
         [JsonPropertyName("message_id")]
-        [JsonRequired]
-        public string MessageId { get; set; }
+        public required string MessageId { get; init; }
 
         [JsonPropertyName("message_type")]
-        [JsonRequired]
-        public string MessageType { get; set; }
+        public required string MessageType { get; init; }
 
         [JsonPropertyName("message_timestamp")]
-        [JsonRequired]
-        public string MessageTimestamp { get; set; }
+        public required string MessageTimestamp { get; init; }
 
         [JsonPropertyName("subscription_type")]
-        [JsonRequired]
-        public string SubscriptionType { get; set; }
+        public required string SubscriptionType { get; init; }
 
         [JsonPropertyName("subscription_version")]
-        [JsonRequired]
-        public string SubscriptionVersion { get; set; }
+        public required string SubscriptionVersion { get; init; }
     }
 
-    internal struct EventSubRevocationMessagePayload {
+    internal class EventSubRevocationMessagePayload {
         [JsonPropertyName("subscription")]
-        [JsonRequired]
-        public EventSubRevocationMessagePayloadSubscription Subscription { get; set; }
+        public required EventSubRevocationMessagePayloadSubscription Subscription { get; init; }
     }
 
-    internal struct EventSubRevocationMessagePayloadSubscription {
+    internal class EventSubRevocationMessagePayloadSubscription {
         [JsonPropertyName("id")]
-        [JsonRequired]
-        public string Id { get; set; }
+        public required string Id { get; init; }
 
         [JsonPropertyName("status")]
-        [JsonRequired]
-        public string Status { get; set; }
+        public required string Status { get; init; }
 
         [JsonPropertyName("type")]
-        [JsonRequired]
-        public string Type { get; set; }
+        public required string Type { get; init; }
 
         [JsonPropertyName("version")]
-        [JsonRequired]
-        public string Version { get; set; }
+        public required string Version { get; init; }
 
         [JsonPropertyName("cost")]
-        [JsonRequired]
-        public int Cost { get; set; }
+        public required int Cost { get; init; }
 
         [JsonPropertyName("condition")]
-        [JsonRequired]
-        public EventSubRevocationMessagePayloadSubscriptionCondition Condition { get; set; }
+        public required EventSubRevocationMessagePayloadSubscriptionCondition Condition { get; init; }
 
         [JsonPropertyName("transport")]
-        [JsonRequired]
-        public EventSubRevocationMessagePayloadSubscriptionTransport Transport { get; set; }
+        public required EventSubRevocationMessagePayloadSubscriptionTransport Transport { get; init; }
 
         [JsonPropertyName("created_at")]
-        [JsonRequired]
-        public string CreatedAt { get; set; }
+        public required string CreatedAt { get; init; }
     }
 
-    internal struct EventSubRevocationMessagePayloadSubscriptionCondition {
+    internal class EventSubRevocationMessagePayloadSubscriptionCondition {
         [JsonPropertyName("broadcaster_user_id")]
-        [JsonRequired]
-        public string BroadcasterId { get; set; }
+        public required string BroadcasterId { get; init; }
 
         [JsonPropertyName("user_id")]
-        [JsonRequired]
-        public string UserId { get; set; }
+        public required string UserId { get; init; }
     }
 
-    internal struct EventSubRevocationMessagePayloadSubscriptionTransport {
+    internal class EventSubRevocationMessagePayloadSubscriptionTransport {
         [JsonPropertyName("method")]
-        [JsonRequired]
-        public string Method { get; set; }
+        public required string Method { get; init; }
 
         [JsonPropertyName("session_id")]
-        [JsonRequired]
-        public string SessionId { get; set; }
+        public required string SessionId { get; init; }
     }
 }

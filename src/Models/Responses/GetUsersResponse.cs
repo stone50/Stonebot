@@ -1,51 +1,40 @@
 ﻿namespace Stonebot.Models.Responses {
     using System.Text.Json.Serialization;
 
-    internal struct GetUsersResponse {
+    internal class GetUsersResponse {
         [JsonPropertyName("data")]
-        [JsonRequired]
-        public GetUsersResponseDataPoint[] Data { get; set; }
+        public required GetUsersResponseDataPoint[] Data { get; init; }
     }
 
-    internal struct GetUsersResponseDataPoint {
+    internal class GetUsersResponseDataPoint {
         [JsonPropertyName("id")]
-        [JsonRequired]
-        public string Id { get; set; }
+        public required string Id { get; init; }
 
         [JsonPropertyName("login")]
-        [JsonRequired]
-        public string Login { get; set; }
+        public required string Login { get; init; }
 
         [JsonPropertyName("display_name")]
-        [JsonRequired]
-        public string DisplayName { get; set; }
+        public required string DisplayName { get; init; }
 
         [JsonPropertyName("type")]
-        [JsonRequired]
-        public string Type { get; set; }
+        public required string Type { get; init; }
 
         [JsonPropertyName("broadcaster_type")]
-        [JsonRequired]
-        public string BroadcasterType { get; set; }
+        public required string BroadcasterType { get; init; }
 
         [JsonPropertyName("description")]
-        [JsonRequired]
-        public string Description { get; set; }
+        public required string Description { get; init; }
 
         [JsonPropertyName("profile_image_url")]
-        [JsonRequired]
-        public string ProfileImageUrl { get; set; }
+        public required string ProfileImageUrl { get; init; }
 
         [JsonPropertyName("offline_image_url")]
-        [JsonRequired]
-        public string OfflineImageUrl { get; set; }
+        public required string OfflineImageUrl { get; init; }
 
         [JsonPropertyName("view_count")]
-        [JsonRequired]
-        public int ViewCount { get; set; }
+        public required int ViewCount { get; init; }
 
         [JsonPropertyName("created_at")]
-        [JsonRequired]
-        public string CreatedAt { get; set; }
+        public required string CreatedAt { get; init; }
     }
 }

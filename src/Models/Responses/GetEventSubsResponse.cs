@@ -1,91 +1,73 @@
 ﻿namespace Stonebot.Models.Responses {
     using System.Text.Json.Serialization;
 
-    internal struct GetEventSubsResponse {
+    internal class GetEventSubsResponse {
         [JsonPropertyName("data")]
-        [JsonRequired]
-        public GetEventSubsResponseDataPoint[] Data { get; set; }
+        public required GetEventSubsResponseDataPoint[] Data { get; init; }
 
         [JsonPropertyName("total")]
-        [JsonRequired]
-        public int Total { get; set; }
+        public required int Total { get; init; }
 
         [JsonPropertyName("total_cost")]
-        [JsonRequired]
-        public int TotalCost { get; set; }
+        public required int TotalCost { get; init; }
 
         [JsonPropertyName("max_total_cost")]
-        [JsonRequired]
-        public int MaxTotalCost { get; set; }
+        public required int MaxTotalCost { get; init; }
 
         [JsonPropertyName("pagination")]
-        [JsonRequired]
-        public GetEventSubsResponsePagination Pagination { get; set; }
+        public required GetEventSubsResponsePagination Pagination { get; init; }
     }
 
-    internal struct GetEventSubsResponseDataPoint {
+    internal class GetEventSubsResponseDataPoint {
         [JsonPropertyName("id")]
-        [JsonRequired]
-        public string Id { get; set; }
+        public required string Id { get; init; }
 
         [JsonPropertyName("status")]
-        [JsonRequired]
-        public string Status { get; set; }
+        public required string Status { get; init; }
 
         [JsonPropertyName("type")]
-        [JsonRequired]
-        public string Type { get; set; }
+        public required string Type { get; init; }
 
         [JsonPropertyName("version")]
-        [JsonRequired]
-        public string Version { get; set; }
+        public required string Version { get; init; }
 
         [JsonPropertyName("condition")]
-        [JsonRequired]
-        public GetEventSubsResponseDataPointCondition Condition { get; set; }
+        public required GetEventSubsResponseDataPointCondition Condition { get; init; }
 
         [JsonPropertyName("created_at")]
-        [JsonRequired]
-        public string CreatedAt { get; set; }
+        public required string CreatedAt { get; init; }
 
         [JsonPropertyName("transport")]
-        [JsonRequired]
-        public GetEventSubsResponseDataPointTransport Transport { get; set; }
+        public required GetEventSubsResponseDataPointTransport Transport { get; init; }
 
         [JsonPropertyName("cost")]
-        [JsonRequired]
-        public int Cost { get; set; }
+        public required int Cost { get; init; }
     }
 
-    internal struct GetEventSubsResponseDataPointCondition {
+    internal class GetEventSubsResponseDataPointCondition {
         [JsonPropertyName("broadcaster_user_id")]
-        [JsonRequired]
-        public string BroadcasterId { get; set; }
+        public required string BroadcasterId { get; init; }
 
         [JsonPropertyName("user_id")]
-        [JsonRequired]
-        public string UserId { get; set; }
+        public required string UserId { get; init; }
     }
 
-    internal struct GetEventSubsResponseDataPointTransport {
+    internal class GetEventSubsResponseDataPointTransport {
         [JsonPropertyName("method")]
-        [JsonRequired]
-        public string Method { get; set; }
+        public required string Method { get; init; }
 
         [JsonPropertyName("session_id")]
-        [JsonRequired]
-        public string SessionId { get; set; }
+        public required string SessionId { get; init; }
 
         [JsonPropertyName("connected_at")]
-        [JsonRequired]
-        public string ConnectedAt { get; set; }
+        public required string ConnectedAt { get; init; }
 
         [JsonPropertyName("disconnected_at")]
-        public string? DisconnectedAt { get; set; }
+        public string? DisconnectedAt { get; init; }
     }
 
-    internal struct GetEventSubsResponsePagination {
+    internal class GetEventSubsResponsePagination {
         [JsonPropertyName("cursor")]
-        public string? Cursor { get; set; }
+        public string? Cursor { get; init; }
     }
 }

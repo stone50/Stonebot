@@ -1,6 +1,5 @@
 ﻿namespace Stonebot.Scripting.Python {
     using Models.EventSubMessages;
-    using Stonebot;
     using System.Diagnostics.CodeAnalysis;
     using Twitch;
 

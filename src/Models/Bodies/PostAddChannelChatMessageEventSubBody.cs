@@ -1,41 +1,33 @@
 ﻿namespace Stonebot.Models.Bodies {
     using System.Text.Json.Serialization;
 
-    internal struct PostAddChannelChatMessageEventSubBody {
+    internal class PostAddChannelChatMessageEventSubBody {
         [JsonPropertyName("type")]
-        [JsonRequired]
-        public string Type { get; set; }
+        public required string Type { get; init; }
 
         [JsonPropertyName("version")]
-        [JsonRequired]
-        public string Version { get; set; }
+        public required string Version { get; init; }
 
         [JsonPropertyName("condition")]
-        [JsonRequired]
-        public PostAddChannelChatMessageEventSubBodyCondition Condition { get; set; }
+        public required PostAddChannelChatMessageEventSubBodyCondition Condition { get; init; }
 
         [JsonPropertyName("transport")]
-        [JsonRequired]
-        public PostAddChannelChatMessageEventSubBodyTransport Transport { get; set; }
+        public required PostAddChannelChatMessageEventSubBodyTransport Transport { get; init; }
     }
 
-    internal struct PostAddChannelChatMessageEventSubBodyCondition {
+    internal class PostAddChannelChatMessageEventSubBodyCondition {
         [JsonPropertyName("broadcaster_user_id")]
-        [JsonRequired]
-        public string BroadcasterId { get; set; }
+        public required string BroadcasterId { get; init; }
 
         [JsonPropertyName("user_id")]
-        [JsonRequired]
-        public string UserId { get; set; }
+        public required string UserId { get; init; }
     }
 
-    internal struct PostAddChannelChatMessageEventSubBodyTransport {
+    internal class PostAddChannelChatMessageEventSubBodyTransport {
         [JsonPropertyName("method")]
-        [JsonRequired]
-        public string Method { get; set; }
+        public required string Method { get; init; }
 
         [JsonPropertyName("session_id")]
-        [JsonRequired]
-        public string SessionId { get; set; }
+        public required string SessionId { get; init; }
     }
 }

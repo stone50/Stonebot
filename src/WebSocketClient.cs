@@ -1,6 +1,7 @@
 ﻿namespace Stonebot {
     using Helpers;
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Net.WebSockets;
     using System.Text;
     using System.Text.Json;
@@ -98,7 +99,7 @@
                 var welcomeCancellationToken = GetLinkedConnectCancellationToken();
                 var request = GetRequest(socket, welcomeCancellationToken);
                 var welcomeMessage = JsonSerializer.Deserialize(request!, JsonContext.Default.EventSubWelcomeMessage);
-                return welcomeMessage.Payload.Session.Id;
+                return welcomeMessage!.Payload.Session.Id;
             } catch {
                 var closeCancellationToken = TaskHelper.GetDefaultCancellationToken();
                 TaskHelper.Sync(socket.CloseAsync(WebSocketCloseStatus.InternalServerError, "Error while receiving welcome message.", closeCancellationToken));
@@ -204,9 +205,9 @@
 
         private static void FireClose(WebSocketCloseStatus status, string? statusDescription, bool isFullClosure) => TaskHelper.FireTryElseError(() => Close(status, statusDescription, isFullClosure));
 
-        private static bool TryParseRequest<T>(string request, JsonTypeInfo<T> jsonTypeInfo, out T requestData) where T : struct {
+        private static bool TryParseRequest<T>(string request, JsonTypeInfo<T> jsonTypeInfo, [MaybeNullWhen(false)] out T requestData) {
             try {
-                requestData = JsonSerializer.Deserialize(request, jsonTypeInfo);
+                requestData = JsonSerializer.Deserialize(request, jsonTypeInfo)!;
             } catch {
                 requestData = default;
                 return false;
