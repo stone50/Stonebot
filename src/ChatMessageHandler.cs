@@ -10,7 +10,7 @@
                 return;
             }
 
-            if (Config.ShouldFilterChatMessages) {
+            if (Config.ShouldFilterInvisibleText) {
                 FilterMessage(channelChatMessageEvent.Message);
             }
 

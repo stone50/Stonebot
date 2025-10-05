@@ -3,9 +3,6 @@
 	https://github.com/IronLanguages/ironpython3/wiki/Package-compatibility
 	stack overflow exception will crash Stonebot
 
-General:
-	3rd party extensions (like 7tv) can insert invisible characters to avoid spam detection
-
 Uninstalling:
 	remove local appdata dir (will remove scripts)
 	remove exe and Lib

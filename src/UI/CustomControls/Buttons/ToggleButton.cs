@@ -10,6 +10,11 @@
             UpdateBackground();
         }
 
+        public virtual void Toggle() {
+            State = !State;
+            UpdateBackground();
+        }
+
         protected override void UpdateBackground() => Background =
             State
                 ? IsPressed
@@ -23,9 +28,6 @@
                         ? MainTheme.DangerBrush1
                         : MainTheme.DangerBrush2;
 
-        private void OnClick(object? sender, RoutedEventArgs e) {
-            State = !State;
-            UpdateBackground();
-        }
+        private void OnClick(object? sender, RoutedEventArgs e) => Toggle();
     }
 }

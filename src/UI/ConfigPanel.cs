@@ -24,6 +24,9 @@
             clientIdInput = GetClientIdInput();
             var clientIdPopupOkButton = GetConfigValueInfoPopupOkButton();
             var clientIdPopup = GetClientIdPopup(clientIdPopupOkButton);
+            shouldFilterInvisibleTextInput = GetShouldFilterInvisibleTextInput();
+            var shouldFilterInvisibleTextOkButton = GetConfigValueInfoPopupOkButton();
+            var shouldFilterInvisibleTextPopup = GetShouldFilterInvisibleTextPopup(shouldFilterInvisibleTextOkButton);
             numMaxLogFilesInput = GetNumMaxLogFilesInput();
             var numMaxLogFilesPopupOkButton = GetConfigValueInfoPopupOkButton();
             var numMaxLogFilesPopup = GetNumMaxLogFilesPopup(numMaxLogFilesPopupOkButton);
@@ -34,6 +37,9 @@
                 GetConfigValueLabel("Client ID"),
                 GetConfigValueInfoButton(clientIdPopup),
                 clientIdInput,
+                GetConfigValueLabel("Filter Invisible Text"),
+                GetConfigValueInfoButton(shouldFilterInvisibleTextPopup),
+                shouldFilterInvisibleTextInput,
                 GetConfigValueLabel("Max Log Files"),
                 GetConfigValueInfoButton(numMaxLogFilesPopup),
                 numMaxLogFilesInput,
@@ -43,42 +49,48 @@
             Children.Add(mainGrid);
             Children.Add(broadcasterUsernamePopup);
             Children.Add(clientIdPopup);
+            Children.Add(shouldFilterInvisibleTextPopup);
             Children.Add(numMaxLogFilesPopup);
         }
 
         public void Init() {
             broadcasterUsernameInput.Text = Config.BroadcasterUsername;
             clientIdInput.Text = Config.ClientId;
+            if (!Config.ShouldFilterInvisibleText) {
+                shouldFilterInvisibleTextInput.Toggle();
+            }
+
             numMaxLogFilesInput.Value = Config.NumMaxLogFiles;
         }
 
         private readonly STextBox broadcasterUsernameInput;
         private readonly STextBox clientIdInput;
+        private readonly SCheckBox shouldFilterInvisibleTextInput;
         private readonly SNumericUpDown numMaxLogFilesInput;
 
         private static SGrid GetMainGrid(SGrid header, ScrollViewer body) => new([
-                GridLength.Auto,
-                GridLength.Star,
-            ], [
-                GridLength.Star,
-            ], [
-                header,
-                body,
-            ]);
+            GridLength.Auto,
+            GridLength.Star,
+        ], [
+            GridLength.Star,
+        ], [
+            header,
+            body,
+        ]);
 
         private static SGrid GetHeader(Image configIcon, SSelectableTextBlock headerTitle, DangerButton cancelButton, SuccessButton saveButton) => new([
-                GridLength.Star
-            ], [
-                GridLength.Auto,
-                GridLength.Star,
-                GridLength.Auto,
-                GridLength.Auto,
-            ], [
-                configIcon,
-                headerTitle,
-                cancelButton,
-                saveButton,
-            ]) {
+            GridLength.Star
+        ], [
+            GridLength.Auto,
+            GridLength.Star,
+            GridLength.Auto,
+            GridLength.Auto,
+        ], [
+            configIcon,
+            headerTitle,
+            cancelButton,
+            saveButton,
+        ]) {
             Background = MainTheme.PrimaryBrush2,
             Height = 150d,
         };
@@ -123,6 +135,8 @@
                 Config.ClientId = clientIdInput.Text!;
                 updateClientIdTask = TaskHelper.FireTryElseErrorAfter(Cache.ClearAuthData, updateBroadcasterUsernameTask);
             }
+
+            Config.ShouldFilterInvisibleText = shouldFilterInvisibleTextInput.State;
 
             var updateNumMaxLogFilesTask = Task.CompletedTask;
             if ((int)numMaxLogFilesInput.Value! != Config.NumMaxLogFiles) {
@@ -172,6 +186,13 @@
             new Run("."),
         ], okButton);
 
+        private static SPopup GetShouldFilterInvisibleTextPopup(InfoButton okButton) => GetConfigValueInfoPopup("Filter Invisible Text", [
+            new Run(
+                "Some third-party tools (like 7TV) may add extra whitespace or invisible characters to chat messages. " +
+                "This will remove those characters so that the text is closer to what is displayed in the Twitch chat."
+            ),
+        ], okButton);
+
         private static SPopup GetNumMaxLogFilesPopup(InfoButton okButton) => GetConfigValueInfoPopup("Max Log Files", [
             new Run("Every time Stonebot is launched, it writes a new log file to "),
             GetFolderLinkInline(Constants.LogsPath),
@@ -189,7 +210,15 @@
             Width = 335d,
         };
 
+        private static SCheckBox GetShouldFilterInvisibleTextInput() => new(true) {
+            Height = 25d,
+            HorizontalAlignment = HorizontalAlignment.Left,
+            Padding = new(4d),
+            Width = 25d,
+        };
+
         private static SNumericUpDown GetNumMaxLogFilesInput() => new(Constants.NumMaxLogFilesMin, Constants.NumMaxLogFilesMax, true) {
+            Padding = new(0d),
             Width = 75d,
         };
 
