@@ -2,7 +2,8 @@
 	Python 3.4
 	https://github.com/IronLanguages/ironpython3/wiki/Package-compatibility
 	stack overflow exception will crash Stonebot
+	to use modules, paste into lib folder in scripts folder
 
 Uninstalling:
 	remove local appdata dir (will remove scripts)
-	remove exe and Lib
+	remove exe

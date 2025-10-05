@@ -22,6 +22,7 @@
 
         // scripting paths
         public static readonly string ScriptsPath = Path.Join(LocalAppDataPath, "scripts");
+        public static readonly string ScriptsLibPath = Path.Join(ScriptsPath, "lib");
         public static readonly string ScriptsTypeHintsPackagePath = Path.Join(ScriptsPath, "stonebot");
         public static readonly string ScriptsTypeHintsFilePath = Path.Join(ScriptsTypeHintsPackagePath, "__init__.pyi");
         public static readonly string CommandScriptsPath = Path.Join(ScriptsPath, "commands");

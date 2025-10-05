@@ -1,5 +1,6 @@
 ﻿namespace Stonebot.Scripting.Python {
     using Models.EventSubMessages;
+    using Resources;
     using System.Diagnostics.CodeAnalysis;
     using Twitch;
 
@@ -18,6 +19,11 @@
         public static ChatResponse chat(string message, string? reply_parent_message_id = null) => new(Chat.Send(message, reply_parent_message_id));
 
         public ChatResponse reply(string message) => chat(message, message_data.message_id);
+
+        internal static void Init() {
+            _ = Directory.CreateDirectory(Constants.ScriptsTypeHintsPackagePath);
+            File.WriteAllText(Constants.ScriptsTypeHintsFilePath, Embedded.ScriptsTypeHintsPyi);
+        }
     }
 #pragma warning restore IDE1006 // Naming Styles
 }

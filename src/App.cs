@@ -4,8 +4,8 @@
     using Avalonia.Themes.Simple;
     using Avalonia.Threading;
     using Helpers;
-    using Resources;
     using Scripting;
+    using Scripting.Python;
     using UI;
 
     internal class App : Application {
@@ -29,7 +29,8 @@
             FireUpdateMainWindowAfter(mainWindow => mainWindow.LoadMainPanelAuth(), cacheInitTask);
             var commandManagerInitTask = TaskHelper.FireTryElseErrorAfter(CommandManager.Init, loggerInitTask);
             FireUpdateMainWindowAfter(mainWindow => mainWindow.LoadMainPanelInteractionGrid(), commandManagerInitTask);
-            var copyScriptsTypeHintsFileTask = TaskHelper.FireTryElseErrorAfter(CopyScriptsTypeHintsFile, loggerInitTask);
+            var scriptInterfaceInitTask = TaskHelper.FireTryElseErrorAfter(ScriptInterface.Init, loggerInitTask);
+            var scriptRunnerInitTask = TaskHelper.FireTryElseErrorAfter(ScriptRunner.Init, loggerInitTask);
             var scriptFilesWatcherInitTask = TaskHelper.FireTryElseErrorAfter(ScriptFilesWatcher.Init, commandManagerInitTask);
             TaskHelper.Sync(configInitTask);
             var desktopApplicationLifetime = (IClassicDesktopStyleApplicationLifetime)ApplicationLifetime!;
@@ -41,11 +42,6 @@
             var webSocketClientCloseTask = WebSocketClient.Id == null ? Task.CompletedTask : TaskHelper.FireTryElseError(WebSocketClient.Close);
             var commandManaderSaveTask = TaskHelper.FireTryElseError(CommandManager.Save);
             var configSaveTask = TaskHelper.FireTryElseError(Config.Save);
-        }
-
-        private static void CopyScriptsTypeHintsFile() {
-            _ = Directory.CreateDirectory(Constants.ScriptsTypeHintsPackagePath);
-            File.WriteAllText(Constants.ScriptsTypeHintsFilePath, Embedded.ScriptsTypeHintsPyi);
         }
 
         private void FireUpdateMainWindowAfter(Action<MainWindow> update, params Task[] tasks) => TaskHelper.FireTryElseErrorAfter(() => Dispatcher.UIThread.Invoke(() => {
