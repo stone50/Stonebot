@@ -109,4 +109,6 @@ class ScriptInterface:
     @staticmethod
     def chat(message: str, reply_parent_message_id: Optional[str] = None) -> ChatResponse: ...
 
+    def reply(message: str) -> ChatResponse: ...
+
 Stonebot: ScriptInterface
