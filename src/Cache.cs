@@ -32,7 +32,7 @@
             if (GetAccessTokenShouldBeRefreshed()) {
                 accessToken = Auth.GetRefreshedAccessToken();
                 _ = authorizedHttpClient.DefaultRequestHeaders.Remove("Authorization");
-                authorizedHttpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken.Value}");
+                authorizedHttpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {((AccessToken)accessToken).Value}");
             }
 
             return authorizedHttpClient;
