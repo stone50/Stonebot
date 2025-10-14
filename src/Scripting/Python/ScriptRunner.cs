@@ -8,6 +8,7 @@
 
         public static void Init() {
             var searchPaths = Engine.GetSearchPaths();
+            searchPaths.Add(Constants.ScriptsPath);
             searchPaths.Add(Constants.ScriptsLibPath);
             Engine.SetSearchPaths(searchPaths);
         }
