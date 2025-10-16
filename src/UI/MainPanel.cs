@@ -30,12 +30,12 @@
             var configButton = GetConfigButton(swappableContent);
             var header = GetHeader(logo, connectButton, loadableAuthButtons, configButton);
             var interactionGrid = new InteractionGrid();
-            var newCommandPopup = new NewCommandPopup(interactionGrid);
+            var newCommandPopup = new NewCommandPopup();
             var addCommandButton = GetAddCommandButton(newCommandPopup);
             var addPatternButton = GetAddPatternButton(/*TODO: pass in popup*/);
             var addTimerButton = GetAddTimerButton(/*TODO: pass in popup*/);
             var subheader = GetSubheader(addCommandButton, addPatternButton, addTimerButton);
-            var deleteCommandPopup = new DeleteCommandPopup(interactionGrid);
+            var deleteCommandPopup = new DeleteCommandPopup();
             loadableInteractionGrid = GetLoadableInteractionGrid(interactionGrid, deleteCommandPopup);
             var body = GetBody(loadableInteractionGrid);
             var mainGrid = GetMainGrid(header, subheader, body);

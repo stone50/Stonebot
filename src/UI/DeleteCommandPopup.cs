@@ -6,11 +6,11 @@
     using Scripting;
 
     internal class DeleteCommandPopup : SPopup {
-        public DeleteCommandPopup(InteractionGrid interactionGrid) : base("Delete Command?") {
+        public DeleteCommandPopup() : base("Delete Command?") {
             bodyTextBlock = GetBodyTextBlock();
             Body.Children.Add(bodyTextBlock);
             var cancelButton = GetCancelButton();
-            var deleteButton = GetDeleteButton(interactionGrid);
+            var deleteButton = GetDeleteButton();
             var footerButtons = GetFooterButtons(cancelButton, deleteButton);
             Footer.Children.Add(footerButtons);
         }
@@ -53,7 +53,7 @@
             return cancelButton;
         }
 
-        private DangerButton GetDeleteButton(InteractionGrid interactionGrid) {
+        private DangerButton GetDeleteButton() {
             var deleteButton = new DangerButton() {
                 Content = "Delete",
                 Margin = new(10d, 0d, 0d, 0d),
@@ -73,7 +73,7 @@
                     Logger.Error(e);
                 }
 
-                interactionGrid.Update();
+                InteractionGrid.Update();
                 commandToDelete = null;
                 IsVisible = false;
             };

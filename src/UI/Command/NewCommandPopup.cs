@@ -8,7 +8,7 @@
     using Scripting;
 
     internal class NewCommandPopup : SPopup {
-        public NewCommandPopup(InteractionGrid interactionGrid) : base("New Command") {
+        public NewCommandPopup() : base("New Command") {
             var nameLabel = GetNameLabel();
             nameTextBox = GetNameTextBox();
             var nameRow = GetNameRow(nameLabel, nameTextBox);
@@ -28,7 +28,7 @@
             var mainGrid = GetMainGrid(nameRow, permissionRow, cooldownRow);
             Body.Children.Add(mainGrid);
             var cancelButton = GetCancelButton();
-            var createButton = GetCreateButton(interactionGrid);
+            var createButton = GetCreateButton();
             var footerButtons = GetFooterButtons(cancelButton, createButton);
             Footer.Children.Add(footerButtons);
         }
@@ -178,17 +178,17 @@
             return cancelButton;
         }
 
-        private SuccessButton GetCreateButton(InteractionGrid interactionGrid) {
+        private SuccessButton GetCreateButton() {
             var okButton = new SuccessButton() {
                 Content = "Create",
                 Margin = new(10d, 0d, 0d, 0d),
                 MaxHeight = 50d,
             };
-            okButton.Click += GetOnCreateClick(interactionGrid);
+            okButton.Click += GetOnCreateClick();
             return okButton;
         }
 
-        private EventHandler<RoutedEventArgs> GetOnCreateClick(InteractionGrid interactionGrid) => (_, _) => {
+        private EventHandler<RoutedEventArgs> GetOnCreateClick() => (_, _) => {
             if (!IsNewNameValid(nameTextBox.Text!)) {
                 return;
             }
@@ -214,7 +214,7 @@
                 Logger.Error(e);
             }
 
-            interactionGrid.Update();
+            InteractionGrid.Update();
             IsVisible = false;
         };
 

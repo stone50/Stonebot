@@ -7,6 +7,7 @@
 
     internal class InteractionGrid : WrapPanel {
         public InteractionGrid() {
+            instance = this;
             HorizontalAlignment = HorizontalAlignment.Left;
             VerticalAlignment = VerticalAlignment.Top;
         }
@@ -15,18 +16,19 @@
             this.deleteCommandPopup = deleteCommandPopup;
             var sortedCommands = CommandManager.Commands.OrderBy(x => x.Name);
             foreach (var command in sortedCommands) {
-                Children.Add(new CommandCard(command, deleteCommandPopup, this));
+                Children.Add(new CommandCard(command, deleteCommandPopup));
             }
         }
 
-        public void Update() {
-            Children.Clear();
+        public static void Update() {
+            instance!.Children.Clear();
             var sortedCommands = CommandManager.Commands.OrderBy(x => x.Name);
             foreach (var command in sortedCommands) {
-                Children.Add(new CommandCard(command, deleteCommandPopup!, this));
+                instance.Children.Add(new CommandCard(command, instance.deleteCommandPopup!));
             }
         }
 
+        private static InteractionGrid? instance;
         private DeleteCommandPopup? deleteCommandPopup;
     }
 }

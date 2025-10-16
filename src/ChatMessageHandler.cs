@@ -19,7 +19,6 @@
             }
 
             // TODO: handle chat message
-            Logger.Debug(channelChatMessageEvent.ChatterUserName, channelChatMessageEvent.Message.Text);
         }
 
         private static void FilterMessage(EventSubNotificationMessagePayloadEventMessage message) {

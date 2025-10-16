@@ -111,4 +111,16 @@ class ScriptInterface:
 
     def reply(message: str) -> ChatResponse: ...
 
+    @staticmethod
+    def is_command_enabled(command_name_or_alias: str) -> Optional[bool]: ...
+
+    @staticmethod
+    def get_command_name_and_aliases(command_name_or_alias: str) -> Optional[List[str]]: ...
+
+    @staticmethod
+    def enable_command(command_name_or_alias: str) -> None: ...
+    
+    @staticmethod
+    def disable_command(command_name_or_alias: str) -> None: ...
+
 Stonebot: ScriptInterface

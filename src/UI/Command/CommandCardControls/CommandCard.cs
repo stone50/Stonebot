@@ -14,7 +14,7 @@
     internal class CommandCard : Border {
         public readonly Command Command;
 
-        public CommandCard(Command command, DeleteCommandPopup deleteCommandPopup, InteractionGrid interactionGrid) {
+        public CommandCard(Command command, DeleteCommandPopup deleteCommandPopup) {
             Background = MainTheme.PrimaryBrush2;
             CornerRadius = new(5d);
             Margin = new(10d);
@@ -31,8 +31,8 @@
             var swappableName = new Swappable(staticNameGroup, editableNameGroup);
             nameEditButton.Click += GetOnNameEditButtonClick(swappableName, nameTextBox);
             nameCancelButton.Click += GetOnNameCancelButtonClick(swappableName, nameTextBox);
-            nameSubmitButton.Click += GetOnNameSubmitButtonClick(swappableName, nameTextBlock, nameTextBox, interactionGrid);
-            nameTextBox.KeyUp += GetOnNameTextBoxKeyUp(swappableName, nameTextBlock, nameTextBox, interactionGrid);
+            nameSubmitButton.Click += GetOnNameSubmitButtonClick(swappableName, nameTextBlock, nameTextBox);
+            nameTextBox.KeyUp += GetOnNameTextBoxKeyUp(swappableName, nameTextBlock, nameTextBox);
             var enableToggleButton = GetEnableToggleButton();
             var nameRow = GetNameRow(swappableName, enableToggleButton);
             var nameRowBorder = GetNameRowBorder(nameRow);
@@ -189,26 +189,23 @@
         private EventHandler<RoutedEventArgs> GetOnNameSubmitButtonClick(
             Swappable swappableName,
             SSelectableTextBlock nameTextBlock,
-            STextBox nameTextBox,
-            InteractionGrid interactionGrid
-        ) => (_, _) => OnNameSubmit(swappableName, nameTextBlock, nameTextBox, interactionGrid);
+            STextBox nameTextBox
+        ) => (_, _) => OnNameSubmit(swappableName, nameTextBlock, nameTextBox);
 
         private EventHandler<KeyEventArgs> GetOnNameTextBoxKeyUp(
             Swappable swappableName,
             SSelectableTextBlock nameTextBlock,
-            STextBox nameTextBox,
-            InteractionGrid interactionGrid
+            STextBox nameTextBox
         ) => (_, e) => {
             if (e.Key == Key.Enter) {
-                OnNameSubmit(swappableName, nameTextBlock, nameTextBox, interactionGrid);
+                OnNameSubmit(swappableName, nameTextBlock, nameTextBox);
             }
         };
 
         private void OnNameSubmit(
             Swappable swappableName,
             SSelectableTextBlock nameTextBlock,
-            STextBox nameTextBox,
-            InteractionGrid interactionGrid
+            STextBox nameTextBox
         ) {
             var newName = nameTextBox.Text!;
             if (newName == Command.Name) {
@@ -232,7 +229,7 @@
                 Logger.Error(e);
             }
 
-            interactionGrid.Update();
+            InteractionGrid.Update();
         }
 
         private ToggleButton GetEnableToggleButton() {
