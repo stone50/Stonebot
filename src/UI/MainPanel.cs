@@ -35,10 +35,11 @@
             var addPatternButton = GetAddPatternButton(/*TODO: pass in popup*/);
             var addTimerButton = GetAddTimerButton(/*TODO: pass in popup*/);
             var subheader = GetSubheader(addCommandButton, addPatternButton, addTimerButton);
+            var subheaderBorder = GetSubheaderBorder(subheader);
             var deleteCommandPopup = new DeleteCommandPopup();
             loadableInteractionGrid = GetLoadableInteractionGrid(interactionGrid, deleteCommandPopup);
             var body = GetBody(loadableInteractionGrid);
-            var mainGrid = GetMainGrid(header, subheader, body);
+            var mainGrid = GetMainGrid(header, subheaderBorder, body);
             Children.Add(mainGrid);
             Children.Add(clearAuthPopup);
             Children.Add(confirmAuthPopup);
@@ -73,7 +74,7 @@
         private bool isShowingAuth = false;
         private readonly Loadable loadableInteractionGrid;
 
-        private static SGrid GetMainGrid(SGrid header, SGrid subheader, ScrollViewer body) => new([
+        private static SGrid GetMainGrid(SGrid header, Border subheader, ScrollViewer body) => new([
             GridLength.Auto,
             GridLength.Auto,
             GridLength.Star,
@@ -213,6 +214,12 @@
             //addPatternButton,
             //addTimerButton,
         ]);
+
+        private static Border GetSubheaderBorder(SGrid subheader) => new() {
+            Child = subheader,
+            BorderBrush = MainTheme.PrimaryBrush4,
+            BorderThickness = new(0d, 2d),
+        };
 
         private static SuccessButton GetAddCommandButton(NewCommandPopup newCommandPopup) {
             var addCommandButton = new SuccessButton() {

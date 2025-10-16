@@ -2,9 +2,9 @@
     using Avalonia.Threading;
     using Models.EventSubMessages;
     using Resources;
-    using Stonebot.UI;
     using System.Diagnostics.CodeAnalysis;
     using Twitch;
+    using UI;
 
 #pragma warning disable IDE1006 // Naming Styles
     public class ScriptInterface(EventSubNotificationMessagePayloadEvent channelChatMessageEvent, UserPermission.Level permissionLevel) {
