@@ -14,7 +14,7 @@
     internal class CommandCard : Border {
         public readonly Command Command;
 
-        public CommandCard(Command command, DeleteCommandPopup deleteCommandPopup) {
+        public CommandCard(Command command, DeleteCommandPopup deleteCommandPopup, Swappable swappableCommandDisplay) {
             Background = MainTheme.PrimaryBrush2;
             CornerRadius = new(5d);
             Margin = new(10d);
@@ -52,20 +52,22 @@
             var cooldownRow = GetCooldownRow(cooldownRowLabel, cooldownInput);
             var editScriptButton = GetEditScriptButton(command);
             var deleteButton = GetDeleteButton(command, deleteCommandPopup);
-            var footer = GetFooter(editScriptButton, deleteButton);
-            Child = GetMainGrid(nameRowBorder, permissionRow, cooldownRow, footer);
+            var editRow = GetEditRow(editScriptButton, deleteButton);
+            var collapseButton = GetCollapseButton(swappableCommandDisplay);
+            Child = GetMainGrid(nameRowBorder, permissionRow, cooldownRow, editRow, collapseButton);
         }
 
-        private static SGrid GetMainGrid(Border nameRow, SGrid permissionRow, SGrid cooldownRow, SGrid footer) => new([
+        private static SGrid GetMainGrid(Border nameRowBorder, SGrid permissionRow, SGrid cooldownRow, SGrid editRow, SButton collapseButton) => new([
             GridLength.Auto,
             //GridLength.Auto,
+            GridLength.Auto,
             GridLength.Auto,
             GridLength.Auto,
             GridLength.Auto,
         ], [
             GridLength.Star,
         ], [
-            nameRow,
+            nameRowBorder,
             // TODO
             //new SSelectableTextBlock(){
             //    Text = "Aliases",
@@ -73,7 +75,8 @@
             //},
             permissionRow,
             cooldownRow,
-            footer,
+            editRow,
+            collapseButton,
         ]);
 
         private Border GetNameRowBorder(SGrid nameRow) => new() {
@@ -82,6 +85,7 @@
             BorderThickness = new(2d),
             CornerRadius = new(5d),
             Height = 70d,
+            Padding = new(2d),
         };
 
         private static EventHandler<RoutedEventArgs> GetOnEnableToggleButtonClick(
@@ -114,13 +118,13 @@
             Height = 30d,
         };
 
-        private static SGrid GetStaticNameGroup(SSelectableTextBlock textBlock, InfoButton editButton) => new([
+        private static SGrid GetStaticNameGroup(SSelectableTextBlock nameTextBlock, InfoButton editButton) => new([
             GridLength.Auto,
         ], [
             GridLength.Auto,
             GridLength.Auto,
         ], [
-            textBlock,
+            nameTextBlock,
             editButton,
         ]);
 
@@ -312,7 +316,7 @@
             return cooldownInput;
         }
 
-        private static SGrid GetFooter(InfoButton editScriptButton, DangerButton deleteButton) => new([
+        private static SGrid GetEditRow(InfoButton editScriptButton, DangerButton deleteButton) => new([
             GridLength.Auto,
         ], [
             GridLength.Auto,
@@ -350,6 +354,19 @@
             };
             deleteButton.Click += (_, _) => deleteCommandPopup.Show(command);
             return deleteButton;
+        }
+
+        private static SButton GetCollapseButton(Swappable swappableCommandDisplay) {
+            var collapseButton = new SButton(
+                MainTheme.PrimaryBrush3,
+                MainTheme.PrimaryBrush4,
+                MainTheme.PrimaryBrush2
+            ) {
+                Content = "^",
+                Margin = new(0d),
+            };
+            collapseButton.Click += (_, _) => swappableCommandDisplay.Swap();
+            return collapseButton;
         }
 
         private static bool IsNewNameValid(string newName) {
