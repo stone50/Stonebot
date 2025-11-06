@@ -40,7 +40,7 @@
                 var commandStub = new CommandStub(command, swappableCommandDisplay);
                 swappableCommandDisplay.Init(commandStub, commandCard);
                 instance.Children.Add(swappableCommandDisplay);
-                if (displayToggleStates[command]) {
+                if (!displayToggleStates.TryGetValue(command, out var displayToggleState) || displayToggleState) {
                     swappableCommandDisplay.Swap();
                 }
             }
