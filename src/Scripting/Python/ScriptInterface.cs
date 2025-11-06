@@ -18,7 +18,7 @@
 
         public static void log_error(params object?[] messages) => Logger.Error(messages);
 
-        public static ChatResponse chat(string message, string? reply_parent_message_id = null) => new(Chat.Send(message[..500], reply_parent_message_id));
+        public static ChatResponse chat(string message, string? reply_parent_message_id = null) => new(Chat.Send(message[..Math.Min(message.Length, 500)], reply_parent_message_id));
 
         public ChatResponse reply(string message) => chat(message, message_data.message_id);
 
