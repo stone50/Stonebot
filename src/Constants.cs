@@ -11,6 +11,7 @@
         public static readonly string CrossAvaloniaResourceFilePath = Path.Join(BaseAvaloniaResourcePath, "cross.png");
         public static readonly string PencilAvaloniaResourceFilePath = Path.Join(BaseAvaloniaResourcePath, "pencil.png");
         public static readonly string TrashAvaloniaResourceFilePath = Path.Join(BaseAvaloniaResourcePath, "trash.png");
+        public static readonly string ArrowAvaloniaResourceFilePath = Path.Join(BaseAvaloniaResourcePath, "arrow.png");
 
         // Stonebot config paths
         public static readonly string LocalAppDataPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Stonebot");

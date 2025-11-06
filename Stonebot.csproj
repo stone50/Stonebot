@@ -69,6 +69,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<AvaloniaResource Include="Resources\arrow.png" />
 		<AvaloniaResource Include="Resources\check.png" />
 		<AvaloniaResource Include="Resources\cross.png" />
 		<AvaloniaResource Include="Resources\JetBrainsMono-Regular.ttf" />

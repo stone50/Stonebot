@@ -357,13 +357,17 @@
         }
 
         private static SButton GetCollapseButton(Swappable swappableCommandDisplay) {
+            var arrow = UIUtils.GetArrowIcon();
+            arrow.Width = 32d;
+            arrow.Margin = new(5d);
             var collapseButton = new SButton(
                 MainTheme.PrimaryBrush3,
                 MainTheme.PrimaryBrush4,
                 MainTheme.PrimaryBrush2
             ) {
-                Content = "^",
+                Content = arrow,
                 Margin = new(0d),
+                Padding = new(0d),
             };
             collapseButton.Click += (_, _) => swappableCommandDisplay.Swap();
             return collapseButton;

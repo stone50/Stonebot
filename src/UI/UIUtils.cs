@@ -36,6 +36,12 @@
             return trash;
         }
 
+        public static Image GetArrowIcon() {
+            var arrow = GetImage(Constants.ArrowAvaloniaResourceFilePath);
+            RenderOptions.SetBitmapInterpolationMode(arrow, BitmapInterpolationMode.MediumQuality);
+            return arrow;
+        }
+
         private static Image GetImage(string avaloniaResourceFilePath) {
             var uri = new Uri(avaloniaResourceFilePath);
             var assetStream = AssetLoader.Open(uri);

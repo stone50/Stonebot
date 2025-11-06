@@ -94,13 +94,20 @@
         }
 
         private static SButton GetExpandButton(Swappable swappableCommandDisplay) {
+            var arrow = UIUtils.GetArrowIcon();
+            arrow.RenderTransform = new ScaleTransform {
+                ScaleY = -1
+            };
+            arrow.Width = 32d;
+            arrow.Margin = new(5d);
             var expandButton = new SButton(
                 MainTheme.PrimaryBrush3,
                 MainTheme.PrimaryBrush4,
                 MainTheme.PrimaryBrush2
             ) {
-                Content = "V",
+                Content = arrow,
                 Margin = new(0d),
+                Padding = new(0d),
             };
             expandButton.Click += (_, _) => swappableCommandDisplay.Swap();
             return expandButton;
