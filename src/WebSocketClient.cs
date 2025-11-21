@@ -50,7 +50,11 @@
 
         public static void Close() {
             Close(WebSocketCloseStatus.NormalClosure, null, true);
-            EventSub.DeleteEventSubs();
+            try {
+                EventSub.DeleteEventSubs();
+            } catch (Exception e) {
+                Logger.Warn("Could not delete event subs", e);
+            }
         }
 
         public static void TryCancelConnectAttempt() => connectCancellationTokenSource?.Cancel();
