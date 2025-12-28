@@ -1,9 +1,9 @@
-﻿namespace Stonebot {
-    using Avalonia;
+namespace Stonebot {
+    using System;
 
-    internal class Program {
-        private static void Main(string[] args) => AppBuilder.Configure<App>()
-            .UsePlatformDetect()
-            .StartWithClassicDesktopLifetime(args);
+    public static class Program {
+        public static void Main(string[] args) {
+            Console.WriteLine("Hello World");
+        }
     }
 }

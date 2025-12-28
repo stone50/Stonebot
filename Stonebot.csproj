@@ -1,98 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<NeutralLanguage>en-US</NeutralLanguage>
-	</PropertyGroup>
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+  </PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-		<OutputType>WinExe</OutputType>
-		<DefineConstants>DEBUG;TRACE</DefineConstants>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)' == 'Debug Console'">
-		<OutputType>Exe</OutputType>
-		<DefineConstants>DEBUG;TRACE;CONSOLE</DefineConstants>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)' == 'Release Console'">
-		<OutputType>Exe</OutputType>
-		<DefineConstants>TRACE;CONSOLE</DefineConstants>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
-		<OutputType>WinExe</OutputType>
-		<DefineConstants>TRACE</DefineConstants>
-	</PropertyGroup>
-
-	<PropertyGroup>
-		<Configurations>Debug;Debug Console;Release Console;Release</Configurations>
-
-		<TargetFramework>net9.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
-
-		<PublishSingleFile>true</PublishSingleFile>
-		<DebugType>none</DebugType>
-
-		<PublishTrimmed>true</PublishTrimmed>
-		<TrimMode>link</TrimMode>
-
-		<PublishReadyToRun>true</PublishReadyToRun>
-		<PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
-		<ReadyToRunUseCrossgen2>true</ReadyToRunUseCrossgen2>
-		<SelfContained>true</SelfContained>
-		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-		<ApplicationIcon>Resources\logo.ico</ApplicationIcon>
-	</PropertyGroup>
-
-	<PropertyGroup Label="Avalonia">
-		<AvaloniaXamlVerboseExceptions>True</AvaloniaXamlVerboseExceptions>
-		<EnableAvaloniaXamlCompilation>False</EnableAvaloniaXamlCompilation>
-	</PropertyGroup>
-
-	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="9.0.10" />
-		<PackageReference Include="Microsoft.AspNetCore.DataProtection.Extensions" Version="9.0.10" />
-		<PackageReference Include="Avalonia" Version="11.3.8" />
-		<PackageReference Include="Avalonia.Desktop" Version="11.3.8" />
-		<PackageReference Include="Avalonia.Themes.Simple" Version="11.3.8" />
-		<PackageReference Include="IronPython" Version="3.4.2" />
-		<PackageReference Include="IronPython.StdLib" Version="3.4.2" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<TrimmerRootAssembly Include="Microsoft.Scripting" />
-		<TrimmerRootAssembly Include="Microsoft.Dynamic" />
-		<TrimmerRootAssembly Include="IronPython" />
-		<TrimmerRootAssembly Include="IronPython.Modules" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<AvaloniaResource Include="Resources\arrow.png" />
-		<AvaloniaResource Include="Resources\check.png" />
-		<AvaloniaResource Include="Resources\cross.png" />
-		<AvaloniaResource Include="Resources\JetBrainsMono-Regular.ttf" />
-		<AvaloniaResource Include="Resources\logo.png" />
-		<AvaloniaResource Include="Resources\cog.png" />
-		<AvaloniaResource Include="Resources\power.png" />
-		<AvaloniaResource Include="Resources\pencil.png" />
-		<AvaloniaResource Include="Resources\trash.png" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Compile Update="Resources\Embedded.Designer.cs">
-			<DesignTime>True</DesignTime>
-			<AutoGen>True</AutoGen>
-			<DependentUpon>Embedded.resx</DependentUpon>
-		</Compile>
-	</ItemGroup>
-
-	<ItemGroup>
-		<EmbeddedResource Update="Resources\Embedded.resx">
-			<Generator>ResXFileCodeGenerator</Generator>
-			<LastGenOutput>Embedded.Designer.cs</LastGenOutput>
-		</EmbeddedResource>
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.3.10" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.10" />
+    <PackageReference Include="Avalonia.Themes.Simple" Version="11.3.10" />
+  </ItemGroup>
 
 </Project>
