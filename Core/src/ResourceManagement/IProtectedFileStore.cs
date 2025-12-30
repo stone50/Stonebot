@@ -1,7 +1,17 @@
 ﻿namespace StonebotCore.ResourceManagement {
-    internal interface IProtectedFileStore {
-        void Save(string data, string filePath);
+    using System.Threading;
+    using System.Threading.Tasks;
 
-        string Load(string filePath);
+    internal interface IProtectedFileStore {
+        Task SaveAsync(
+            string filePath,
+            string data,
+            CancellationToken cancellationToken
+        );
+
+        Task<string> LoadAsync(
+            string filePath,
+            CancellationToken cancellationToken
+        );
     }
 }

@@ -7,11 +7,18 @@
 
         public static void ConfigureClient() {
             var client = Access.Client;
-            var credentials = new ConnectionCredentials("stonebot5555", Access.API.Settings.AccessToken);
-            client.Initialize(credentials, "stone5555");
+            var credentials = new ConnectionCredentials(
+                twitchUsername: "stonebot5555",
+                twitchOAuth: Access.API.Settings.AccessToken
+            );
+            client.Initialize(
+                credentials,
+                channel: "stone5555"
+            );
             client.OnLog += OnLog;
         }
 
-        private static void OnLog(object? sender, OnLogArgs e) => Console.WriteLine($"{e.DateTime}: {e.BotUsername} - {e.Data}");
+        private static void OnLog(object? sender, OnLogArgs e) =>
+            Console.WriteLine($"{e.DateTime}: {e.BotUsername} - {e.Data}");
     }
 }
