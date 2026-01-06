@@ -5,7 +5,7 @@
 
     internal static class Bot {
 
-        public static void ConfigureClient() {
+        internal static void ConfigureClient() {
             var client = Access.Client;
             var credentials = new ConnectionCredentials(
                 twitchUsername: "stonebot5555",

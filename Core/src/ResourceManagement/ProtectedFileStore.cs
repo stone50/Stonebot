@@ -1,10 +1,15 @@
 ﻿namespace StonebotCore.ResourceManagement {
+    using System;
+
     internal static class ProtectedFileStore {
-        internal static IProtectedFileStore Create() =>
+        private static readonly Lazy<IProtectedFileStore> _instance = new(() =>
 #if WINDOWS
-            new WindowsDpapiFileStore();
+            new WindowsDpapiFileStore()
 #else
-            new DataProtectionFileStore();
+            new DataProtectionFileStore()
 #endif
+        );
+
+        internal static IProtectedFileStore Instance => _instance.Value;
     }
 }

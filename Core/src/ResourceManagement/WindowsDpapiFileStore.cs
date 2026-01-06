@@ -7,37 +7,15 @@ namespace StonebotCore.ResourceManagement {
     using System.Threading.Tasks;
 
     internal sealed class WindowsDpapiFileStore : IProtectedFileStore {
-        public Task SaveAsync(
-            string filePath,
-            string data,
-            CancellationToken cancellationToken
-        ) {
+        public Task SaveAsync(string filePath, string data, CancellationToken cancellationToken) {
             var plaintext = Encoding.UTF8.GetBytes(data);
-            var encrypted = ProtectedData.Protect(
-                userData: plaintext,
-                optionalEntropy: null,
-                scope: DataProtectionScope.CurrentUser
-            );
-            return File.WriteAllBytesAsync(
-                path: filePath,
-                bytes: encrypted,
-                cancellationToken
-            );
+            var encrypted = ProtectedData.Protect(plaintext, null, DataProtectionScope.CurrentUser);
+            return File.WriteAllBytesAsync(filePath, encrypted, cancellationToken);
         }
 
-        public async Task<string> LoadAsync(
-            string filePath,
-            CancellationToken cancellationToken
-        ) {
-            var encrypted = await File.ReadAllBytesAsync(
-                path: filePath,
-                cancellationToken
-            );
-            var decrypted = ProtectedData.Unprotect(
-                encryptedData: encrypted,
-                optionalEntropy: null,
-                scope: DataProtectionScope.CurrentUser
-            );
+        public async Task<string> LoadAsync(string filePath, CancellationToken cancellationToken) {
+            var encrypted = await File.ReadAllBytesAsync(filePath, cancellationToken).ConfigureAwait(false);
+            var decrypted = ProtectedData.Unprotect(encrypted, null, DataProtectionScope.CurrentUser);
             return Encoding.UTF8.GetString(decrypted);
         }
     }

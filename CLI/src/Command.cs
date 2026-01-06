@@ -1,198 +1,70 @@
 ﻿namespace StonebotCLI {
     using System;
     using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
     using System.Text;
+    using System.Text.RegularExpressions;
+    using System.Threading;
+    using System.Threading.Tasks;
 
-    internal abstract class Command(
-        string[] aliases,
-        Option[] options,
-        Command[] subCommands
-    ) {
-        public readonly string[] Aliases = aliases;
-        public readonly Option[] Options = options;
-        public readonly Command[] SubCommands = subCommands;
+    internal abstract partial class Command(string[] aliases, Option[] options, Command[] subCommands) {
+        protected readonly string[] _aliases = aliases;
+        protected readonly Option[] _options = options;
+        private readonly Command[] _subCommands = subCommands;
+        private static readonly Regex _optionRegex = OptionRegex();
 
-        // TODO: have this return a task, and add the ability for the user to cancel
-        protected abstract void Execute(
-            StringReader input,
-            Dictionary<Option, string> options,
-            Command? subCommand
+        protected abstract Task ExecuteAsync(
+            ArgReader argReader,
+            Dictionary<Option, string> optionMap,
+            Command? subCommand,
+            CancellationToken cancellationToken
         );
 
-        public void HandleInput(StringReader input) {
-            var options = ParseOptions(input);
-            var subCommand = ParseSubCommand(input);
-            Execute(input, options, subCommand);
+        public async Task HandleInputAsync(ArgReader argReader, CancellationToken cancellationToken) {
+            var optionMap = ParseOptions(argReader);
+            var subCommand = ParseSubCommand(argReader);
+            await ExecuteAsync(argReader, optionMap, subCommand, cancellationToken);
         }
 
-        protected static TValue GetOptionValue<TValue>(
-            Option<TValue> option,
-            Dictionary<Option, string> inputOptionMap
-        ) =>
-            inputOptionMap.TryGetValue(option, out var valueString)
-                ? option.GetValue(valueString)
-                : option.DefaultValue;
-
-        protected static TValue GetOptionValue<TValue>(
-            Option option,
-            Dictionary<Option, string> inputOptionMap
-        ) =>
-            inputOptionMap.TryGetValue(option, out var valueString)
-                ? ((Option<TValue>)option).GetValue(valueString)
-                : ((Option<TValue>)option).DefaultValue;
-
-        private Dictionary<Option, string> ParseOptions(StringReader input) {
-            var options = new Dictionary<Option, string>();
-            while (input.Peek() == '-') {
-                _ = input.Read();
-                var option = ParseOption(input);
-                options.Add(option.Key, option.Value);
+        private Dictionary<Option, string> ParseOptions(ArgReader argReader) {
+            var optionMap = new Dictionary<Option, string>();
+            while (argReader.Peek()?.StartsWith('-') ?? false) {
+                var option = ParseOption(argReader);
+                optionMap.Add(option.Key, option.Value);
             }
 
-            return options;
+            return optionMap;
         }
 
-        private KeyValuePair<Option, string> ParseOption(StringReader input) {
-            var key = ParseOptionKey(input);
-            var option = GetOptionFromAlias(key);
-            var optionValueString = ParseOptionValue(input);
-            return new(option, optionValueString);
-        }
-
-        private string ParseOptionKey(StringReader input) {
-            var keyBuilder = new StringBuilder();
-            int next;
-            while (true) {
-                next = input.Read();
-                if (next == -1) {
-                    throw new Exception(
-                        $"`{keyBuilder}` is not a valid option format for command `{Aliases[0]}`. " +
-                        "The option must be in the format -<name>=<value>"
-                    );
-                }
-
-                var c = (char)next;
-                if (c == '=') {
-                    break;
-                }
-
-                _ = keyBuilder.Append(c);
+        private KeyValuePair<Option, string> ParseOption(ArgReader argReader) {
+            var input = argReader.Read()!;
+            var match = _optionRegex.Match(input);
+            if (!match.Success) {
+                throw new Exception(
+                    $"`{input}` is not a valid option format. " +
+                    "The option must be of the format <option name>=<option value>"
+                );
             }
 
-            return keyBuilder.ToString();
+            var option = GetOptionFromAlias(match.Groups[1].Value);
+            return new(option, match.Groups[2].Value);
         }
 
-        private Option GetOptionFromAlias(string optionAlias) {
-            foreach (var option in Options) {
-                if (option.Aliases.Contains(optionAlias)) {
+        private Option GetOptionFromAlias(string alias) {
+            foreach (var option in _options) {
+                if (Array.Exists(option.Aliases, a => a.Equals(alias, StringComparison.OrdinalIgnoreCase))) {
                     return option;
                 }
             }
 
             throw new Exception(
-                $"`{optionAlias}` is not a valid option for command `{Aliases[0]}`. " +
+                $"`{alias}` is not a valid option for command `{_aliases[0]}`. " +
                 $"The option must be one of:\n{GetAllOptionAliasesText()}"
-            );
-        }
-
-        private string ParseOptionValue(StringReader input) {
-            var valueBuilder = new StringBuilder();
-            var isInsideQuote = false;
-            var isEscaping = false;
-            int next;
-            while (true) {
-                next = input.Read();
-                if (next == -1) {
-                    if (isInsideQuote) {
-                        throw new Exception(
-                            $"`{valueBuilder}` is not a valid option value for command `{Aliases[0]}`. " +
-                            "The option value must have a closing quotation mark"
-                        );
-                    }
-
-                    if (isEscaping) {
-                        throw new Exception(
-                            $"`{valueBuilder}` is not a valid option value for command `{Aliases[0]}`. " +
-                            "The option value must escape one of:\n\"\n\\"
-                        );
-                    }
-
-                    break;
-                }
-
-                var c = (char)next;
-                if (isEscaping) {
-                    if (c is not '"' and not '\\') {
-                        throw new Exception(
-                            $"`{valueBuilder}` is not a valid option format for command `{Aliases[0]}`. " +
-                            "The option value must escape one of:\n\"\n\\"
-                        );
-                    }
-
-                    _ = valueBuilder.Append(c);
-                    isEscaping = false;
-                    continue;
-                }
-
-                if (c == '\\') {
-                    isEscaping = true;
-                    continue;
-                }
-
-                if (c == '\"') {
-                    isInsideQuote = !isInsideQuote;
-                    continue;
-                }
-
-                if (!isInsideQuote && char.IsWhiteSpace(c)) {
-                    break;
-                }
-
-                _ = valueBuilder.Append(c);
-            }
-
-            return valueBuilder.ToString();
-        }
-
-        private Command? ParseSubCommand(StringReader input) {
-            var builder = new StringBuilder();
-            int next;
-            while (true) {
-                next = input.Read();
-                if (next == -1) {
-                    break;
-                }
-
-                var c = (char)next;
-                if (char.IsWhiteSpace(c)) {
-                    break;
-                }
-
-                _ = builder.Append(c);
-            }
-
-            var subCommandName = builder.ToString();
-            if (subCommandName == "") {
-                return null;
-            }
-
-            foreach (var subCommand in SubCommands) {
-                if (subCommand.Aliases.Contains(subCommandName)) {
-                    return subCommand;
-                }
-            }
-
-            throw new Exception(
-                $"`{subCommandName}` is not a valid sub-command for command `{Aliases[0]}`. " +
-                $"The sub-command must be one of:\n{GetAllSubCommandAliasesText()}"
             );
         }
 
         private string GetAllOptionAliasesText() {
             var builder = new StringBuilder();
-            foreach (var option in Options) {
+            foreach (var option in _options) {
                 _ = builder.Append(string.Join(", ", option.Aliases));
                 _ = builder.Append('\n');
             }
@@ -200,14 +72,35 @@
             return builder.ToString();
         }
 
-        private string GetAllSubCommandAliasesText() {
+        private Command? ParseSubCommand(ArgReader argReader) {
+            var alias = argReader.Read();
+            if (alias == null) {
+                return null;
+            }
+
+            foreach (var subCommand in _subCommands) {
+                if (Array.Exists(subCommand._aliases, a => a.Equals(alias, StringComparison.OrdinalIgnoreCase))) {
+                    return subCommand;
+                }
+            }
+
+            throw new Exception(
+                $"`{alias}` is not a valid sub-command for command `{_aliases[0]}`. " +
+                $"The sub-command must be one of:\n{GetAllSubCommandAliasesText()}"
+            );
+        }
+
+        protected string GetAllSubCommandAliasesText() {
             var builder = new StringBuilder();
-            foreach (var subCommand in SubCommands) {
-                _ = builder.Append(string.Join(", ", subCommand.Aliases));
+            foreach (var subCommand in _subCommands) {
+                _ = builder.Append(string.Join(", ", subCommand._aliases));
                 _ = builder.Append('\n');
             }
 
             return builder.ToString();
         }
+
+        [GeneratedRegex(@"(.*)=(.*)", RegexOptions.Compiled)]
+        private static partial Regex OptionRegex();
     }
 }

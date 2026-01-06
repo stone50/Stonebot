@@ -1,40 +1,28 @@
 ﻿namespace StonebotCLI {
     using StonebotCLI.Commands;
     using System;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     public static class Program {
-        private static readonly BaseCommand baseCommand = new();
+        private static readonly BaseCommand _baseCommand = new();
 
-        public static void Main(string[] args) {
-            Console.WriteLine("Welcome to Stonebot!");
-            Console.WriteLine("To quit, use one of:\nq, quit, exit");
-            Console.WriteLine();
-            while (true) {
-                Console.Write(">Stonebot:");
+        public static async Task<int> Main(string[] args) {
+            using var cancellationTokenSource = new CancellationTokenSource();
 
-                var readLine = Console.ReadLine();
-                if (readLine == null) {
-                    break;
-                }
+            Console.CancelKeyPress += (_, e) => {
+                e.Cancel = true;
+                cancellationTokenSource.Cancel();
+            };
 
-                var input = readLine.Trim();
-                if (Console.IsInputRedirected) {
-                    Console.WriteLine(input);
-                }
-
-                if (
-                    input.Equals("q", StringComparison.OrdinalIgnoreCase) ||
-                    input.Equals("quit", StringComparison.OrdinalIgnoreCase) ||
-                    input.Equals("exit", StringComparison.OrdinalIgnoreCase)
-                ) {
-                    break;
-                }
-
-                try {
-                    baseCommand.HandleInput(new(input));
-                } catch (Exception e) {
-                    Console.WriteLine(e.Message);
-                }
+            try {
+                await _baseCommand.HandleInputAsync(new(args), cancellationTokenSource.Token);
+                return 0;
+            } catch (OperationCanceledException) {
+                return 130;
+            } catch (Exception e) {
+                Console.Error.WriteLine(e.Message);
+                return 1;
             }
         }
     }

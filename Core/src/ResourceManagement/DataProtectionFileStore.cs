@@ -12,35 +12,17 @@ namespace StonebotCore.ResourceManagement {
         internal DataProtectionFileStore() {
             var keyDirPath = Path.Join(ResourceManager.StonebotDataDirPath, "keys");
             var keyDirInfo = Directory.CreateDirectory(keyDirPath);
-            var provider = DataProtectionProvider.Create(
-                keyDirectory: keyDirInfo,
-                setupAction: builder => builder.SetApplicationName("Stonebot")
-            );
-            _protector = provider.CreateProtector("Credentials");
+            var provider = DataProtectionProvider.Create(keyDirInfo, opts => opts.SetApplicationName("Stonebot"));
+            _protector = provider.CreateProtector("Stonebot.Credentials.v1");
         }
 
-        public Task SaveAsync(
-            string filePath,
-            string data,
-            CancellationToken cancellationToken
-        ) {
-            var plaintext = Encoding.UTF8.GetBytes(data);
-            var encrypted = _protector.Protect(plaintext);
-            return File.WriteAllBytesAsync(
-                path: filePath,
-                bytes: encrypted,
-                cancellationToken
-            );
+        public Task SaveAsync(string filePath, string data, CancellationToken cancellationToken) {
+            var encrypted = _protector.Protect(Encoding.UTF8.GetBytes(data));
+            return File.WriteAllBytesAsync(filePath, encrypted, cancellationToken);
         }
 
-        public async Task<string> LoadAsync(
-            string filePath,
-            CancellationToken cancellationToken
-        ) {
-            var encrypted = await File.ReadAllBytesAsync(
-                path: filePath,
-                cancellationToken
-            );
+        public async Task<string> LoadAsync(string filePath, CancellationToken cancellationToken) {
+            var encrypted = await File.ReadAllBytesAsync(filePath, cancellationToken).ConfigureAwait(false);
             var decrypted = _protector.Unprotect(encrypted);
             return Encoding.UTF8.GetString(decrypted);
         }
