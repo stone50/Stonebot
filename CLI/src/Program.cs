@@ -1,11 +1,13 @@
 ﻿namespace StonebotCLI {
+    using StonebotCLI.Commands;
     using System;
-    using System.Threading.Tasks;
 
     public static class Program {
-        public static async Task Main(string[] args) {
+        private static readonly BaseCommand baseCommand = new();
+
+        public static void Main(string[] args) {
             Console.WriteLine("Welcome to Stonebot!");
-            Console.WriteLine("Use `quit` or `exit` to exit");
+            Console.WriteLine("To quit, use one of:\nq, quit, exit");
             Console.WriteLine();
             while (true) {
                 Console.Write(">Stonebot:");
@@ -21,13 +23,18 @@
                 }
 
                 if (
+                    input.Equals("q", StringComparison.OrdinalIgnoreCase) ||
                     input.Equals("quit", StringComparison.OrdinalIgnoreCase) ||
                     input.Equals("exit", StringComparison.OrdinalIgnoreCase)
                 ) {
                     break;
                 }
 
-                // TODO: process input
+                try {
+                    baseCommand.HandleInput(new(input));
+                } catch (Exception e) {
+                    Console.WriteLine(e.Message);
+                }
             }
         }
     }
