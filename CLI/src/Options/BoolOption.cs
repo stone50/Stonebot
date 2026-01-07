@@ -1,7 +1,7 @@
 ﻿namespace StonebotCLI.Options {
     using System;
 
-    internal class BoolOption(string[] aliases, bool defaultValue) : Option<bool>(aliases, defaultValue) {
+    internal class BoolOption(string[] aliases, bool? defaultValue = null) : ValueOption<bool>(aliases, defaultValue) {
         internal override bool GetValue(string valueString) =>
             valueString.Equals("t", StringComparison.OrdinalIgnoreCase) ||
             valueString.Equals("true", StringComparison.OrdinalIgnoreCase) ||

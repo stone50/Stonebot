@@ -1,7 +1,7 @@
 ﻿namespace StonebotCLI.Options {
     using System;
 
-    internal class IntOption(string[] aliases, int defaultValue) : Option<int>(aliases, defaultValue) {
+    internal class IntOption(string[] aliases, int? defaultValue = null) : ValueOption<int>(aliases, defaultValue) {
         internal override int GetValue(string valueString) =>
             int.TryParse(valueString, out var result)
                 ? result
