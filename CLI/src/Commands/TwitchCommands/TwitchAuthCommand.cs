@@ -1,9 +1,6 @@
 ﻿namespace StonebotCLI.Commands.TwitchCommands {
     using StonebotCLI.Options;
-    using StonebotCore;
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
+    using System.Collections.ObjectModel;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -29,7 +26,7 @@
 
         protected override Task ExecuteAsync(
             ArgReader argReader,
-            Dictionary<Option, string> options,
+            ReadOnlyDictionary<Option, string> options,
             Command? subCommand,
             CancellationToken cancellationToken
         ) {
@@ -38,28 +35,17 @@
             var methodOption = ((EnumOption<Method>)_options[0]).GetValue(options);
             switch (methodOption) {
                 case Method.Full:
-                    return AuthorizeTwitchAsync(options, cancellationToken);
+                    // TODO
+                    break;
                 case Method.Refresh:
-                    return Interface.RefreshTwitchAuthAsync(cancellationToken);
+                    // TODO
+                    break;
                 case Method.TryRefreshThenFull:
-                    try {
-                        return Interface.RefreshTwitchAuthAsync(cancellationToken);
-                    } catch (Exception) {
-                        // TODO: log the error
-                        return AuthorizeTwitchAsync(options, cancellationToken);
-                    }
+                    // TODO
+                    break;
             }
 
             return Task.CompletedTask;
-        }
-
-        private async Task AuthorizeTwitchAsync(Dictionary<Option, string> options, CancellationToken cancellationToken) {
-            var html = ((StringOption)_options[1]).GetValue(options);
-            if (File.Exists(html)) {
-                html = await File.ReadAllTextAsync(html, cancellationToken).ConfigureAwait(false);
-            }
-
-            await Interface.AuthorizeTwitchAsync(html, cancellationToken).ConfigureAwait(false);
         }
     }
 }

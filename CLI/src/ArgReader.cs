@@ -1,5 +1,5 @@
 ﻿namespace StonebotCLI {
-    internal class ArgReader {
+    internal sealed class ArgReader {
         private readonly string[] _args;
         private int _index = 0;
 

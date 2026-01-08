@@ -1,7 +1,7 @@
 ﻿namespace StonebotCLI.Commands {
     using StonebotCLI.Commands.TwitchCommands;
     using System;
-    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -12,7 +12,7 @@
     ) {
         protected override Task ExecuteAsync(
             ArgReader argReader,
-            Dictionary<Option, string> options,
+            ReadOnlyDictionary<Option, string> options,
             Command? subCommand,
             CancellationToken cancellationToken
         ) => subCommand != null

@@ -1,5 +1,5 @@
 ﻿namespace StonebotCore.Models {
-    internal class Config {
+    internal sealed class Config {
         public string ClientId { get; set; } = "";
     }
 }

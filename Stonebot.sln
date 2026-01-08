@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StonebotCLI", "CLI\Stonebot
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StonebotDashboard", "Dashboard\StonebotDashboard.csproj", "{B9DC4B7C-583E-4244-8B25-34C19B5D08E1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StonebotDaemon", "Daemon\StonebotDaemon.csproj", "{1E9DC5A6-F97F-4129-838F-2E9D85D23139}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{B9DC4B7C-583E-4244-8B25-34C19B5D08E1}.Release|x64.Build.0 = Release|Any CPU
 		{B9DC4B7C-583E-4244-8B25-34C19B5D08E1}.Release|x86.ActiveCfg = Release|Any CPU
 		{B9DC4B7C-583E-4244-8B25-34C19B5D08E1}.Release|x86.Build.0 = Release|Any CPU
+		{1E9DC5A6-F97F-4129-838F-2E9D85D23139}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E9DC5A6-F97F-4129-838F-2E9D85D23139}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E9DC5A6-F97F-4129-838F-2E9D85D23139}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1E9DC5A6-F97F-4129-838F-2E9D85D23139}.Debug|x64.Build.0 = Debug|Any CPU
+		{1E9DC5A6-F97F-4129-838F-2E9D85D23139}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1E9DC5A6-F97F-4129-838F-2E9D85D23139}.Debug|x86.Build.0 = Debug|Any CPU
+		{1E9DC5A6-F97F-4129-838F-2E9D85D23139}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E9DC5A6-F97F-4129-838F-2E9D85D23139}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E9DC5A6-F97F-4129-838F-2E9D85D23139}.Release|x64.ActiveCfg = Release|Any CPU
+		{1E9DC5A6-F97F-4129-838F-2E9D85D23139}.Release|x64.Build.0 = Release|Any CPU
+		{1E9DC5A6-F97F-4129-838F-2E9D85D23139}.Release|x86.ActiveCfg = Release|Any CPU
+		{1E9DC5A6-F97F-4129-838F-2E9D85D23139}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

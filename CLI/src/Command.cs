@@ -1,6 +1,7 @@
 ﻿namespace StonebotCLI {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading;
@@ -14,7 +15,7 @@
 
         protected abstract Task ExecuteAsync(
             ArgReader argReader,
-            Dictionary<Option, string> optionMap,
+            ReadOnlyDictionary<Option, string> optionMap,
             Command? subCommand,
             CancellationToken cancellationToken
         );
@@ -25,14 +26,14 @@
             await ExecuteAsync(argReader, optionMap, subCommand, cancellationToken);
         }
 
-        private Dictionary<Option, string> ParseOptions(ArgReader argReader) {
+        private ReadOnlyDictionary<Option, string> ParseOptions(ArgReader argReader) {
             var optionMap = new Dictionary<Option, string>();
             while (argReader.Peek()?.StartsWith('-') ?? false) {
                 var option = ParseOption(argReader);
                 optionMap.Add(option.Key, option.Value);
             }
 
-            return optionMap;
+            return new(optionMap);
         }
 
         private KeyValuePair<Option, string> ParseOption(ArgReader argReader) {

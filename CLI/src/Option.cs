@@ -1,6 +1,6 @@
 ﻿namespace StonebotCLI {
     using System;
-    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
 
     internal abstract class Option(string[] aliases) {
         internal readonly string[] Aliases = aliases;
@@ -11,7 +11,7 @@
 
         internal abstract TValue GetValue(string valueString);
 
-        internal TValue GetValue(Dictionary<Option, string> optionMap) =>
+        internal TValue GetValue(ReadOnlyDictionary<Option, string> optionMap) =>
             optionMap.TryGetValue(this, out var valueString)
                 ? GetValue(valueString)
                 : _defaultValue ?? throw new Exception($"The value for option {Aliases[0]} is required");
@@ -22,7 +22,7 @@
 
         internal abstract TValue GetValue(string valueString);
 
-        internal TValue GetValue(Dictionary<Option, string> optionMap) =>
+        internal TValue GetValue(ReadOnlyDictionary<Option, string> optionMap) =>
             optionMap.TryGetValue(this, out var valueString)
                 ? GetValue(valueString)
                 : _defaultValue ?? throw new Exception($"The value for option {Aliases[0]} is required");
