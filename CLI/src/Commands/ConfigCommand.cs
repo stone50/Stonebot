@@ -1,18 +1,16 @@
 ﻿namespace StonebotCLI.Commands {
+    using StonebotCLI.Commands.ConfigCommands;
     using System;
     using System.Collections.ObjectModel;
     using System.Threading;
     using System.Threading.Tasks;
 
-    internal sealed class BaseCommand() : Command(
-        aliases: ["StonebotCLI"],
+    internal sealed class ConfigCommand() : Command(
+        aliases: ["config", "settings"],
         options: [],
         subCommands: [
-            new StartCommand(),
-            new StopCommand(),
-            new StatusCommand(),
-            new ConfigCommand(),
-            new TwitchCommand()
+            new ConfigLoadCommand(),
+            new ConfigSetCommand()
         ]
     ) {
         protected override Task ExecuteAsync(
@@ -20,8 +18,7 @@
             ReadOnlyDictionary<Option, string> options,
             Command? subCommand,
             CancellationToken cancellationToken
-        ) =>
-            subCommand != null
+        ) => subCommand != null
                 ? subCommand.HandleInputAsync(argReader, cancellationToken)
                 : throw new Exception(
                     $"Sub-command for command `{_aliases[0]}` must be one of:\n" +
