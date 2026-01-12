@@ -38,20 +38,20 @@
             using var client = new HttpClient();
             switch (method) {
                 case Method.Full:
-                    var fullAuthResponse = await Utils.SendPostRequestAsync(client, port, "/auth/twitch/start", $"{{\"Html\":\"{html}\"}}");
+                    var fullAuthResponse = await Utils.SendPostRequestAsync(client, port, "/auth/twitch/start", $"{{\"Html\":\"{html}\"}}", cancellationToken);
                     _ = fullAuthResponse.EnsureSuccessStatusCode();
                     break;
                 case Method.Refresh:
-                    var refreshAuthResponse = await Utils.SendPostRequestAsync(client, port, "/auth/twitch/refresh");
+                    var refreshAuthResponse = await Utils.SendPostRequestAsync(client, port, "/auth/twitch/refresh", null, cancellationToken);
                     _ = refreshAuthResponse.EnsureSuccessStatusCode();
                     break;
                 case Method.TryRefreshThenFull:
-                    var tryRefreshAuthResponse = await Utils.SendPostRequestAsync(client, port, "/auth/twitch/refresh");
+                    var tryRefreshAuthResponse = await Utils.SendPostRequestAsync(client, port, "/auth/twitch/refresh", null, cancellationToken);
                     if (tryRefreshAuthResponse.IsSuccessStatusCode) {
                         break;
                     }
 
-                    var authResponse = await Utils.SendPostRequestAsync(client, port, "/auth/twitch/start", $"{{\"Html\":\"{html}\"}}");
+                    var authResponse = await Utils.SendPostRequestAsync(client, port, "/auth/twitch/start", $"{{\"Html\":\"{html}\"}}", cancellationToken);
                     _ = authResponse.EnsureSuccessStatusCode();
                     break;
             }

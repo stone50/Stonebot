@@ -10,6 +10,7 @@
         subCommands: [
             new StartCommand(),
             new StopCommand(),
+            new StatusCommand(),
             new TwitchCommand()
         ]
     ) {

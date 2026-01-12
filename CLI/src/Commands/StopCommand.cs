@@ -16,7 +16,7 @@
             CancellationToken cancellationToken
         ) {
             var port = GetValueOptionValue<PortOption, int>(_options[0], options);
-            return Utils.SendPostRequestAsync(new(), port, "/stop");
+            return Utils.SendPostRequestAsync(new(), port, "/stop", null, cancellationToken);
         }
     }
 }
