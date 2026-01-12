@@ -36,6 +36,7 @@
                         _ = app.UseRouting();
                         _ = app.UseEndpoints(endpoints => {
                             _ = endpoints.MapGet("/health", RequestDelegates.GetHealth);
+                            _ = endpoints.MapPost("/stop", RequestDelegates.PostStop);
                             _ = endpoints.MapPost("/subscriber", RequestDelegates.PostSubscriber);
                             _ = endpoints.MapGet("/subscriber/{subscriberId}", RequestDelegates.GetSubscriber);
                             _ = endpoints.MapDelete("/subscriber/{subscriberId}", RequestDelegates.DeleteSubscriber);

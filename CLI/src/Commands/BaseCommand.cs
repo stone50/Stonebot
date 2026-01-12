@@ -9,6 +9,7 @@
         options: [],
         subCommands: [
             new StartCommand(),
+            new StopCommand(),
             new TwitchCommand()
         ]
     ) {

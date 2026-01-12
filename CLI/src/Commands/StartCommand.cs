@@ -1,6 +1,5 @@
 ﻿namespace StonebotCLI.Commands {
     using StonebotCLI.Options;
-    using System;
     using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.Threading;
