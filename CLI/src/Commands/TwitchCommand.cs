@@ -5,7 +5,7 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    internal class TwitchCommand() : Command(
+    internal sealed class TwitchCommand() : Command(
         aliases: ["twitch"],
         options: [],
         subCommands: [new TwitchAuthCommand()]

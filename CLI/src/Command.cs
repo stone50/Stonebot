@@ -26,6 +26,18 @@
             await ExecuteAsync(argReader, optionMap, subCommand, cancellationToken);
         }
 
+        protected static TValue GetRefOptionValue<TOption, TValue>(
+             Option option,
+             ReadOnlyDictionary<Option, string> options
+         ) where TValue : class where TOption : RefOption<TValue> =>
+             ((TOption)option).GetValue(options);
+
+        protected static TValue GetValueOptionValue<TOption, TValue>(
+            Option option,
+            ReadOnlyDictionary<Option, string> options
+        ) where TValue : struct where TOption : ValueOption<TValue> =>
+            ((TOption)option).GetValue(options);
+
         private ReadOnlyDictionary<Option, string> ParseOptions(ArgReader argReader) {
             var optionMap = new Dictionary<Option, string>();
             while (argReader.Peek()?.StartsWith('-') ?? false) {

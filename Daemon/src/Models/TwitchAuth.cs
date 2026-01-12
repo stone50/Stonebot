@@ -1,5 +1,5 @@
 namespace StonebotDaemon.Models {
     internal sealed class TwitchAuth {
-        public string? Html;
+        public string? Html { get; set; }
     }
 }

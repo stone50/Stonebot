@@ -1,14 +1,16 @@
 ﻿namespace StonebotCLI.Commands.TwitchCommands {
     using StonebotCLI.Options;
     using System.Collections.ObjectModel;
+    using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
 
-    internal class TwitchAuthCommand() : Command(
-        aliases: ["auth", "authorize", "login"],
+    internal sealed class TwitchAuthCommand() : Command(
+        aliases: ["authorize", "auth", "login"],
         options: [
+            new PortOption(),
             new EnumOption<Method>(
-                aliases: ["-m", "--method"],
+                aliases: ["--method", "-m"],
                 defaultValue: Method.TryRefreshThenFull
             ),
             new StringOption(
@@ -24,28 +26,35 @@
             TryRefreshThenFull,
         }
 
-        protected override Task ExecuteAsync(
+        protected override async Task ExecuteAsync(
             ArgReader argReader,
             ReadOnlyDictionary<Option, string> options,
             Command? subCommand,
             CancellationToken cancellationToken
         ) {
-            // TODO: check if subCommand is not null; it should always be null here
-
-            var methodOption = ((EnumOption<Method>)_options[0]).GetValue(options);
-            switch (methodOption) {
+            var port = GetValueOptionValue<PortOption, int>(_options[0], options);
+            var method = GetValueOptionValue<EnumOption<Method>, Method>(_options[1], options);
+            var html = GetRefOptionValue<StringOption, string>(_options[2], options);
+            using var client = new HttpClient();
+            switch (method) {
                 case Method.Full:
-                    // TODO
+                    var fullAuthResponse = await Utils.SendPostRequestAsync(client, port, "/auth/twitch/start", $"{{\"Html\":\"{html}\"}}");
+                    _ = fullAuthResponse.EnsureSuccessStatusCode();
                     break;
                 case Method.Refresh:
-                    // TODO
+                    var refreshAuthResponse = await Utils.SendPostRequestAsync(client, port, "/auth/twitch/refresh");
+                    _ = refreshAuthResponse.EnsureSuccessStatusCode();
                     break;
                 case Method.TryRefreshThenFull:
-                    // TODO
+                    var tryRefreshAuthResponse = await Utils.SendPostRequestAsync(client, port, "/auth/twitch/refresh");
+                    if (tryRefreshAuthResponse.IsSuccessStatusCode) {
+                        break;
+                    }
+
+                    var authResponse = await Utils.SendPostRequestAsync(client, port, "/auth/twitch/start", $"{{\"Html\":\"{html}\"}}");
+                    _ = authResponse.EnsureSuccessStatusCode();
                     break;
             }
-
-            return Task.CompletedTask;
         }
     }
 }

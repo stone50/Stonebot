@@ -33,6 +33,10 @@
             string authorizationCode,
             string redirectUrl,
             CancellationToken cancellationToken
-        ) => Twitch.Auth.AuthorizeFromCodeAsync(authorizationCode, redirectUrl, cancellationToken);
+        ) => Twitch.Auth.AuthorizeFromCodeAsync(
+            authorizationCode,
+            redirectUrl,
+            cancellationToken
+        );
     }
 }

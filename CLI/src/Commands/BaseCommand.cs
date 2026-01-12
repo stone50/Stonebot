@@ -4,10 +4,13 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    internal class BaseCommand() : Command(
+    internal sealed class BaseCommand() : Command(
         aliases: ["StonebotCLI"],
         options: [],
-        subCommands: [new TwitchCommand()]
+        subCommands: [
+            new StartCommand(),
+            new TwitchCommand()
+        ]
     ) {
         protected override Task ExecuteAsync(
             ArgReader argReader,
