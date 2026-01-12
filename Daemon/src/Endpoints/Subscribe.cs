@@ -2,17 +2,19 @@ namespace StonebotDaemon.Endpoints {
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
     using StonebotDaemon.Models;
-    using System;
     using System.Text.Json;
 
     internal static partial class RequestDelegates {
         internal static RequestDelegate PostSubscriber = async context => {
-            SubscriberRegistration? registration;
-            try {
-                registration = await JsonSerializer.DeserializeAsync<SubscriberRegistration>(context.Request.Body);
-            } catch (Exception e) {
-                context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                await context.Response.WriteAsync($"Invalid JSON payload: {e.Message}");
+            SubscriberRegistration? registration = null;
+            var success = await Utils.TryDo(
+                async () => registration = await JsonSerializer.DeserializeAsync<SubscriberRegistration>(
+                    context.Request.Body,
+                    cancellationToken: context.RequestAborted
+                ),
+                context
+            );
+            if (!success) {
                 return;
             }
 

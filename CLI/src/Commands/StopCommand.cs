@@ -1,5 +1,6 @@
 ﻿namespace StonebotCLI.Commands {
     using StonebotCLI.Options;
+    using StonebotSharedConstants;
     using System.Collections.ObjectModel;
     using System.Threading;
     using System.Threading.Tasks;
@@ -16,7 +17,7 @@
             CancellationToken cancellationToken
         ) {
             var port = GetValueOptionValue<PortOption, int>(_options[0], options);
-            return Utils.SendPostRequestAsync(new(), port, "/stop", null, cancellationToken);
+            return Utils.SendPostRequestAsync(new(), port, EndpointPaths.PostStop, null, cancellationToken);
         }
     }
 }

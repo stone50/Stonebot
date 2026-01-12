@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Core\StonebotCore.csproj" />
+    <ProjectReference Include="..\StonebotSharedConstants\StonebotSharedConstants.csproj" />
   </ItemGroup>
 
 </Project>

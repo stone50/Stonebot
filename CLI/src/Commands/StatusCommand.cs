@@ -1,5 +1,6 @@
 ﻿namespace StonebotCLI.Commands {
     using StonebotCLI.Options;
+    using StonebotSharedConstants;
     using System;
     using System.Collections.ObjectModel;
     using System.Net.Http;
@@ -20,7 +21,7 @@
             var port = GetValueOptionValue<PortOption, int>(_options[0], options);
             HttpResponseMessage response;
             try {
-                response = await Utils.SendGetRequestAsync(new(), port, "/health", cancellationToken);
+                response = await Utils.SendGetRequestAsync(new(), port, EndpointPaths.GetHealth, cancellationToken);
                 Console.WriteLine(response.IsSuccessStatusCode ? "Running" : "Not running");
             } catch {
                 Console.WriteLine("Not running");

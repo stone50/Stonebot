@@ -1,12 +1,13 @@
 ﻿namespace StonebotCLI.Commands.TwitchCommands {
     using StonebotCLI.Options;
+    using StonebotSharedConstants;
     using System.Collections.ObjectModel;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
 
     internal sealed class TwitchAuthCommand() : Command(
-        aliases: ["authorize", "auth", "login"],
+        aliases: ["auth", "authorize", "login"],
         options: [
             new PortOption(),
             new EnumOption<Method>(
@@ -38,20 +39,20 @@
             using var client = new HttpClient();
             switch (method) {
                 case Method.Full:
-                    var fullAuthResponse = await Utils.SendPostRequestAsync(client, port, "/auth/twitch/start", $"{{\"Html\":\"{html}\"}}", cancellationToken);
+                    var fullAuthResponse = await Utils.SendPostRequestAsync(client, port, EndpointPaths.PostAuthTwitchStart, $"{{\"Html\":\"{html}\"}}", cancellationToken);
                     _ = fullAuthResponse.EnsureSuccessStatusCode();
                     break;
                 case Method.Refresh:
-                    var refreshAuthResponse = await Utils.SendPostRequestAsync(client, port, "/auth/twitch/refresh", null, cancellationToken);
+                    var refreshAuthResponse = await Utils.SendPostRequestAsync(client, port, EndpointPaths.PostAuthTwitchRefresh, null, cancellationToken);
                     _ = refreshAuthResponse.EnsureSuccessStatusCode();
                     break;
                 case Method.TryRefreshThenFull:
-                    var tryRefreshAuthResponse = await Utils.SendPostRequestAsync(client, port, "/auth/twitch/refresh", null, cancellationToken);
+                    var tryRefreshAuthResponse = await Utils.SendPostRequestAsync(client, port, EndpointPaths.PostAuthTwitchRefresh, null, cancellationToken);
                     if (tryRefreshAuthResponse.IsSuccessStatusCode) {
                         break;
                     }
 
-                    var authResponse = await Utils.SendPostRequestAsync(client, port, "/auth/twitch/start", $"{{\"Html\":\"{html}\"}}", cancellationToken);
+                    var authResponse = await Utils.SendPostRequestAsync(client, port, EndpointPaths.PostAuthTwitchStart, $"{{\"Html\":\"{html}\"}}", cancellationToken);
                     _ = authResponse.EnsureSuccessStatusCode();
                     break;
             }

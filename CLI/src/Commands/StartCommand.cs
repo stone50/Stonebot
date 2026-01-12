@@ -10,7 +10,7 @@
         options: [
             new PortOption(),
             new StringOption(
-                aliases: ["--daemon-file-path", "-f"],
+                aliases: ["--daemon-file-path", "--file", "-f"],
                 defaultValue: "StonebotDaemon"
             ),
         ],
