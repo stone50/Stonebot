@@ -1,4 +1,4 @@
-namespace StonebotDaemon.Subscription {
+namespace StonebotDaemon {
     using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Concurrent;
@@ -6,7 +6,7 @@ namespace StonebotDaemon.Subscription {
     using System.Text;
     using System.Threading.Tasks;
 
-    internal class SubscriberRegistry(ILogger<SubscriberRegistry> logger, IHttpClientFactory httpClientFactory) {
+    internal sealed class SubscriberRegistry(ILogger<SubscriberRegistry> logger, IHttpClientFactory httpClientFactory) {
         private readonly ConcurrentDictionary<string, string> _subscribers = [];
         private readonly HttpClient _httpClient = httpClientFactory.CreateClient("Subscribers");
 

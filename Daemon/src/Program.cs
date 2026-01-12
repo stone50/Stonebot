@@ -4,7 +4,6 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using StonebotDaemon.Endpoints;
-    using StonebotDaemon.Subscription;
     using System;
 
     public static class Program {
@@ -27,6 +26,7 @@
                 .UseSystemd()
                 .ConfigureServices(services => {
                     _ = services.AddSingleton<SubscriberRegistry>();
+                    _ = services.AddSingleton<TwitchAuthCache>();
                     _ = services.AddHostedService<Worker>();
                     _ = services.AddHttpClient("Subscribers");
                 })
@@ -39,6 +39,9 @@
                             _ = endpoints.MapPost("/subscriber", RequestDelegates.PostSubscriber);
                             _ = endpoints.MapGet("/subscriber/{subscriberId}", RequestDelegates.GetSubscriber);
                             _ = endpoints.MapDelete("/subscriber/{subscriberId}", RequestDelegates.DeleteSubscriber);
+                            _ = endpoints.MapPost("/auth/twitch/start", RequestDelegates.PostAuthTwitchStart);
+                            _ = endpoints.MapPost("/auth/twitch", RequestDelegates.PostAuthTwitch);
+                            _ = endpoints.MapPost("/auth/twitch/refresh", RequestDelegates.PostAuthTwitchRefresh);
                         });
                     });
                 })

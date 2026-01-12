@@ -1,7 +1,7 @@
 namespace StonebotDaemon.Endpoints {
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
-    using StonebotDaemon.Subscription;
+    using StonebotDaemon.Models;
     using System;
     using System.Text.Json;
 

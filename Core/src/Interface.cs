@@ -26,9 +26,13 @@
         public static Task RefreshTwitchAuthAsync(CancellationToken cancellationToken) =>
             Twitch.Auth.RefreshAuthorizationAsync(cancellationToken);
 
-        public static Task AuthorizeTwitchAsync(
-            string redirectHtml,
+        public static string StartAuthorization(string redirectUrl) =>
+            Twitch.Auth.StartAuthorization(redirectUrl);
+
+        public static Task AuthorizeTwitchFromCodeAsync(
+            string authorizationCode,
+            string redirectUrl,
             CancellationToken cancellationToken
-        ) => Twitch.Auth.AuthorizeAsync(redirectHtml, cancellationToken);
+        ) => Twitch.Auth.AuthorizeFromCodeAsync(authorizationCode, redirectUrl, cancellationToken);
     }
 }

@@ -11,4 +11,8 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="10.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Core\StonebotCore.csproj" />
+  </ItemGroup>
+
 </Project>
