@@ -1,16 +1,15 @@
-﻿#if !WINDOWS
-namespace StonebotCore.ResourceManagement {
+﻿namespace StonebotCore.ResourceManagement {
     using Microsoft.AspNetCore.DataProtection;
     using System.IO;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
 
-    internal sealed class DataProtectionFileStore : IProtectedFileStore {
+    internal sealed class DataProtectionFileStore {
         private readonly IDataProtector _protector;
 
-        internal DataProtectionFileStore() {
-            var keyDirPath = Path.Join(ResourceManager.StonebotDataDirPath, "keys");
+        internal DataProtectionFileStore(string dirPath) {
+            var keyDirPath = Path.Join(dirPath, "keys");
             var keyDirInfo = Directory.CreateDirectory(keyDirPath);
             var provider = DataProtectionProvider.Create(keyDirInfo, opts => opts.SetApplicationName("Stonebot"));
             _protector = provider.CreateProtector("Stonebot.Credentials.v1");
@@ -28,4 +27,3 @@ namespace StonebotCore.ResourceManagement {
         }
     }
 }
-#endif

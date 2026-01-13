@@ -28,7 +28,6 @@ namespace StonebotDaemon.Endpoints {
 
             var authCache = context.RequestServices.GetRequiredService<TwitchAuthCache>();
             authCache.Html = auth.Html;
-            // TODO: fix error "Internal server error: The payload was invalid. For more information go to https://aka.ms/aspnet/dataprotectionwarning"
             authCache.State = Interface.StartAuthorization($"{context.Request.Scheme}://{context.Request.Host}{EndpointPaths.GetAuthTwitch}");
             context.Response.StatusCode = StatusCodes.Status200OK;
             await context.Response.WriteAsync("OK");
@@ -65,7 +64,7 @@ namespace StonebotDaemon.Endpoints {
             }
 
             context.Response.StatusCode = StatusCodes.Status200OK;
-            await context.Response.WriteAsync("OK");
+            await context.Response.WriteAsync(authCache.Html ?? "OK");
             var subscriberRegistry = context.RequestServices.GetRequiredService<SubscriberRegistry>();
             await subscriberRegistry.SendEventToSubscribersAsync("Twitch authorization success");
         };
