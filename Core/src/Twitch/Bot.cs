@@ -1,5 +1,6 @@
 ﻿namespace StonebotCore.Twitch {
     using System;
+    using System.Threading.Tasks;
     using TwitchLib.Client.Events;
     using TwitchLib.Client.Models;
 
@@ -15,10 +16,10 @@
                 credentials,
                 channel: "stone5555"
             );
-            client.OnLog += OnLog;
+            client.OnMessageReceived += OnMessageReceived;
         }
 
-        private static void OnLog(object? sender, OnLogArgs e) =>
-            Console.WriteLine($"{e.DateTime}: {e.BotUsername} - {e.Data}");
+        private static async Task OnMessageReceived(object? sender, OnMessageReceivedArgs args) =>
+            Console.WriteLine($"{DateTime.UtcNow}: {args.ChatMessage.Username} - {args.ChatMessage.Message}");
     }
 }

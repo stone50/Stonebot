@@ -18,7 +18,7 @@
             CancellationToken cancellationToken
         ) {
             var port = GetValueOptionValue<PortOption, int>(_options[0], options);
-            return Utils.SendPostRequestAsync(new(), port, EndpointPaths.PutConfigLoad, null, cancellationToken);
+            return Utils.SendPostRequestAsync(new(), port, EndpointPaths.PostConfigLoad, null, cancellationToken);
         }
     }
 }

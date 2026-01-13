@@ -3,12 +3,16 @@
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Serilog;
     using StonebotDaemon.Endpoints;
     using StonebotSharedConstants;
     using System;
 
     public static class Program {
         public static void Main(string[] args) {
+            // TODO: configure logger
+            Log.Logger = new LoggerConfiguration().WriteTo.File("logs/temp.txt", rollingInterval: RollingInterval.Day).CreateLogger();
+
             var envPort = Environment.GetEnvironmentVariable("STONEBOT_PORT");
             int port;
             if (string.IsNullOrWhiteSpace(envPort)) {
@@ -23,6 +27,7 @@
             }
 
             Host.CreateDefaultBuilder(args)
+                .UseSerilog()
                 .UseWindowsService()
                 .UseSystemd()
                 .ConfigureServices(services => {

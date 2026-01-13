@@ -28,20 +28,21 @@ namespace StonebotDaemon.Endpoints {
 
             var authCache = context.RequestServices.GetRequiredService<TwitchAuthCache>();
             authCache.Html = auth.Html;
-            authCache.State = Interface.StartAuthorization($"{context.Request.PathBase}{EndpointPaths.GetAuthTwitch}");
+            // TODO: fix error "Internal server error: The payload was invalid. For more information go to https://aka.ms/aspnet/dataprotectionwarning"
+            authCache.State = Interface.StartAuthorization($"{context.Request.Scheme}://{context.Request.Host}{EndpointPaths.GetAuthTwitch}");
             context.Response.StatusCode = StatusCodes.Status200OK;
             await context.Response.WriteAsync("OK");
         };
 
         internal static RequestDelegate GetAuthTwitch = async context => {
-            var code = context.Request.RouteValues["code"]?.ToString();
+            var code = context.Request.Query["code"].ToString();
             if (string.IsNullOrWhiteSpace(code)) {
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 await context.Response.WriteAsync("Missing code");
                 return;
             }
 
-            var state = context.Request.RouteValues["state"]?.ToString();
+            var state = context.Request.Query["state"].ToString();
             if (string.IsNullOrWhiteSpace(state)) {
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 await context.Response.WriteAsync("Missing state");
@@ -56,7 +57,7 @@ namespace StonebotDaemon.Endpoints {
             }
 
             var success = await Utils.TryDo(
-                () => Interface.AuthorizeTwitchFromCodeAsync(code, $"{context.Request.PathBase}{EndpointPaths.GetAuthTwitch}", context.RequestAborted),
+                () => Interface.AuthorizeTwitchFromCodeAsync(code, $"{context.Request.Scheme}://{context.Request.Host}{EndpointPaths.GetAuthTwitch}", context.RequestAborted),
                 context
             );
             if (!success) {
