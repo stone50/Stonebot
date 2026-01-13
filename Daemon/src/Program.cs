@@ -4,15 +4,28 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Serilog;
+    using Serilog.Events;
     using StonebotDaemon.Endpoints;
     using StonebotSharedConstants;
     using System;
 
     public static class Program {
         public static void Main(string[] args) {
-            // TODO: configure logger
-            Log.Logger = new LoggerConfiguration().WriteTo.File("logs/temp.txt", rollingInterval: RollingInterval.Day).CreateLogger();
-
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? Environments.Production;
+            var isDevelopment = environment == Environments.Development;
+            var outputTemplate = "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level:u3}] {Message:lj}{NewLine}{Exception}";
+            var exceptionTemplate = isDevelopment ? "{Exception}" : "{Exception:Message}";
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Is(isDevelopment ? LogEventLevel.Verbose : LogEventLevel.Information)
+                .MinimumLevel.Override("Microsoft", isDevelopment ? LogEventLevel.Information : LogEventLevel.Warning)
+                .WriteTo.File(
+                    path: "logs/stonebot-.log",
+                    rollingInterval: RollingInterval.Day,
+                    retainedFileCountLimit: 10,
+                    outputTemplate: outputTemplate.Replace("{Exception}", exceptionTemplate),
+                    shared: true
+                )
+                .CreateLogger();
             var envPort = Environment.GetEnvironmentVariable("STONEBOT_PORT");
             int port;
             if (string.IsNullOrWhiteSpace(envPort)) {
