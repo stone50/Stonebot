@@ -1,9 +1,12 @@
 ﻿namespace StonebotCore {
+    using Microsoft.Extensions.Logging;
     using StonebotCore.ResourceManagement;
     using System.Threading;
     using System.Threading.Tasks;
 
     public static class Interface {
+        public sealed class TwitchClientLog { }
+
         public static Task LoadConfigAsync(CancellationToken cancellationToken) =>
             ResourceManager.LoadConfigAsync(cancellationToken);
 
@@ -38,5 +41,11 @@
             redirectUrl,
             cancellationToken
         );
+
+        public static void ConfigureTwtichClient(ILogger<TwitchClientLog>? logger) => Twitch.Bot.ConfigureClient(logger);
+
+        public static Task ConnectTwtichAsync() => Twitch.Access.Client.ConnectAsync();
+
+        public static Task DisconnectTwtichAsync() => Twitch.Access.Client.DisconnectAsync();
     }
 }

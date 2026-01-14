@@ -8,7 +8,12 @@
     internal sealed class TwitchCommand() : Command(
         aliases: ["twitch"],
         options: [],
-        subCommands: [new TwitchAuthCommand()]
+        subCommands: [
+            new TwitchAuthCommand(),
+            new TwitchConfigureClientCommand(),
+            new TwitchConnectCommand(),
+            new TwitchDisconnectCommand()
+        ]
     ) {
         protected override Task ExecuteAsync(
             ArgReader argReader,

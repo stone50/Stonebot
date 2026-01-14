@@ -59,12 +59,16 @@
                             _ = endpoints.MapPost(EndpointPaths.PostSubscriber, RequestDelegates.PostSubscriber);
                             _ = endpoints.MapGet(EndpointPaths.GetSubscriber, RequestDelegates.GetSubscriber);
                             _ = endpoints.MapDelete(EndpointPaths.DeleteSubscriber, RequestDelegates.DeleteSubscriber);
-                            _ = endpoints.MapPost(EndpointPaths.PostAuthTwitchStart, RequestDelegates.PostAuthTwitchStart);
+                            _ = endpoints.MapPost(EndpointPaths.PostTwitchAuthStart, RequestDelegates.PostTwitchAuthStart);
                             // TODO: add endpoint for serving a favicon
-                            _ = endpoints.MapGet(EndpointPaths.GetAuthTwitch, RequestDelegates.GetAuthTwitch);
-                            _ = endpoints.MapPost(EndpointPaths.PostAuthTwitchRefresh, RequestDelegates.PostAuthTwitchRefresh);
+                            _ = endpoints.MapGet(EndpointPaths.GetTwitchAuth, RequestDelegates.GetTwitchAuth);
+                            _ = endpoints.MapPost(EndpointPaths.PostTwitchAuthRefresh, RequestDelegates.PostTwitchAuthRefresh);
                             _ = endpoints.MapPost(EndpointPaths.PostConfigLoad, RequestDelegates.PostConfigLoad);
                             _ = endpoints.MapPatch(EndpointPaths.PatchConfigSet, RequestDelegates.PatchConfigSet);
+                            // TODO: add endpoint for getting config values
+                            _ = endpoints.MapPost(EndpointPaths.PostTwitchConfigureClient, RequestDelegates.PostTwitchConfigureClient);
+                            _ = endpoints.MapPost(EndpointPaths.PostTwitchConnect, RequestDelegates.PostTwitchConnect);
+                            _ = endpoints.MapPost(EndpointPaths.PostTwitchDisconnect, RequestDelegates.PostTwitchDisconnect);
                         });
                     });
                 })

@@ -17,7 +17,7 @@ namespace StonebotDaemon.Endpoints {
             HttpRequest,
             ILogger<TwitchAuthEndpoints>,
             IResult
-        > PostAuthTwitchStart = (
+        > PostTwitchAuthStart = (
             auth,
             authCache,
             request,
@@ -31,7 +31,7 @@ namespace StonebotDaemon.Endpoints {
 
             authCache.Html = auth.Html;
             var result = Utils.TryDo(
-                action: () => authCache.State = Interface.StartTwitchAuthorization($"http://localhost:{request.Host.Port ?? Port.Default}{EndpointPaths.GetAuthTwitch}"),
+                action: () => authCache.State = Interface.StartTwitchAuthorization($"http://localhost:{request.Host.Port ?? Port.Default}{EndpointPaths.GetTwitchAuth}"),
                 failMessage: "Could not start Twitch authorization",
                 logger
             );
@@ -53,7 +53,7 @@ namespace StonebotDaemon.Endpoints {
             ILogger<TwitchAuthEndpoints>,
             CancellationToken,
             Task<IResult>
-        > GetAuthTwitch = async (
+        > GetTwitchAuth = async (
             code,
             state,
             request,
@@ -93,7 +93,7 @@ namespace StonebotDaemon.Endpoints {
             var result = await Utils.TryDo(
                 action: ct => Interface.AuthorizeTwitchFromCodeAsync(
                     code,
-                    $"http://localhost:{request.Host.Port ?? Port.Default}{EndpointPaths.GetAuthTwitch}",
+                    $"http://localhost:{request.Host.Port ?? Port.Default}{EndpointPaths.GetTwitchAuth}",
                     ct
                 ),
                 failMessage: "Could not authorize Twitch",
@@ -124,7 +124,7 @@ namespace StonebotDaemon.Endpoints {
             ILogger<TwitchAuthEndpoints>,
             CancellationToken,
             Task<IResult>
-        > PostAuthTwitchRefresh = async (
+        > PostTwitchAuthRefresh = async (
             logger,
             cancellationToken
         ) => {
