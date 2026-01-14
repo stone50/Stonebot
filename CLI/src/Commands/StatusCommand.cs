@@ -19,10 +19,9 @@
         ) {
             var port = GetValueOptionValue<PortOption, int>(_options[0], options);
             try {
-                var response = await Utils.SendGetRequestAsync(new(), port, EndpointPaths.GetHealth, cancellationToken);
-                Console.WriteLine(response.IsSuccessStatusCode ? "Running" : "Not running");
+                _ = await Utils.SendGetRequestAsync(new(), port, EndpointPaths.GetHealth, cancellationToken);
             } catch {
-                Console.WriteLine("Not running");
+                Console.WriteLine(" - Not running");
             }
         }
     }

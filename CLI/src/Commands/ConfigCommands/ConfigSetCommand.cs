@@ -25,7 +25,7 @@
         ],
         subCommands: []
     ) {
-        protected override async Task ExecuteAsync(
+        protected override Task ExecuteAsync(
             ArgReader argReader,
             ReadOnlyDictionary<Option, string> options,
             Command? subCommand,
@@ -54,8 +54,7 @@
             }
 
             var bodyContent = $"{{{string.Join(',', valueJsonParts)}}}";
-            var response = await Utils.SendPatchRequestAsync(new(), port, EndpointPaths.PatchConfigSet, bodyContent, cancellationToken);
-            _ = response.EnsureSuccessStatusCode();
+            return Utils.SendPatchRequestAsync(new(), port, EndpointPaths.PatchConfigSet, bodyContent, cancellationToken);
         }
     }
 }

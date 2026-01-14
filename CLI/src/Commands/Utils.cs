@@ -1,4 +1,5 @@
 ﻿namespace StonebotCLI.Commands {
+    using System;
     using System.Net.Http;
     using System.Text;
     using System.Threading;
@@ -14,7 +15,7 @@
         internal static Task<HttpResponseMessage> SendPatchRequestAsync(HttpClient client, int port, string path, string? bodyContent, CancellationToken cancellationToken) =>
             SendRequestAsync(HttpMethod.Patch, client, port, path, bodyContent, cancellationToken);
 
-        internal static Task<HttpResponseMessage> SendRequestAsync(HttpMethod method, HttpClient client, int port, string path, string? bodyContent, CancellationToken cancellationToken) {
+        internal static async Task<HttpResponseMessage> SendRequestAsync(HttpMethod method, HttpClient client, int port, string path, string? bodyContent, CancellationToken cancellationToken) {
             var request = new HttpRequestMessage(method, $"http://localhost:{port}{path}");
             if (bodyContent != null) {
                 request.Content = new StringContent(
@@ -24,7 +25,10 @@
                 );
             }
 
-            return client.SendAsync(request, cancellationToken);
+            Console.Write($"{method} {request.RequestUri?.LocalPath}");
+            var response = await client.SendAsync(request, cancellationToken);
+            Console.Write($": {await response.Content.ReadAsStringAsync(cancellationToken)}");
+            return response;
         }
     }
 }

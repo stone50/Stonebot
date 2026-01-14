@@ -9,7 +9,6 @@
 
         public static async Task<int> Main(string[] args) {
             using var cancellationTokenSource = new CancellationTokenSource();
-
             Console.CancelKeyPress += (_, e) => {
                 e.Cancel = true;
                 cancellationTokenSource.Cancel();

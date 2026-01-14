@@ -17,7 +17,7 @@ namespace StonebotDaemon.Endpoints {
         ) => {
             logger.LogInformation("Stopping");
             lifetime.StopApplication();
-            return Results.Accepted("Stopping");
+            return Results.Accepted(value: "Stopping");
         };
     }
 }

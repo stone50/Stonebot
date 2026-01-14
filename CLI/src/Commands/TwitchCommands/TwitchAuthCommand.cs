@@ -27,7 +27,7 @@
             TryRefreshThenFull,
         }
 
-        protected override async Task ExecuteAsync(
+        protected override Task ExecuteAsync(
             ArgReader argReader,
             ReadOnlyDictionary<Option, string> options,
             Command? subCommand,
@@ -36,26 +36,20 @@
             var port = GetValueOptionValue<PortOption, int>(_options[0], options);
             var method = GetValueOptionValue<EnumOption<Method>, Method>(_options[1], options);
             var html = GetRefOptionValue<StringOption, string>(_options[2], options);
-            using var client = new HttpClient();
-            switch (method) {
-                case Method.Full:
-                    var fullAuthResponse = await Utils.SendPostRequestAsync(client, port, EndpointPaths.PostTwitchAuthStart, $"{{\"Html\":\"{html}\"}}", cancellationToken);
-                    _ = fullAuthResponse.EnsureSuccessStatusCode();
-                    break;
-                case Method.Refresh:
-                    var refreshAuthResponse = await Utils.SendPostRequestAsync(client, port, EndpointPaths.PostTwitchAuthRefresh, null, cancellationToken);
-                    _ = refreshAuthResponse.EnsureSuccessStatusCode();
-                    break;
-                case Method.TryRefreshThenFull:
-                    var tryRefreshAuthResponse = await Utils.SendPostRequestAsync(client, port, EndpointPaths.PostTwitchAuthRefresh, null, cancellationToken);
-                    if (tryRefreshAuthResponse.IsSuccessStatusCode) {
-                        break;
-                    }
+            var client = new HttpClient();
+            return method switch {
+                Method.Full => Utils.SendPostRequestAsync(client, port, EndpointPaths.PostTwitchAuthStart, $"{{\"Html\":\"{html}\"}}", cancellationToken),
+                Method.Refresh => Utils.SendPostRequestAsync(client, port, EndpointPaths.PostTwitchAuthRefresh, null, cancellationToken),
+                Method.TryRefreshThenFull => TryRefreshThenFull(client, port, html, cancellationToken),
+                _ => Task.CompletedTask,
+            };
+        }
 
-                    var authResponse = await Utils.SendPostRequestAsync(client, port, EndpointPaths.PostTwitchAuthStart, $"{{\"Html\":\"{html}\"}}", cancellationToken);
-                    _ = authResponse.EnsureSuccessStatusCode();
-                    break;
-            }
+        private static async Task<HttpResponseMessage> TryRefreshThenFull(HttpClient client, int port, string html, CancellationToken cancellationToken) {
+            var tryRefreshAuthResponse = await Utils.SendPostRequestAsync(client, port, EndpointPaths.PostTwitchAuthRefresh, null, cancellationToken);
+            return tryRefreshAuthResponse.IsSuccessStatusCode
+                ? tryRefreshAuthResponse
+                : await Utils.SendPostRequestAsync(client, port, EndpointPaths.PostTwitchAuthStart, $"{{\"Html\":\"{html}\"}}", cancellationToken);
         }
     }
 }
