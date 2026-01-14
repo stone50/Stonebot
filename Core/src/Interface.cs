@@ -14,7 +14,7 @@
             string clientId,
             CancellationToken cancellationToken
         ) {
-            Access.Config.ClientId = clientId;
+            Access.Config.TwitchClientId = clientId;
             return ResourceManager.SaveConfigAsync(cancellationToken);
         }
 
@@ -26,7 +26,7 @@
         public static Task RefreshTwitchAuthAsync(CancellationToken cancellationToken) =>
             Twitch.Auth.RefreshAuthorizationAsync(cancellationToken);
 
-        public static string StartAuthorization(string redirectUrl) =>
+        public static string StartTwitchAuthorization(string redirectUrl) =>
             Twitch.Auth.StartAuthorization(redirectUrl);
 
         public static Task AuthorizeTwitchFromCodeAsync(

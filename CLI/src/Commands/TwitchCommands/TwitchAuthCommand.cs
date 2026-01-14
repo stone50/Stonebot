@@ -16,7 +16,7 @@
             ),
             new StringOption(
                 aliases: ["--html"],
-                defaultValue: "You can close this tab"
+                defaultValue: "<h1>Success!</h1><p>You can close this tab</p>"
             ),
         ],
         subCommands: []

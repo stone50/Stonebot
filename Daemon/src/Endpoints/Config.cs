@@ -1,64 +1,86 @@
 namespace StonebotDaemon.Endpoints {
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Logging;
     using StonebotCore;
     using StonebotDaemon.Models;
-    using System.Text.Json;
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     internal static partial class RequestDelegates {
-        internal static RequestDelegate PostConfigLoad = async context => {
-            var success = await Utils.TryDo(
-                () => Interface.LoadConfigAsync(context.RequestAborted),
-                context
+        internal sealed class ConfigEndpoints { }
+
+        internal static readonly Func<
+            ILogger<ConfigEndpoints>,
+            CancellationToken,
+            Task<IResult>
+        > PostConfigLoad = async (
+            logger,
+            cancellationToken
+        ) => {
+            logger.LogInformation("Loading config");
+            var result = await Utils.TryDo(
+                action: ct => Interface.LoadConfigAsync(ct),
+                failMessage: "Could not load config",
+                logger,
+                cancellationToken
             );
-            if (!success) {
-                return;
+            if (result != null) {
+                return result;
             }
 
-            context.Response.StatusCode = StatusCodes.Status200OK;
-            await context.Response.WriteAsync("OK");
+            logger.LogInformation("Config loaded");
+            return Results.Ok("Config loaded");
         };
 
-        internal static RequestDelegate PatchConfigSet = async context => {
-            Config? config = null;
-            var success = await Utils.TryDo(
-                async () => config = await JsonSerializer.DeserializeAsync<Config>(
-                    context.Request.Body,
-                    cancellationToken: context.RequestAborted
-                ),
-                context
-            );
-            if (!success) {
-                return;
-            }
-
+        internal static readonly Func<
+            Config?,
+            ILogger<ConfigEndpoints>,
+            CancellationToken,
+            Task<IResult>
+        > PatchConfigSet = async (
+            config,
+            logger,
+            cancellationToken
+        ) => {
+            logger.LogInformation("Setting config value(s)");
             if (config == null) {
-                context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                await context.Response.WriteAsync("Invalid JSON payload");
-                return;
+                logger.LogDebug("Invalid JSON payload");
+                return Results.BadRequest("Invalid JSON payload");
             }
 
-            if (config.ClientId != null) {
-                success = await Utils.TryDo(
-                    () => Interface.SetTwitchClientIdAsync(config.ClientId, context.RequestAborted),
-                    context
+            if (config.TwitchClientId != null) {
+                logger.LogDebug("Setting Twitch client ID");
+                var result = await Utils.TryDo(
+                    action: ct => Interface.SetTwitchClientIdAsync(config.TwitchClientId, ct),
+                    failMessage: "Could not set Twitch client ID",
+                    logger,
+                    cancellationToken
                 );
-                if (!success) {
-                    return;
+                if (result != null) {
+                    return result;
                 }
+
+                logger.LogDebug("Twitch client ID set");
             }
 
-            if (config.ClientSecret != null) {
-                success = await Utils.TryDo(
-                    () => Interface.SetTwitchClientSecretAsync(config.ClientSecret, context.RequestAborted),
-                    context
+            if (config.TwitchClientSecret != null) {
+                logger.LogDebug("Setting Twitch client secret");
+                var result = await Utils.TryDo(
+                    action: ct => Interface.SetTwitchClientSecretAsync(config.TwitchClientSecret, ct),
+                    failMessage: "Could not set Twitch client secret",
+                    logger,
+                    cancellationToken
                 );
-                if (!success) {
-                    return;
+                if (result != null) {
+                    return result;
                 }
+
+                logger.LogDebug("Twitch client secret set");
             }
 
-            context.Response.StatusCode = StatusCodes.Status200OK;
-            await context.Response.WriteAsync("OK");
+            logger.LogInformation("Config value(s) set");
+            return Results.Ok("Config value(s) set");
         };
     }
 }

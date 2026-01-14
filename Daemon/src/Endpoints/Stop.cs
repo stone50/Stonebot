@@ -1,13 +1,23 @@
 namespace StonebotDaemon.Endpoints {
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
     using System;
 
     internal static partial class RequestDelegates {
-        internal static Delegate PostStop = async (HttpContext context, IHostApplicationLifetime lifetime) => {
-            context.Response.StatusCode = StatusCodes.Status202Accepted;
-            await context.Response.WriteAsync("Stopping");
+        internal sealed class StopEndpoints { }
+
+        internal static readonly Func<
+            IHostApplicationLifetime,
+            ILogger<StopEndpoints>,
+            IResult
+        > PostStop = (
+            lifetime,
+            logger
+        ) => {
+            logger.LogInformation("Stopping");
             lifetime.StopApplication();
+            return Results.Accepted("Stopping");
         };
     }
 }

@@ -19,7 +19,7 @@ namespace StonebotDaemon {
         internal async Task SendEventToSubscribersAsync(string data) {
             var content = new StringContent(data, Encoding.UTF8, "application/json");
             if (logger.IsEnabled(LogLevel.Information)) {
-                logger.LogInformation("Sending event to subscribers: {data}", data);
+                logger.LogInformation("Sending event to subscribers: {Data}", data);
             }
 
             foreach (var subscriber in _subscribers) {
@@ -51,6 +51,10 @@ namespace StonebotDaemon {
                 if (logger.IsEnabled(LogLevel.Information)) {
                     logger.LogInformation("Sent event to {SubscriberId}", subscriberId);
                 }
+            }
+
+            if (logger.IsEnabled(LogLevel.Information)) {
+                logger.LogInformation("Event sent to subscribers: {Data}", data);
             }
         }
     }

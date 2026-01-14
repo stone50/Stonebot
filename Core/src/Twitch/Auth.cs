@@ -22,7 +22,7 @@
             var api = Access.API;
             var apiSettings = api.Settings;
             var refreshToken = await ResourceManager.LoadTwitchRefreshTokenAsync(cancellationToken);
-            var clientId = StonebotCore.Access.Config.ClientId;
+            var clientId = StonebotCore.Access.Config.TwitchClientId;
             var clientSecret = await ResourceManager.LoadTwitchClientSecretAsync(cancellationToken);
             apiSettings.ClientId = clientId;
             var refreshResponse = await api.Auth.RefreshAuthTokenAsync(
@@ -40,7 +40,7 @@
 
         internal static string StartAuthorization(string redirectUrl) {
             var api = Access.API;
-            api.Settings.ClientId = StonebotCore.Access.Config.ClientId;
+            api.Settings.ClientId = StonebotCore.Access.Config.TwitchClientId;
             var state = GetState();
             var authorizationUrl = api.Auth.GetAuthorizationCodeUrl(
                 redirectUri: redirectUrl,

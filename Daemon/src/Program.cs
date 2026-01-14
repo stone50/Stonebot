@@ -60,6 +60,7 @@
                             _ = endpoints.MapGet(EndpointPaths.GetSubscriber, RequestDelegates.GetSubscriber);
                             _ = endpoints.MapDelete(EndpointPaths.DeleteSubscriber, RequestDelegates.DeleteSubscriber);
                             _ = endpoints.MapPost(EndpointPaths.PostAuthTwitchStart, RequestDelegates.PostAuthTwitchStart);
+                            // TODO: add endpoint for serving a favicon
                             _ = endpoints.MapGet(EndpointPaths.GetAuthTwitch, RequestDelegates.GetAuthTwitch);
                             _ = endpoints.MapPost(EndpointPaths.PostAuthTwitchRefresh, RequestDelegates.PostAuthTwitchRefresh);
                             _ = endpoints.MapPost(EndpointPaths.PostConfigLoad, RequestDelegates.PostConfigLoad);

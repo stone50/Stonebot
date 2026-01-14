@@ -11,10 +11,10 @@
         options: [
             new PortOption(),
             new StringOption(
-                aliases: ["--client-id", "--id"]
+                aliases: ["--twitch-client-id", "--twitch-id"]
             ),
             new StringOption(
-                aliases: ["--client-secret", "--secret"]
+                aliases: ["--twitch-client-secret", "--twitch-secret"]
             )
         ],
         subCommands: []
@@ -29,12 +29,12 @@
             var valueJsonParts = new List<string>();
             if (options.ContainsKey(_options[1])) {
                 var clientId = GetRefOptionValue<StringOption, string>(_options[1], options);
-                valueJsonParts.Add($"\"ClientId\":\"{clientId}\"");
+                valueJsonParts.Add($"\"TwitchClientId\":\"{clientId}\"");
             }
 
             if (options.ContainsKey(_options[2])) {
                 var clientSecret = GetRefOptionValue<StringOption, string>(_options[2], options);
-                valueJsonParts.Add($"\"ClientSecret\":\"{clientSecret}\"");
+                valueJsonParts.Add($"\"TwitchClientSecret\":\"{clientSecret}\"");
             }
 
             var bodyContent = $"{{{string.Join(',', valueJsonParts)}}}";
