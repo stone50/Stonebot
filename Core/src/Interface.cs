@@ -26,6 +26,22 @@
             CancellationToken cancellationToken
         ) => ResourceManager.SaveTwitchClientSecretAsync(clientSecret, cancellationToken);
 
+        public static Task SetTwitchBotUsernameAsync(
+            string botUsername,
+            CancellationToken cancellationToken
+        ) {
+            Access.Config.TwitchBotUsername = botUsername;
+            return ResourceManager.SaveConfigAsync(cancellationToken);
+        }
+
+        public static Task SetTwitchBroadcasterChannelAsync(
+            string broadcasterChannel,
+            CancellationToken cancellationToken
+        ) {
+            Access.Config.TwitchBroadcasterChannel = broadcasterChannel;
+            return ResourceManager.SaveConfigAsync(cancellationToken);
+        }
+
         public static Task RefreshTwitchAuthAsync(CancellationToken cancellationToken) =>
             Twitch.Auth.RefreshAuthorizationAsync(cancellationToken);
 
@@ -42,7 +58,7 @@
             cancellationToken
         );
 
-        public static void ConfigureTwtichClient(ILogger<TwitchClientLog>? logger) => Twitch.Bot.ConfigureClient(logger);
+        public static void ConfigureTwitchClient(ILogger<TwitchClientLog>? logger) => Twitch.Bot.ConfigureClient(logger);
 
         public static Task ConnectTwtichAsync() => Twitch.Access.Client.ConnectAsync();
 

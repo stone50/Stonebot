@@ -10,14 +10,15 @@
         options: [new PortOption()],
         subCommands: []
     ) {
-        protected override Task ExecuteAsync(
+        protected override async Task ExecuteAsync(
             ArgReader argReader,
             ReadOnlyDictionary<Option, string> options,
             Command? subCommand,
             CancellationToken cancellationToken
         ) {
             var port = GetValueOptionValue<PortOption, int>(_options[0], options);
-            return Utils.SendPostRequestAsync(new(), port, EndpointPaths.PostStop, null, cancellationToken);
+            var response = await Utils.SendPostRequestAsync(new(), port, EndpointPaths.PostStop, null, cancellationToken);
+            _ = response.EnsureSuccessStatusCode();
         }
     }
 }

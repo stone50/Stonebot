@@ -3,7 +3,6 @@
     using StonebotSharedConstants;
     using System;
     using System.Collections.ObjectModel;
-    using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -19,9 +18,8 @@
             CancellationToken cancellationToken
         ) {
             var port = GetValueOptionValue<PortOption, int>(_options[0], options);
-            HttpResponseMessage response;
             try {
-                response = await Utils.SendGetRequestAsync(new(), port, EndpointPaths.GetHealth, cancellationToken);
+                var response = await Utils.SendGetRequestAsync(new(), port, EndpointPaths.GetHealth, cancellationToken);
                 Console.WriteLine(response.IsSuccessStatusCode ? "Running" : "Not running");
             } catch {
                 Console.WriteLine("Not running");

@@ -18,7 +18,7 @@ namespace StonebotDaemon.Endpoints {
         ) => {
             logger.LogInformation("Configuring Twitch client");
             var twitchClientLogger = loggerFactory.CreateLogger<Interface.TwitchClientLog>();
-            Interface.ConfigureTwtichClient(twitchClientLogger);
+            Interface.ConfigureTwitchClient(twitchClientLogger);
             logger.LogInformation("Twitch client configured");
             return Results.Ok("Twitch client configured");
         };

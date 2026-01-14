@@ -9,13 +9,14 @@
         internal static void ConfigureClient(ILogger<Interface.TwitchClientLog>? logger) {
             Access.Logger = logger;
             var client = Access.Client;
+            var config = StonebotCore.Access.Config;
             var credentials = new ConnectionCredentials(
-                twitchUsername: "stonebot5555",
+                twitchUsername: config.TwitchBotUsername,
                 twitchOAuth: Access.API.Settings.AccessToken
             );
             client.Initialize(
                 credentials,
-                channel: "stonebot5555"
+                channel: config.TwitchBroadcasterChannel
             );
             client.OnMessageReceived += OnMessageReceived;
             client.OnChatCommandReceived += OnChatCommandReceived;

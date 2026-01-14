@@ -79,6 +79,36 @@ namespace StonebotDaemon.Endpoints {
                 logger.LogDebug("Twitch client secret set");
             }
 
+            if (config.TwitchBotUsername != null) {
+                logger.LogDebug("Setting Twitch bot username");
+                var result = await Utils.TryDo(
+                    action: ct => Interface.SetTwitchBotUsernameAsync(config.TwitchBotUsername, ct),
+                    failMessage: "Could not set Twitch bot username",
+                    logger,
+                    cancellationToken
+                );
+                if (result != null) {
+                    return result;
+                }
+
+                logger.LogDebug("Twitch bot username set");
+            }
+
+            if (config.TwitchBroadcasterChannel != null) {
+                logger.LogDebug("Setting Twitch broadcaster channel");
+                var result = await Utils.TryDo(
+                    action: ct => Interface.SetTwitchBroadcasterChannelAsync(config.TwitchBroadcasterChannel, ct),
+                    failMessage: "Could not set Twitch broadcaster channel",
+                    logger,
+                    cancellationToken
+                );
+                if (result != null) {
+                    return result;
+                }
+
+                logger.LogDebug("Twitch broadcaster channel set");
+            }
+
             logger.LogInformation("Config value(s) set");
             return Results.Ok("Config value(s) set");
         };

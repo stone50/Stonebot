@@ -15,11 +15,17 @@
             ),
             new StringOption(
                 aliases: ["--twitch-client-secret", "--twitch-secret"]
+            ),
+            new StringOption(
+                aliases: ["--twitch-bot-username", "--twitch-user"]
+            ),
+            new StringOption(
+                aliases: ["--twitch-broadcaster-channel", "--twitch-channel"]
             )
         ],
         subCommands: []
     ) {
-        protected override Task ExecuteAsync(
+        protected override async Task ExecuteAsync(
             ArgReader argReader,
             ReadOnlyDictionary<Option, string> options,
             Command? subCommand,
@@ -37,8 +43,19 @@
                 valueJsonParts.Add($"\"TwitchClientSecret\":\"{clientSecret}\"");
             }
 
+            if (options.ContainsKey(_options[3])) {
+                var botUsername = GetRefOptionValue<StringOption, string>(_options[3], options);
+                valueJsonParts.Add($"\"TwitchBotUsername\":\"{botUsername}\"");
+            }
+
+            if (options.ContainsKey(_options[4])) {
+                var broadcasterChannel = GetRefOptionValue<StringOption, string>(_options[4], options);
+                valueJsonParts.Add($"\"TwitchBroadcasterChannel\":\"{broadcasterChannel}\"");
+            }
+
             var bodyContent = $"{{{string.Join(',', valueJsonParts)}}}";
-            return Utils.SendPatchRequestAsync(new(), port, EndpointPaths.PatchConfigSet, bodyContent, cancellationToken);
+            var response = await Utils.SendPatchRequestAsync(new(), port, EndpointPaths.PatchConfigSet, bodyContent, cancellationToken);
+            _ = response.EnsureSuccessStatusCode();
         }
     }
 }
