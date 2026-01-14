@@ -37,10 +37,10 @@ namespace StonebotDaemon.Endpoints {
             ILogger<TwitchClientEndpoints>,
             Task<IResult>
         > PostTwitchDisconnect = async logger => {
-            logger.LogInformation("Connecting to Twitch");
+            logger.LogInformation("Disconnecting from Twitch");
             await Interface.DisconnectTwtichAsync();
-            logger.LogInformation("Connected to Twitch");
-            return Results.Ok("Connected to Twitch");
+            logger.LogInformation("Disconnected from Twitch");
+            return Results.Ok("Disconnected from Twitch");
         };
     }
 }
