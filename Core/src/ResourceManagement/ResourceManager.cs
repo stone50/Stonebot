@@ -14,7 +14,7 @@
         private static readonly string _quotesFilePath = Path.Join(_customDataDirPath, "quotes.json");
         private static readonly DataProtectionFileStore _protectedStore = new(FilePaths.StonebotDataDirPath);
 
-        static ResourceManager() => Directory.CreateDirectory(FilePaths.StonebotDataDirPath);
+        static ResourceManager() => Directory.CreateDirectory(_customDataDirPath);
 
         internal static Task SaveTwitchRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken) =>
             _protectedStore.SaveAsync(_twitchRefreshTokenFilePath, refreshToken, cancellationToken);

@@ -4,7 +4,7 @@
     using System.Threading.Tasks;
     using TwitchLib.Client.Events;
 
-    internal class Hug() : Command("hug", PermissionLevel.Viewer) {
+    internal class HugCommand() : Command("hug", PermissionLevel.Viewer) {
         internal override Task ExecuteAsync(
             OnChatCommandReceivedArgs args,
             CancellationToken cancellationToken

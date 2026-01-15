@@ -9,30 +9,38 @@
 
     internal static class CommandManager {
         internal static readonly Command[] Commands = [
-            new Hug(),
+            new AddQuoteCommand(),
+            new DeleteQuoteCommand(),
+            new EditQuoteCommand(),
+            new HugCommand(),
+            new QuoteCommand()
         ];
 
-        internal static Task OnChatCommandReceived(object? sender, OnChatCommandReceivedArgs args) {
+        internal static async Task OnChatCommandReceived(object? sender, OnChatCommandReceivedArgs args) {
             var chatMessage = args.ChatMessage;
             if (chatMessage.IsMe) {
-                return Task.CompletedTask;
+                return;
             }
 
             var invokedCommand = Commands.FirstOrDefault(command => command.Keyword == args.Command.Name);
             if (invokedCommand == null) {
-                return Task.CompletedTask;
+                return;
             }
 
             if (!UserCanUseCommand(chatMessage, invokedCommand)) {
-                return Task.CompletedTask;
+                return;
             }
 
             try {
                 // TODO: implement default command timeout
-                return invokedCommand.ExecuteAsync(args, default);
+                if (Access.Logger?.IsEnabled(LogLevel.Information) ?? false) {
+                    Access.Logger?.LogInformation("Using command `{CommandName}`", invokedCommand.Keyword);
+                }
+
+                await invokedCommand.ExecuteAsync(args, default).ConfigureAwait(false);
             } catch (Exception e) {
                 Access.Logger?.LogError(e, "Error executing command `{CommandName}`", invokedCommand.Keyword);
-                return Task.CompletedTask;
+                return;
             }
         }
 
