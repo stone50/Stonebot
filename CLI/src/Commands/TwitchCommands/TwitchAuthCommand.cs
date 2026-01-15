@@ -46,10 +46,10 @@
         }
 
         private static async Task<HttpResponseMessage> TryRefreshThenFull(HttpClient client, int port, string html, CancellationToken cancellationToken) {
-            var tryRefreshAuthResponse = await Utils.SendPostRequestAsync(client, port, EndpointPaths.PostTwitchAuthRefresh, null, cancellationToken);
+            var tryRefreshAuthResponse = await Utils.SendPostRequestAsync(client, port, EndpointPaths.PostTwitchAuthRefresh, null, cancellationToken).ConfigureAwait(false);
             return tryRefreshAuthResponse.IsSuccessStatusCode
                 ? tryRefreshAuthResponse
-                : await Utils.SendPostRequestAsync(client, port, EndpointPaths.PostTwitchAuthStart, $"{{\"Html\":\"{html}\"}}", cancellationToken);
+                : await Utils.SendPostRequestAsync(client, port, EndpointPaths.PostTwitchAuthStart, $"{{\"Html\":\"{html}\"}}", cancellationToken).ConfigureAwait(false);
         }
     }
 }

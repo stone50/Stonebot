@@ -15,7 +15,7 @@
             };
 
             try {
-                await _baseCommand.HandleInputAsync(new(args), cancellationTokenSource.Token);
+                await _baseCommand.HandleInputAsync(new(args), cancellationTokenSource.Token).ConfigureAwait(false);
                 return 0;
             } catch (OperationCanceledException) {
                 return 130;

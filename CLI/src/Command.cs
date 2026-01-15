@@ -20,10 +20,10 @@
             CancellationToken cancellationToken
         );
 
-        public async Task HandleInputAsync(ArgReader argReader, CancellationToken cancellationToken) {
+        public Task HandleInputAsync(ArgReader argReader, CancellationToken cancellationToken) {
             var optionMap = ParseOptions(argReader);
             var subCommand = ParseSubCommand(argReader);
-            await ExecuteAsync(argReader, optionMap, subCommand, cancellationToken);
+            return ExecuteAsync(argReader, optionMap, subCommand, cancellationToken);
         }
 
         protected static TValue GetRefOptionValue<TOption, TValue>(

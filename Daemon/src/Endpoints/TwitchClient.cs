@@ -28,7 +28,7 @@ namespace StonebotDaemon.Endpoints {
             Task<IResult>
         > PostTwitchConnect = async logger => {
             logger.LogInformation("Connecting to Twitch");
-            await Interface.ConnectTwtichAsync();
+            await Interface.ConnectTwtichAsync().ConfigureAwait(false);
             logger.LogInformation("Connected to Twitch");
             return Results.Ok("Connected to Twitch");
         };
@@ -38,7 +38,7 @@ namespace StonebotDaemon.Endpoints {
             Task<IResult>
         > PostTwitchDisconnect = async logger => {
             logger.LogInformation("Disconnecting from Twitch");
-            await Interface.DisconnectTwtichAsync();
+            await Interface.DisconnectTwtichAsync().ConfigureAwait(false);
             logger.LogInformation("Disconnected from Twitch");
             return Results.Ok("Disconnected from Twitch");
         };

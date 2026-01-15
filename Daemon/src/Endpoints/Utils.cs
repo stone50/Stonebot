@@ -13,7 +13,8 @@ namespace StonebotDaemon.Endpoints {
             CancellationToken cancellationToken
         ) {
             try {
-                await action(cancellationToken);
+                await action(cancellationToken).ConfigureAwait(false);
+                return null;
             } catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) {
                 logger.LogInformation("Client closed request");
                 return Results.Empty;
@@ -28,8 +29,6 @@ namespace StonebotDaemon.Endpoints {
 
                 return Results.InternalServerError($"{failMessage}: {e.Message}");
             }
-
-            return null;
         }
 
         internal static IResult? TryDo(

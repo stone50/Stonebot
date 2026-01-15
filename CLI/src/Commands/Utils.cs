@@ -26,8 +26,9 @@
             }
 
             Console.Write($"{method} {request.RequestUri?.LocalPath}");
-            var response = await client.SendAsync(request, cancellationToken);
-            Console.Write($": {await response.Content.ReadAsStringAsync(cancellationToken)}");
+            var response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
+            var responseContent = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+            Console.Write($": {responseContent}");
             return response;
         }
     }

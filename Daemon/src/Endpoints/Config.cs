@@ -24,7 +24,7 @@ namespace StonebotDaemon.Endpoints {
                 failMessage: "Could not load config",
                 logger,
                 cancellationToken
-            );
+            ).ConfigureAwait(false);
             if (result != null) {
                 return result;
             }
@@ -56,7 +56,7 @@ namespace StonebotDaemon.Endpoints {
                     failMessage: "Could not set Twitch client ID",
                     logger,
                     cancellationToken
-                );
+                ).ConfigureAwait(false);
                 if (result != null) {
                     return result;
                 }
@@ -71,7 +71,7 @@ namespace StonebotDaemon.Endpoints {
                     failMessage: "Could not set Twitch client secret",
                     logger,
                     cancellationToken
-                );
+                ).ConfigureAwait(false);
                 if (result != null) {
                     return result;
                 }
@@ -86,7 +86,7 @@ namespace StonebotDaemon.Endpoints {
                     failMessage: "Could not set Twitch bot username",
                     logger,
                     cancellationToken
-                );
+                ).ConfigureAwait(false);
                 if (result != null) {
                     return result;
                 }
@@ -101,7 +101,7 @@ namespace StonebotDaemon.Endpoints {
                     failMessage: "Could not set Twitch broadcaster channel",
                     logger,
                     cancellationToken
-                );
+                ).ConfigureAwait(false);
                 if (result != null) {
                     return result;
                 }

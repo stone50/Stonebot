@@ -99,7 +99,7 @@ namespace StonebotDaemon.Endpoints {
                 failMessage: "Could not authorize Twitch",
                 logger,
                 cancellationToken
-            );
+            ).ConfigureAwait(false);
             if (result != null) {
                 var errorMessage = result is IValueHttpResult valueResult ? valueResult.Value : "Something went wrong";
                 var statusCode = result is IStatusCodeHttpResult statusCodeResult ? statusCodeResult.StatusCode : 500;
@@ -112,7 +112,7 @@ namespace StonebotDaemon.Endpoints {
 
             logger.LogDebug("Authorized Twitch");
             logger.LogInformation("Twitch authorization gotten");
-            await registry.SendEventToSubscribersAsync("Twitch authorization success");
+            await registry.SendEventToSubscribersAsync("Twitch authorization success").ConfigureAwait(false);
             return Results.Content(
                 authCache.Html ?? "<h1>Success!</h1><p>You can close this tab</p>",
                 "text/html; charset=utf-8",
@@ -134,7 +134,7 @@ namespace StonebotDaemon.Endpoints {
                 failMessage: "Could not refresh Twitch authorization",
                 logger,
                 cancellationToken
-            );
+            ).ConfigureAwait(false);
             if (result != null) {
                 return result;
             }

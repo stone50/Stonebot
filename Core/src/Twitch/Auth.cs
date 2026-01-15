@@ -21,20 +21,20 @@
         ) {
             var api = Access.API;
             var apiSettings = api.Settings;
-            var refreshToken = await ResourceManager.LoadTwitchRefreshTokenAsync(cancellationToken);
+            var refreshToken = await ResourceManager.LoadTwitchRefreshTokenAsync(cancellationToken).ConfigureAwait(false);
             var clientId = StonebotCore.Access.Config.TwitchClientId;
-            var clientSecret = await ResourceManager.LoadTwitchClientSecretAsync(cancellationToken);
+            var clientSecret = await ResourceManager.LoadTwitchClientSecretAsync(cancellationToken).ConfigureAwait(false);
             apiSettings.ClientId = clientId;
             var refreshResponse = await api.Auth.RefreshAuthTokenAsync(
                 refreshToken: refreshToken,
                 clientSecret: clientSecret,
                 clientId: clientId
-            );
+            ).ConfigureAwait(false);
             AccessTokenExpiration = DateTime.UtcNow.AddSeconds(refreshResponse.ExpiresIn);
             await ResourceManager.SaveTwitchRefreshTokenAsync(
                 refreshToken: refreshResponse.RefreshToken,
                 cancellationToken
-            );
+            ).ConfigureAwait(false);
             apiSettings.AccessToken = refreshResponse.AccessToken;
         }
 
@@ -57,17 +57,17 @@
 
         internal static async Task AuthorizeFromCodeAsync(string authorizationCode, string redirectUrl, CancellationToken cancellationToken) {
             var api = Access.API;
-            var clientSecret = await ResourceManager.LoadTwitchClientSecretAsync(cancellationToken);
+            var clientSecret = await ResourceManager.LoadTwitchClientSecretAsync(cancellationToken).ConfigureAwait(false);
             var tokenResponse = await api.Auth.GetAccessTokenFromCodeAsync(
                 code: authorizationCode,
                 clientSecret: clientSecret,
                 redirectUri: redirectUrl
-            );
+            ).ConfigureAwait(false);
             AccessTokenExpiration = DateTime.UtcNow.AddSeconds(tokenResponse.ExpiresIn);
             await ResourceManager.SaveTwitchRefreshTokenAsync(
                 refreshToken: tokenResponse.RefreshToken,
                 cancellationToken
-            );
+            ).ConfigureAwait(false);
             api.Settings.AccessToken = tokenResponse.AccessToken;
         }
 

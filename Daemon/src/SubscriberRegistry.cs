@@ -27,7 +27,7 @@ namespace StonebotDaemon {
                 var subscriberCallbackUrl = subscriber.Value;
                 HttpResponseMessage response;
                 try {
-                    response = await _httpClient.PostAsync(subscriberCallbackUrl, content);
+                    response = await _httpClient.PostAsync(subscriberCallbackUrl, content).ConfigureAwait(false);
                 } catch (Exception e) {
                     if (logger.IsEnabled(LogLevel.Error)) {
                         logger.LogError(e, "Error sending event to {SubscriberId}", subscriberId);

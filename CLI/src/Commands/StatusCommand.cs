@@ -11,7 +11,7 @@
         options: [new PortOption()],
         subCommands: []
     ) {
-        protected override async Task ExecuteAsync(
+        protected override Task ExecuteAsync(
             ArgReader argReader,
             ReadOnlyDictionary<Option, string> options,
             Command? subCommand,
@@ -19,9 +19,10 @@
         ) {
             var port = GetValueOptionValue<PortOption, int>(_options[0], options);
             try {
-                _ = await Utils.SendGetRequestAsync(new(), port, EndpointPaths.GetHealth, cancellationToken);
+                return Utils.SendGetRequestAsync(new(), port, EndpointPaths.GetHealth, cancellationToken);
             } catch {
                 Console.WriteLine(" - Not running");
+                return Task.CompletedTask;
             }
         }
     }
