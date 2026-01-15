@@ -4,10 +4,10 @@
     using TwitchLib.Client.Events;
     using TwitchLib.Client.Models;
 
-    internal abstract class Command(string keyword) {
+    internal abstract class Command(string keyword, PermissionLevel permissionLevel) {
         internal readonly string Keyword = keyword;
+        internal PermissionLevel PermissionLevel = permissionLevel;
         // TODO: add cooldown
-        // TODO: add permission level
 
         internal abstract Task ExecuteAsync(
             OnChatCommandReceivedArgs args,
