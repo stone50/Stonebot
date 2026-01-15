@@ -1,19 +1,17 @@
 ﻿namespace StonebotCore.ResourceManagement {
-    using System;
+    using StonebotSharedConstants;
     using System.IO;
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
 
     internal static class ResourceManager {
-        private static readonly string _appDataDirPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        private static readonly string _stonebotDataDirPath = Path.Combine(_appDataDirPath, "Stonebot");
-        private static readonly string _configFilePath = Path.Combine(_stonebotDataDirPath, "config.json");
-        private static readonly string _twitchRefreshTokenFilePath = Path.Combine(_stonebotDataDirPath, "twitch_refresh.token");
-        private static readonly string _twitchClientSecretFilePath = Path.Combine(_stonebotDataDirPath, "twitch_client.secret");
-        private static readonly DataProtectionFileStore _protectedStore = new(_stonebotDataDirPath);
+        private static readonly string _configFilePath = Path.Join(FilePaths.StonebotDataDirPath, "config.json");
+        private static readonly string _twitchRefreshTokenFilePath = Path.Join(FilePaths.StonebotDataDirPath, "twitch_refresh.token");
+        private static readonly string _twitchClientSecretFilePath = Path.Join(FilePaths.StonebotDataDirPath, "twitch_client.secret");
+        private static readonly DataProtectionFileStore _protectedStore = new(FilePaths.StonebotDataDirPath);
 
-        static ResourceManager() => Directory.CreateDirectory(_stonebotDataDirPath);
+        static ResourceManager() => Directory.CreateDirectory(FilePaths.StonebotDataDirPath);
 
         internal static Task SaveTwitchRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken) =>
             _protectedStore.SaveAsync(_twitchRefreshTokenFilePath, refreshToken, cancellationToken);

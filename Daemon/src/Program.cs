@@ -8,6 +8,7 @@
     using StonebotDaemon.Endpoints;
     using StonebotSharedConstants;
     using System;
+    using System.IO;
 
     public static class Program {
         public static void Main(string[] args) {
@@ -19,7 +20,7 @@
                 .MinimumLevel.Is(isDevelopment ? LogEventLevel.Verbose : LogEventLevel.Information)
                 .MinimumLevel.Override("Microsoft", isDevelopment ? LogEventLevel.Information : LogEventLevel.Warning)
                 .WriteTo.File(
-                    path: "logs/stonebot-.log",
+                    path: Path.Join(FilePaths.StonebotDataDirPath, "logs", "stonebot-.log"),
                     rollingInterval: RollingInterval.Day,
                     retainedFileCountLimit: 10,
                     outputTemplate: outputTemplate.Replace("{Exception}", exceptionTemplate),
