@@ -1,5 +1,4 @@
 ﻿namespace StonebotCore.Twitch {
-    using Microsoft.Extensions.Logging;
     using System.Threading;
     using System.Threading.Tasks;
     using TwitchLib.Client.Events;
@@ -12,7 +11,6 @@
 
         internal abstract Task ExecuteAsync(
             OnChatCommandReceivedArgs args,
-            ILogger<Interface.TwitchClientLog> logger,
             CancellationToken cancellationToken
         );
 
