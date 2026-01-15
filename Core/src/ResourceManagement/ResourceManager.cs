@@ -1,4 +1,5 @@
 ﻿namespace StonebotCore.ResourceManagement {
+    using StonebotCore.Models;
     using StonebotSharedConstants;
     using System.IO;
     using System.Text.Json;
@@ -9,6 +10,8 @@
         private static readonly string _configFilePath = Path.Join(FilePaths.StonebotDataDirPath, "config.json");
         private static readonly string _twitchRefreshTokenFilePath = Path.Join(FilePaths.StonebotDataDirPath, "twitch_refresh.token");
         private static readonly string _twitchClientSecretFilePath = Path.Join(FilePaths.StonebotDataDirPath, "twitch_client.secret");
+        private static readonly string _customDataDirPath = Path.Join(FilePaths.StonebotDataDirPath, "custom data");
+        private static readonly string _quotesFilePath = Path.Join(_customDataDirPath, "quotes.json");
         private static readonly DataProtectionFileStore _protectedStore = new(FilePaths.StonebotDataDirPath);
 
         static ResourceManager() => Directory.CreateDirectory(FilePaths.StonebotDataDirPath);
@@ -27,17 +30,31 @@
 
         internal static async Task LoadConfigAsync(CancellationToken cancellationToken) {
             if (!File.Exists(_configFilePath)) {
-                Access.Config = new Models.Config();
+                Access.Config = new();
                 return;
             }
 
             var json = await File.ReadAllTextAsync(_configFilePath, cancellationToken).ConfigureAwait(false);
-            Access.Config = JsonSerializer.Deserialize<Models.Config>(json) ?? new Models.Config();
+            Access.Config = JsonSerializer.Deserialize<Config>(json) ?? new();
         }
 
         internal static Task SaveConfigAsync(CancellationToken cancellationToken) {
             var json = JsonSerializer.Serialize(Access.Config);
             return File.WriteAllTextAsync(_configFilePath, json, cancellationToken);
+        }
+
+        internal static async Task<Quote[]> GetQuotesAsync(CancellationToken cancellationToken) {
+            if (!File.Exists(_quotesFilePath)) {
+                return [];
+            }
+
+            var json = await File.ReadAllTextAsync(_quotesFilePath, cancellationToken).ConfigureAwait(false);
+            return JsonSerializer.Deserialize<Quote[]>(json) ?? [];
+        }
+
+        internal static Task SaveQuotesAsync(Quote[] quotes, CancellationToken cancellationToken) {
+            var json = JsonSerializer.Serialize(quotes);
+            return File.WriteAllTextAsync(_quotesFilePath, json, cancellationToken);
         }
     }
 }
