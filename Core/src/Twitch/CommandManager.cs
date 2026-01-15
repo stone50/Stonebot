@@ -11,9 +11,13 @@
         internal static readonly Command[] Commands = [
             new AddQuoteCommand(),
             new DeleteQuoteCommand(),
+            new DiscordCommand(),
             new EditQuoteCommand(),
             new HugCommand(),
-            new QuoteCommand()
+            new LurkCommand(),
+            new QuoteCommand(),
+            new UnlurkCommand(),
+            new YoutubeCommand()
         ];
 
         internal static async Task OnChatCommandReceived(object? sender, OnChatCommandReceivedArgs args) {
