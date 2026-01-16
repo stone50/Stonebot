@@ -13,6 +13,8 @@
             new DeleteQuoteCommand(),
             new DiscordCommand(),
             new EditQuoteCommand(),
+            new FeedCommand(),
+            new FeedRecordCommand(),
             new HugCommand(),
             new LurkCommand(),
             new QuoteCommand(),

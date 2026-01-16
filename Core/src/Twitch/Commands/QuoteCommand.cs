@@ -11,7 +11,7 @@
             CancellationToken cancellationToken
         ) {
             var chatMessage = args.ChatMessage;
-            var quotes = await ResourceManager.GetQuotesAsync(cancellationToken).ConfigureAwait(false);
+            var quotes = await ResourceManager.LoadQuotesAsync(cancellationToken).ConfigureAwait(false);
             if (quotes.Length == 0) {
                 await ReplyAsync(chatMessage, "there are no quotes yet").ConfigureAwait(false);
                 return;

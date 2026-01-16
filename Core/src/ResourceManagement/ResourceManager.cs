@@ -12,6 +12,7 @@
         private static readonly string _twitchClientSecretFilePath = Path.Join(FilePaths.StonebotDataDirPath, "twitch_client.secret");
         private static readonly string _customDataDirPath = Path.Join(FilePaths.StonebotDataDirPath, "custom data");
         private static readonly string _quotesFilePath = Path.Join(_customDataDirPath, "quotes.json");
+        private static readonly string _feedDataFilePath = Path.Join(_customDataDirPath, "feed_data.json");
         private static readonly DataProtectionFileStore _protectedStore = new(FilePaths.StonebotDataDirPath);
 
         static ResourceManager() => Directory.CreateDirectory(_customDataDirPath);
@@ -43,7 +44,7 @@
             return File.WriteAllTextAsync(_configFilePath, json, cancellationToken);
         }
 
-        internal static async Task<Quote[]> GetQuotesAsync(CancellationToken cancellationToken) {
+        internal static async Task<Quote[]> LoadQuotesAsync(CancellationToken cancellationToken) {
             if (!File.Exists(_quotesFilePath)) {
                 return [];
             }
@@ -55,6 +56,20 @@
         internal static Task SaveQuotesAsync(Quote[] quotes, CancellationToken cancellationToken) {
             var json = JsonSerializer.Serialize(quotes);
             return File.WriteAllTextAsync(_quotesFilePath, json, cancellationToken);
+        }
+
+        internal static async Task<FeedData> LoadFeedDataAsync(CancellationToken cancellationToken) {
+            if (!File.Exists(_feedDataFilePath)) {
+                return new();
+            }
+
+            var json = await File.ReadAllTextAsync(_feedDataFilePath, cancellationToken).ConfigureAwait(false);
+            return JsonSerializer.Deserialize<FeedData>(json) ?? new();
+        }
+
+        internal static Task SaveFeedDataAsync(FeedData data, CancellationToken cancellationToken) {
+            var json = JsonSerializer.Serialize(data);
+            return File.WriteAllTextAsync(_feedDataFilePath, json, cancellationToken);
         }
     }
 }

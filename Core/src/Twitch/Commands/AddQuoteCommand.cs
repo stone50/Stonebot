@@ -11,7 +11,7 @@
             OnChatCommandReceivedArgs args,
             CancellationToken cancellationToken
         ) {
-            var quotes = await ResourceManager.GetQuotesAsync(cancellationToken).ConfigureAwait(false);
+            var quotes = await ResourceManager.LoadQuotesAsync(cancellationToken).ConfigureAwait(false);
             var chatMessage = args.ChatMessage;
             var quote = new Quote() {
                 QuoteText = Bot.GetFilteredText(args.Command.ArgumentsAsString),
