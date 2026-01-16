@@ -14,7 +14,7 @@
             var quotes = await ResourceManager.GetQuotesAsync(cancellationToken).ConfigureAwait(false);
             var chatMessage = args.ChatMessage;
             var quote = new Quote() {
-                QuoteText = Bot.GetVisibleCharacters(args.Command.ArgumentsAsString),
+                QuoteText = Bot.GetFilteredText(args.Command.ArgumentsAsString),
                 SpokenBy = chatMessage.Channel,
                 DateAdded = DateTime.UtcNow,
                 AddedBy = chatMessage.DisplayName

@@ -17,13 +17,13 @@
                 return;
             }
 
-            var command = args.Command;
+            var filteredArgumentsAsString = Bot.GetFilteredText(args.Command.ArgumentsAsString);
             int index;
-            if (string.IsNullOrWhiteSpace(command.ArgumentsAsString)) {
+            if (string.IsNullOrWhiteSpace(filteredArgumentsAsString)) {
                 index = Random.Shared.Next(0, quotes.Length);
             } else {
                 if (
-                    !int.TryParse(args.Command.ArgumentsAsString.Trim(), out var spokenIndex) ||
+                    !int.TryParse(filteredArgumentsAsString, out var spokenIndex) ||
                     spokenIndex < 1 || spokenIndex > quotes.Length
                 ) {
                     await ReplyAsync(chatMessage, $"pick a quote from 1-{quotes.Length} (ex: !quote 1)").ConfigureAwait(false);

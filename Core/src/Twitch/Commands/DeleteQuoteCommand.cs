@@ -19,7 +19,7 @@
             }
 
             if (
-                !int.TryParse(args.Command.ArgumentsAsString.Trim(), out var spokenIndex) ||
+                !int.TryParse(Bot.GetFilteredText(args.Command.ArgumentsAsString), out var spokenIndex) ||
                 spokenIndex < 1 || spokenIndex > quotes.Length
             ) {
                 await ReplyAsync(chatMessage, $"pick a quote from 1-{quotes.Length} (ex: !deletequote 1)").ConfigureAwait(false);

@@ -19,10 +19,11 @@
             client.OnChatCommandReceived += CommandManager.OnChatCommandReceived;
         }
 
-        internal static string GetVisibleCharacters(string input) {
-            var normalizedInput = input.Normalize(NormalizationForm.FormC);
-            var builder = new StringBuilder(normalizedInput.Length);
-            foreach (var rune in normalizedInput.EnumerateRunes()) {
+        internal static string GetFilteredText(string text) {
+            var normalizedText = text.Normalize(NormalizationForm.FormC);
+            var builder = new StringBuilder(normalizedText.Length);
+            var isLastCharWhitespace = false;
+            foreach (var rune in normalizedText.EnumerateRunes()) {
                 if (
                     rune.Value is
                     0x034F or // combining grapheme joiner
@@ -35,7 +36,13 @@
                     continue;
                 }
 
-                _ = builder.Append(rune.ToString());
+                var isCurrentCharWhitespace = char.IsWhiteSpace((char)rune.Value);
+                if (isCurrentCharWhitespace && isLastCharWhitespace) {
+                    continue;
+                }
+
+                _ = builder.Append(isCurrentCharWhitespace ? ' ' : rune.ToString());
+                isLastCharWhitespace = isCurrentCharWhitespace;
             }
 
             return builder.ToString().Trim();
