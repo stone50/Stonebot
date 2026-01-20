@@ -1,30 +1,18 @@
 ﻿namespace StonebotCLI {
-    using System;
-    using System.Collections.ObjectModel;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
 
-    internal abstract class Option(string[] aliases) {
-        internal readonly string[] Aliases = aliases;
+    internal abstract class Option(IReadOnlyCollection<string> aliases) {
+        internal readonly IReadOnlyCollection<string> Aliases = aliases;
     }
 
-    internal abstract class ValueOption<TValue>(string[] aliases, TValue? defaultValue = null) : Option(aliases) where TValue : struct {
-        private readonly TValue? _defaultValue = defaultValue;
+    internal delegate bool TryParseOptionValue<TValue>(string valueString, [MaybeNullWhen(false)] out TValue value, [MaybeNullWhen(true)] out Error error);
 
-        internal abstract TValue GetValue(string valueString);
-
-        internal TValue GetValue(ReadOnlyDictionary<Option, string> optionMap) =>
-            optionMap.TryGetValue(this, out var valueString)
-                ? GetValue(valueString)
-                : _defaultValue ?? throw new Exception($"The value for option {Aliases[0]} is required");
+    internal abstract class Option<TValue>(IReadOnlyCollection<string> aliases, TryParseOptionValue<TValue> tryParseValue) : Option(aliases) {
+        internal readonly TryParseOptionValue<TValue> TryParseValue = tryParseValue;
     }
 
-    internal abstract class RefOption<TValue>(string[] aliases, TValue? defaultValue = null) : Option(aliases) where TValue : class {
-        private readonly TValue? _defaultValue = defaultValue;
-
-        internal abstract TValue GetValue(string valueString);
-
-        internal TValue GetValue(ReadOnlyDictionary<Option, string> optionMap) =>
-            optionMap.TryGetValue(this, out var valueString)
-                ? GetValue(valueString)
-                : _defaultValue ?? throw new Exception($"The value for option {Aliases[0]} is required");
+    internal interface IOptionalOption<TValue> {
+        internal TValue DefaultValue { get; }
     }
 }

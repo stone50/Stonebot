@@ -1,18 +1,11 @@
 ﻿namespace StonebotCLI.Options {
+    using StonebotCLI.OptionValueParsers;
     using System;
+    using System.Collections.Generic;
 
-    internal class EnumOption<TEnum>(string[] aliases, TEnum? defaultValue = null) : ValueOption<TEnum>(aliases, defaultValue) where TEnum : struct, Enum {
-        internal override TEnum GetValue(string valueString) {
-            foreach (var enumValue in Enum.GetValues<TEnum>()) {
-                if (enumValue.ToString().Equals(valueString, StringComparison.OrdinalIgnoreCase)) {
-                    return enumValue;
-                }
-            }
+    internal class EnumOption<TEnum>(IReadOnlyCollection<string> aliases) : Option<TEnum>(aliases, OptionValueParsers.TryParseEnumOptionValue) where TEnum : struct, Enum { }
 
-            throw new Exception(
-                $"`{valueString}` is not a valid value for option `{Aliases[0]}`. " +
-                $"The value must be one of:\n{string.Join("\n", Enum.GetNames<TEnum>())}"
-            );
-        }
+    internal class OptionalEnumOption<TEnum>(IReadOnlyCollection<string> aliases, TEnum defaultValue) : EnumOption<TEnum>(aliases), IOptionalOption<TEnum> where TEnum : struct, Enum {
+        TEnum IOptionalOption<TEnum>.DefaultValue => defaultValue;
     }
 }

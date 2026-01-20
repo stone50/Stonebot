@@ -1,28 +1,26 @@
 ﻿namespace StonebotCLI {
-    using StonebotCLI.Commands;
     using System;
     using System.Threading;
     using System.Threading.Tasks;
 
     public static class Program {
-        private static readonly BaseCommand _baseCommand = new();
-
         public static async Task<int> Main(string[] args) {
             using var cancellationTokenSource = new CancellationTokenSource();
-            Console.CancelKeyPress += (_, e) => {
-                e.Cancel = true;
-                cancellationTokenSource.Cancel();
+            Console.CancelKeyPress += (_, args) => {
+                args.Cancel = true;
+                try {
+                    cancellationTokenSource.Cancel();
+                } catch (Exception e) {
+                    Console.Error.WriteLine($"Could not cancel: {e.Message}");
+                }
             };
-
-            try {
-                await _baseCommand.HandleInputAsync(new(args), cancellationTokenSource.Token).ConfigureAwait(false);
+            var error = await Commands.Commands.GetBaseCommand().ExecuteAsync(new(args), cancellationTokenSource.Token).ConfigureAwait(false);
+            if (error == null) {
                 return 0;
-            } catch (OperationCanceledException) {
-                return 130;
-            } catch (Exception e) {
-                Console.Error.WriteLine(e.Message);
-                return 1;
             }
+
+            Console.WriteLine(error.Message);
+            return error.Code == ErrorCode.CommandExecutionFailed ? 1 : 2;
         }
     }
 }

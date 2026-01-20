@@ -1,18 +1,22 @@
 ﻿namespace StonebotCLI {
-    internal sealed class ArgReader {
-        private readonly string[] _args;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
+
+    internal sealed class ArgReader(IReadOnlyCollection<string> args) {
+        private readonly IReadOnlyCollection<string> _args = args;
         private int _index = 0;
 
-        internal ArgReader(string[] args) => _args = args;
+        internal bool IsAtEndOfStream => _index >= _args.Count;
 
-        internal string? Peek() => _index < _args.Length ? _args[_index] : null;
-
-        internal string? Read() => _index < _args.Length ? _args[_index++] : null;
-
-        internal void Skip() {
-            if (_index < _args.Length) {
-                ++_index;
+        internal bool TryRead([MaybeNullWhen(false)] out string value) {
+            if (IsAtEndOfStream) {
+                value = default;
+                return false;
             }
+
+            value = _args.ElementAt(_index++);
+            return true;
         }
     }
 }
