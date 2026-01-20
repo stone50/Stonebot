@@ -1,11 +1,18 @@
 ﻿namespace StonebotCLI.Commands {
     using StonebotCLI.Options;
     using StonebotSharedConstants;
+    using System;
+    using System.Net;
     using System.Net.Http;
 
     internal static partial class Commands {
         internal static ParentCommand GetBaseCommand() {
-            var httpClient = new HttpClient();
+            var handler = new SocketsHttpHandler {
+                PooledConnectionLifetime = TimeSpan.FromMinutes(2),
+                MaxConnectionsPerServer = 1,
+                AutomaticDecompression = DecompressionMethods.None
+            };
+            var httpClient = new HttpClient(handler, true);
             var portOption = new OptionalIntOption(
                 aliases: ["--port", "-p"],
                 defaultValue: Port.Default
