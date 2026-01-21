@@ -45,7 +45,6 @@ namespace StonebotDaemon.Endpoints {
                 return Results.Conflict($"Failed to register subscriber '{registration.Id}'");
             }
 
-            logger.LogDebug("Subscriber registered");
             logger.LogInformation("Subscribed");
             return Results.Ok("Subscribed");
         };
@@ -109,7 +108,6 @@ namespace StonebotDaemon.Endpoints {
                 return Results.NotFound($"Subscriber '{subscriberId}' not found");
             }
 
-            logger.LogDebug("Subscriber unregistered");
             logger.LogInformation("Subscriber deleted");
             return Results.Ok("Unsubscribed");
         };

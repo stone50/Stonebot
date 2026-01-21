@@ -26,6 +26,19 @@ namespace StonebotDaemon.Endpoints {
         internal static readonly Func<
             ILogger<TwitchClientEndpoints>,
             Task<IResult>
+        > GetTwitchClientConfigured = async logger => {
+            logger.LogInformation("Getting if Twitch client is configured");
+            var json = new { IsTwitchClientConfigured = Interface.GetIsTwitchClientConfigured() };
+            if (logger.IsEnabled(LogLevel.Information)) {
+                logger.LogInformation("If Twitch client is configured gotten: {@Json}", json);
+            }
+
+            return Results.Ok(json);
+        };
+
+        internal static readonly Func<
+            ILogger<TwitchClientEndpoints>,
+            Task<IResult>
         > PostTwitchConnect = async logger => {
             logger.LogInformation("Connecting to Twitch");
             await Interface.ConnectTwtichAsync().ConfigureAwait(false);
@@ -41,6 +54,19 @@ namespace StonebotDaemon.Endpoints {
             await Interface.DisconnectTwtichAsync().ConfigureAwait(false);
             logger.LogInformation("Disconnected from Twitch");
             return Results.Ok("Disconnected from Twitch");
+        };
+
+        internal static readonly Func<
+            ILogger<TwitchClientEndpoints>,
+            Task<IResult>
+        > GetTwitchConnected = async logger => {
+            logger.LogInformation("Getting if Twitch is connected");
+            var json = new { IsTwitchConnected = Interface.GetIsTwitchConnected() };
+            if (logger.IsEnabled(LogLevel.Information)) {
+                logger.LogInformation("If Twitch is connected gotten: {@Json}", json);
+            }
+
+            return Results.Ok(json);
         };
     }
 }

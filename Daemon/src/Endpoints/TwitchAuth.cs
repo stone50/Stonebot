@@ -39,7 +39,6 @@ namespace StonebotDaemon.Endpoints {
                 return result;
             }
 
-            logger.LogDebug("Twtich authorization started");
             logger.LogInformation("Twitch authorization started");
             return Results.Ok("Twitch authorization started");
         };
@@ -110,7 +109,6 @@ namespace StonebotDaemon.Endpoints {
                 );
             }
 
-            logger.LogDebug("Authorized Twitch");
             logger.LogInformation("Twitch authorization gotten");
             await registry.SendEventToSubscribersAsync("Twitch authorization success").ConfigureAwait(false);
             return Results.Content(
@@ -139,9 +137,21 @@ namespace StonebotDaemon.Endpoints {
                 return result;
             }
 
-            logger.LogDebug("Refreshed Twitch authorization");
             logger.LogInformation("Twitch authorization refreshed");
             return Results.Ok("Twitch authorization refreshed");
+        };
+
+        internal static readonly Func<
+            ILogger<TwitchAuthEndpoints>,
+            Task<IResult>
+        > GetTwitchAuthorized = async logger => {
+            logger.LogInformation("Getting if Twitch is authorized");
+            var json = new { IsTwitchAuthorized = Interface.GetIsTwitchAuthorized() };
+            if (logger.IsEnabled(LogLevel.Information)) {
+                logger.LogInformation("If Twitch is authorized gotten: {@Json}", json);
+            }
+
+            return Results.Ok(json);
         };
     }
 }

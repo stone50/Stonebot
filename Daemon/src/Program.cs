@@ -55,21 +55,34 @@
                     _ = webBuilder.Configure(app => {
                         _ = app.UseRouting();
                         _ = app.UseEndpoints(endpoints => {
+                            // status
                             _ = endpoints.MapGet(EndpointPaths.GetHealth, RequestDelegates.GetHealth);
                             _ = endpoints.MapPost(EndpointPaths.PostStop, RequestDelegates.PostStop);
+
+                            // subscriber
                             _ = endpoints.MapPost(EndpointPaths.PostSubscriber, RequestDelegates.PostSubscriber);
                             _ = endpoints.MapGet(EndpointPaths.GetSubscriber, RequestDelegates.GetSubscriber);
                             _ = endpoints.MapDelete(EndpointPaths.DeleteSubscriber, RequestDelegates.DeleteSubscriber);
-                            _ = endpoints.MapPost(EndpointPaths.PostTwitchAuthStart, RequestDelegates.PostTwitchAuthStart);
-                            // TODO: add endpoint for serving a favicon
-                            _ = endpoints.MapGet(EndpointPaths.GetTwitchAuth, RequestDelegates.GetTwitchAuth);
-                            _ = endpoints.MapPost(EndpointPaths.PostTwitchAuthRefresh, RequestDelegates.PostTwitchAuthRefresh);
+
+                            // config
                             _ = endpoints.MapPost(EndpointPaths.PostConfigLoad, RequestDelegates.PostConfigLoad);
                             _ = endpoints.MapPatch(EndpointPaths.PatchConfigSet, RequestDelegates.PatchConfigSet);
-                            // TODO: add endpoint for getting config values
+                            _ = endpoints.MapGet(EndpointPaths.GetConfig, RequestDelegates.GetConfig);
+
+                            // TODO: add endpoint for serving a favicon
+
+                            // twitch
+                            _ = endpoints.MapPost(EndpointPaths.PostTwitchAuthStart, RequestDelegates.PostTwitchAuthStart);
+                            _ = endpoints.MapGet(EndpointPaths.GetTwitchAuth, RequestDelegates.GetTwitchAuth);
+                            _ = endpoints.MapPost(EndpointPaths.PostTwitchAuthRefresh, RequestDelegates.PostTwitchAuthRefresh);
+                            _ = endpoints.MapGet(EndpointPaths.GetTwitchAuthorized, RequestDelegates.GetTwitchAuthorized);
+
                             _ = endpoints.MapPost(EndpointPaths.PostTwitchConfigureClient, RequestDelegates.PostTwitchConfigureClient);
+                            _ = endpoints.MapGet(EndpointPaths.GetTwitchClientConfigured, RequestDelegates.GetTwitchClientConfigured);
+
                             _ = endpoints.MapPost(EndpointPaths.PostTwitchConnect, RequestDelegates.PostTwitchConnect);
                             _ = endpoints.MapPost(EndpointPaths.PostTwitchDisconnect, RequestDelegates.PostTwitchDisconnect);
+                            _ = endpoints.MapGet(EndpointPaths.GetTwitchConnected, RequestDelegates.GetTwitchConnected);
                         });
                     });
                 })

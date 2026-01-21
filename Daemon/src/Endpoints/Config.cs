@@ -3,7 +3,9 @@ namespace StonebotDaemon.Endpoints {
     using Microsoft.Extensions.Logging;
     using StonebotCore.PublicInterface;
     using StonebotDaemon.Models;
+    using StonebotSharedConstants;
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -111,6 +113,68 @@ namespace StonebotDaemon.Endpoints {
 
             logger.LogInformation("Config value(s) set");
             return Results.Ok("Config value(s) set");
+        };
+
+        internal static readonly Func<
+            ILogger<ConfigEndpoints>,
+            string[]?,
+            CancellationToken,
+            Task<IResult>
+        > GetConfig = async (
+            logger,
+            values,
+            cancellationToken
+        ) => {
+            logger.LogInformation("Getting config value(s)");
+
+            if (values == null) {
+                logger.LogWarning("No config values requested");
+                return Results.BadRequest("No config values requested");
+            }
+
+            if (logger.IsEnabled(LogLevel.Debug)) {
+                logger.LogDebug("Requested value(s): {@Values}", values);
+            }
+
+            if (values == null || values.Length == 0) {
+                logger.LogWarning("No config values requested");
+                return Results.BadRequest("Request must contain at least one config value");
+            }
+
+            var json = new Dictionary<string, string>();
+            foreach (var valueName in values) {
+                switch (valueName) {
+                    case ConfigValueNames.TwitchClientId:
+                        logger.LogDebug("Getting Twitch client ID");
+                        json.Add(ConfigValueNames.TwitchClientId, Interface.GetTwitchClientId());
+                        logger.LogDebug("Twitch client ID gotten");
+                        break;
+                    case ConfigValueNames.TwitchClientSecret:
+                        logger.LogDebug("Getting Twitch client secret");
+                        json.Add(ConfigValueNames.TwitchClientSecret, await Interface.GetTwitchClientSecretAsync(cancellationToken));
+                        logger.LogDebug("Twitch client secret gotten");
+                        break;
+                    case ConfigValueNames.TwitchBotUsername:
+                        logger.LogDebug("Getting Twitch bot username");
+                        json.Add(ConfigValueNames.TwitchBotUsername, Interface.GetTwitchBotUsername());
+                        logger.LogDebug("Twitch bot username gotten");
+                        break;
+                    case ConfigValueNames.TwitchBroadcasterChannel:
+                        logger.LogDebug("Getting Twitch broadcaster channel");
+                        json.Add(ConfigValueNames.TwitchBroadcasterChannel, Interface.GetTwitchBroadcasterChannel());
+                        logger.LogDebug("Twitch broadcaster channel gotten");
+                        break;
+                    default:
+                        if (logger.IsEnabled(LogLevel.Information)) {
+                            logger.LogInformation("Config value not found: {ValueName}", valueName);
+                        }
+
+                        return Results.NotFound($"Config value not found: {valueName}");
+                }
+            }
+
+            logger.LogInformation("Config value(s) gotten");
+            return Results.Ok(json);
         };
     }
 }

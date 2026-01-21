@@ -9,9 +9,12 @@
             aliases: ["twitch"],
             subCommands: [
                 GetTwitchAuthCommand(httpClient, portOption),
+                GetTwitchAuthorizedCommand(httpClient, portOption),
                 GetTwitchConfigureClientCommand(httpClient, portOption),
+                GetTwitchClientConfiguredCommand(httpClient, portOption),
                 GetTwitchConnectCommand(httpClient, portOption),
                 GetTwitchDisconnectCommand(httpClient, portOption),
+                GetTwitchConnectedCommand(httpClient, portOption),
             ]
         );
 
@@ -51,6 +54,14 @@
                     _ => throw new Exception($"Unsupported auth method: {method}"),
                 });
 
+        private static ChildCommand GetTwitchAuthorizedCommand(HttpClient httpClient, OptionalIntOption portOption) => new(
+            aliases: ["is-authorized", "authorized"],
+            options: [portOption],
+            async (childCommand, optionMap, cancellationToken) =>
+                !childCommand.TryParseOptionValue<int>(0, optionMap, out var port, out var error)
+                ? error
+                : await Utils.SendGetRequestAsync(httpClient, port, EndpointPaths.GetTwitchAuthorized, cancellationToken));
+
         private static ChildCommand GetTwitchConfigureClientCommand(HttpClient httpClient, OptionalIntOption portOption) => new(
             aliases: ["configure-client", "configure", "config"],
             options: [portOption],
@@ -58,6 +69,14 @@
                 !childCommand.TryParseOptionValue<int>(0, optionMap, out var port, out var error)
                 ? error
                 : await Utils.SendPostRequestAsync(httpClient, port, EndpointPaths.PostTwitchConfigureClient, null, cancellationToken));
+
+        private static ChildCommand GetTwitchClientConfiguredCommand(HttpClient httpClient, OptionalIntOption portOption) => new(
+            aliases: ["is-client-configured", "is-configured", "configured"],
+            options: [portOption],
+            async (childCommand, optionMap, cancellationToken) =>
+                !childCommand.TryParseOptionValue<int>(0, optionMap, out var port, out var error)
+                ? error
+                : await Utils.SendGetRequestAsync(httpClient, port, EndpointPaths.GetTwitchClientConfigured, cancellationToken));
 
         private static ChildCommand GetTwitchConnectCommand(HttpClient httpClient, OptionalIntOption portOption) => new(
             aliases: ["connect", "start", "run"],
@@ -74,5 +93,13 @@
                 !childCommand.TryParseOptionValue<int>(0, optionMap, out var port, out var error)
                 ? error
                 : await Utils.SendPostRequestAsync(httpClient, port, EndpointPaths.PostTwitchDisconnect, null, cancellationToken));
+
+        private static ChildCommand GetTwitchConnectedCommand(HttpClient httpClient, OptionalIntOption portOption) => new(
+            aliases: ["is-connected", "connected"],
+            options: [portOption],
+            async (childCommand, optionMap, cancellationToken) =>
+                !childCommand.TryParseOptionValue<int>(0, optionMap, out var port, out var error)
+                ? error
+                : await Utils.SendGetRequestAsync(httpClient, port, EndpointPaths.GetTwitchConnected, cancellationToken));
     }
 }

@@ -39,6 +39,12 @@
             return ResourceManager.SaveConfigAsync(cancellationToken);
         }
 
-        // TODO: add methods for getting config values
+        public static string GetTwitchClientId() => Access.Config.TwitchClientId;
+
+        public static Task<string> GetTwitchClientSecretAsync(CancellationToken cancellationToken) => ResourceManager.LoadTwitchClientSecretAsync(cancellationToken);
+
+        public static string GetTwitchBotUsername() => Access.Config.TwitchBotUsername;
+
+        public static string GetTwitchBroadcasterChannel() => Access.Config.TwitchBroadcasterChannel;
     }
 }

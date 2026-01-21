@@ -22,12 +22,16 @@
             cancellationToken
         );
 
+        public static bool GetIsTwitchAuthorized() => !string.IsNullOrEmpty(Twitch.Access.API.Settings.AccessToken);
+
         public static void ConfigureTwitchClient(ILogger<TwitchClientLog>? logger) => Twitch.Bot.ConfigureClient(logger);
+
+        public static bool GetIsTwitchClientConfigured() => Twitch.Access.Client.IsInitialized;
 
         public static Task ConnectTwtichAsync() => Twitch.Access.Client.ConnectAsync();
 
         public static Task DisconnectTwtichAsync() => Twitch.Access.Client.DisconnectAsync();
 
-        // TODO: add connection status check
+        public static bool GetIsTwitchConnected() => Twitch.Access.Client.IsConnected;
     }
 }
