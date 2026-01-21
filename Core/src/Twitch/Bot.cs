@@ -1,5 +1,6 @@
 ﻿namespace StonebotCore.Twitch {
     using Microsoft.Extensions.Logging;
+    using StonebotCore.PublicInterface;
     using System.Text;
     using TwitchLib.Client.Models;
 

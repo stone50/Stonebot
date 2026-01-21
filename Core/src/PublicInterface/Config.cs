@@ -1,14 +1,11 @@
-﻿namespace StonebotCore {
-    using Microsoft.Extensions.Logging;
+﻿namespace StonebotCore.PublicInterface {
     using StonebotCore.ResourceManagement;
     using System.Threading;
     using System.Threading.Tasks;
 
-    public static class Interface {
-        public sealed class TwitchClientLog { }
-
+    public static partial class Interface {
         public static Task LoadConfigAsync(CancellationToken cancellationToken) =>
-            ResourceManager.LoadConfigAsync(cancellationToken);
+           ResourceManager.LoadConfigAsync(cancellationToken);
 
         public static Task SaveConfigAsync(CancellationToken cancellationToken) =>
             ResourceManager.SaveConfigAsync(cancellationToken);
@@ -42,26 +39,6 @@
             return ResourceManager.SaveConfigAsync(cancellationToken);
         }
 
-        public static Task RefreshTwitchAuthAsync(CancellationToken cancellationToken) =>
-            Twitch.Auth.RefreshAuthorizationAsync(cancellationToken);
-
-        public static string StartTwitchAuthorization(string redirectUrl) =>
-            Twitch.Auth.StartAuthorization(redirectUrl);
-
-        public static Task AuthorizeTwitchFromCodeAsync(
-            string authorizationCode,
-            string redirectUrl,
-            CancellationToken cancellationToken
-        ) => Twitch.Auth.AuthorizeFromCodeAsync(
-            authorizationCode,
-            redirectUrl,
-            cancellationToken
-        );
-
-        public static void ConfigureTwitchClient(ILogger<TwitchClientLog>? logger) => Twitch.Bot.ConfigureClient(logger);
-
-        public static Task ConnectTwtichAsync() => Twitch.Access.Client.ConnectAsync();
-
-        public static Task DisconnectTwtichAsync() => Twitch.Access.Client.DisconnectAsync();
+        // TODO: add methods for getting config values
     }
 }

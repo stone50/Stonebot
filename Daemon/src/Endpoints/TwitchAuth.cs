@@ -1,7 +1,7 @@
 namespace StonebotDaemon.Endpoints {
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
-    using StonebotCore;
+    using StonebotCore.PublicInterface;
     using StonebotDaemon.Models;
     using StonebotSharedConstants;
     using System;
