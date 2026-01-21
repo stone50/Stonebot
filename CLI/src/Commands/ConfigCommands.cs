@@ -4,8 +4,8 @@
     using System.Collections.Generic;
     using System.Net.Http;
 
-    internal static partial class Commands {
-        private static ParentCommand GetConfigCommand(HttpClient httpClient, OptionalIntOption portOption) => new(
+    internal static class ConfigCommands {
+        internal static ParentCommand GetConfigCommand(HttpClient httpClient, OptionalIntOption portOption) => new(
             aliases: ["config", "settings"],
             subCommands: [
                 GetConfigLoadCommand(httpClient, portOption),

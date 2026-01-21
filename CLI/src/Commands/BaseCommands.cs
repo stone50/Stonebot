@@ -5,7 +5,7 @@
     using System.Net;
     using System.Net.Http;
 
-    internal static partial class Commands {
+    internal static class BaseCommands {
         internal static ParentCommand GetBaseCommand() {
             var handler = new SocketsHttpHandler {
                 PooledConnectionLifetime = TimeSpan.FromMinutes(2),
@@ -21,11 +21,11 @@
             return new(
                 aliases: ["StonebotCLI"],
                 subCommands: [
-                    GetStartCommand(portOption),
-                    GetStatusCommand(httpClient, portOption),
-                    GetStopCommand(httpClient, portOption),
-                    GetConfigCommand(httpClient, portOption),
-                    GetTwitchCommand(httpClient, portOption),
+                    DaemonCommands.GetStartCommand(portOption),
+                    DaemonCommands.GetStatusCommand(httpClient, portOption),
+                    DaemonCommands.GetStopCommand(httpClient, portOption),
+                    ConfigCommands.GetConfigCommand(httpClient, portOption),
+                    TwitchCommands.GetTwitchCommand(httpClient, portOption),
                 ]
             );
         }

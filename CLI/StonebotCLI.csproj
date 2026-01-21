@@ -4,20 +4,20 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
-	<InvariantGlobalization>true</InvariantGlobalization>
-	<EnableJsonSourceGeneration>true</EnableJsonSourceGeneration>
-	<EnableRegexSourceGenerator>true</EnableRegexSourceGenerator>
-	<RuntimeIdentifiers>win-x64;win-arm64;linux-x64;linux-arm64</RuntimeIdentifiers>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <EnableJsonSourceGeneration>true</EnableJsonSourceGeneration>
+    <EnableRegexSourceGenerator>true</EnableRegexSourceGenerator>
+    <RuntimeIdentifiers>win-x64;win-arm64;linux-x64;linux-arm64</RuntimeIdentifiers>
   </PropertyGroup>
-
+  
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-  	<Optimize>false</Optimize>
-  	<DebugSymbols>true</DebugSymbols>
-  	<DebugType>portable</DebugType>
-  	<PublishTrimmed>false</PublishTrimmed>
-  	<PublishAot>false</PublishAot>
+    <Optimize>false</Optimize>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>portable</DebugType>
+    <PublishTrimmed>false</PublishTrimmed>
+    <PublishAot>false</PublishAot>
   </PropertyGroup>
-
+  
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <PublishAot>true</PublishAot>
     <PublishTrimmed>true</PublishTrimmed>
@@ -25,15 +25,16 @@
     <SelfContained>true</SelfContained>
     <ServerGarbageCollection>false</ServerGarbageCollection>
     <DebugSymbols>false</DebugSymbols>
+    <DebugType>none</DebugType>
     <StripSymbols>true</StripSymbols>
     <EnableUnsafeBinaryFormatterSerialization>false</EnableUnsafeBinaryFormatterSerialization>
-	<PublishReadyToRun>false</PublishReadyToRun>
+    <PublishReadyToRun>false</PublishReadyToRun>
   </PropertyGroup>
-
+  
   <ItemGroup>
     <ProjectReference Include="..\StonebotSharedConstants\StonebotSharedConstants.csproj" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <Folder Include="Scripts\" />
   </ItemGroup>

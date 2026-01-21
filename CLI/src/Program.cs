@@ -1,4 +1,5 @@
 ﻿namespace StonebotCLI {
+    using StonebotCLI.Commands;
     using System;
     using System.Threading;
     using System.Threading.Tasks;
@@ -14,7 +15,7 @@
                     Console.Error.WriteLine($"Could not cancel: {e.Message}");
                 }
             };
-            var error = await Commands.Commands.GetBaseCommand().ExecuteAsync(new(args), cancellationTokenSource.Token).ConfigureAwait(false);
+            var error = await BaseCommands.GetBaseCommand().ExecuteAsync(new(args), cancellationTokenSource.Token).ConfigureAwait(false);
             if (error == null) {
                 return 0;
             }

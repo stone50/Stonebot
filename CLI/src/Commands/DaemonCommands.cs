@@ -5,8 +5,8 @@
     using System.Diagnostics;
     using System.Net.Http;
 
-    internal static partial class Commands {
-        private static ChildCommand GetStartCommand(OptionalIntOption portOption) => new(
+    internal static class DaemonCommands {
+        internal static ChildCommand GetStartCommand(OptionalIntOption portOption) => new(
             aliases: ["start", "run"],
             options: [
                 portOption,
@@ -44,7 +44,7 @@
             }
         );
 
-        private static ChildCommand GetStatusCommand(HttpClient httpClient, OptionalIntOption portOption) => new(
+        internal static ChildCommand GetStatusCommand(HttpClient httpClient, OptionalIntOption portOption) => new(
             aliases: ["status", "health"],
             options: [portOption],
             async (childCommand, optionMap, cancellationToken) =>
@@ -52,7 +52,7 @@
                 ? error
                 : await Utils.SendGetRequestAsync(httpClient, port, EndpointPaths.GetHealth, cancellationToken));
 
-        private static ChildCommand GetStopCommand(HttpClient httpClient, OptionalIntOption portOption) => new(
+        internal static ChildCommand GetStopCommand(HttpClient httpClient, OptionalIntOption portOption) => new(
             aliases: ["stop", "exit", "quit", "close"],
             options: [portOption],
             async (childCommand, optionMap, cancellationToken) =>

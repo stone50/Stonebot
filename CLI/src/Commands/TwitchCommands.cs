@@ -4,8 +4,8 @@
     using System;
     using System.Net.Http;
 
-    internal static partial class Commands {
-        private static ParentCommand GetTwitchCommand(HttpClient httpClient, OptionalIntOption portOption) => new(
+    internal static class TwitchCommands {
+        internal static ParentCommand GetTwitchCommand(HttpClient httpClient, OptionalIntOption portOption) => new(
             aliases: ["twitch"],
             subCommands: [
                 GetTwitchAuthCommand(httpClient, portOption),
@@ -15,7 +15,7 @@
             ]
         );
 
-        public enum TwitchAuthMethod {
+        internal enum TwitchAuthMethod {
             Full,
             Refresh,
             TryRefreshThenFull,
