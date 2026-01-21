@@ -24,6 +24,5 @@ if !errorlevel! neq 0 (
     StonebotCLI stop >nul
     echo Daemon stopped
 )
-echo All services processed
 endlocal
 pause
