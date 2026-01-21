@@ -58,7 +58,7 @@
             return await executeAsync(this, new ReadOnlyDictionary<Option, string>(optionMap), cancellationToken);
         }
 
-        [GeneratedRegex(@"(-.*)=(.*)", RegexOptions.Compiled)]
+        [GeneratedRegex(@"(-.+?)=(.+)", RegexOptions.Compiled)]
         private static partial Regex OptionRegex();
     }
 }
