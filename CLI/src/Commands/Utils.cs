@@ -32,7 +32,7 @@
             try {
                 using var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
                 if (!response.IsSuccessStatusCode) {
-                    return new(ErrorCode.CommandExecutionFailed, $"{response.StatusCode} {response.ReasonPhrase}: {await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false)}");
+                    return new(ErrorCode.CommandExecutionFailed, $"{response.ReasonPhrase} | {await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false)}");
                 }
 
                 await response.Content.CopyToAsync(StandardOutput, cancellationToken).ConfigureAwait(false);

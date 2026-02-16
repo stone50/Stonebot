@@ -50,7 +50,7 @@
             async (childCommand, optionMap, cancellationToken) =>
                 !childCommand.TryParseOptionValue<int>(0, optionMap, out var port, out var error)
                 ? error
-                : await Utils.SendGetRequestAsync(httpClient, port, EndpointPaths.GetHealth, cancellationToken));
+                : await Utils.SendGetRequestAsync(httpClient, port, EndpointPaths.GetStatus, cancellationToken));
 
         internal static ChildCommand GetStopCommand(HttpClient httpClient, OptionalIntOption portOption) => new(
             aliases: ["stop", "exit", "quit", "close"],

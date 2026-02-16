@@ -1,8 +1,8 @@
 namespace StonebotDaemon.Models {
-    internal class Config {
-        public string? TwitchClientId { get; set; }
-        public string? TwitchClientSecret { get; set; }
-        public string? TwitchBotUsername { get; set; }
-        public string? TwitchBroadcasterChannel { get; set; }
+    internal sealed class Config {
+        public int Port { get; set; } = StonebotSharedConstants.Port.Default;
+        public string TwitchBotUsername { get; set; } = string.Empty;
+        public string TwitchBroadcasterChannel { get; set; } = string.Empty;
+        public string TwitchClientId { get; set; } = string.Empty;
     }
 }

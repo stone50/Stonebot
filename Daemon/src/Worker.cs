@@ -6,8 +6,8 @@
 
     internal sealed class Worker(ILogger<Worker> logger) : BackgroundService {
         protected override Task ExecuteAsync(CancellationToken cancellationToken) {
-            logger.LogInformation("Background service started.");
-            _ = cancellationToken.Register(() => logger.LogInformation("Background service stopping."));
+            logger.LogInformation("Stonebot started.");
+            _ = cancellationToken.Register(() => logger.LogInformation("Stonebot stopping..."));
             return Task.CompletedTask;
         }
     }

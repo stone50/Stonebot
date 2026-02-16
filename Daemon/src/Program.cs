@@ -1,93 +1,76 @@
 ﻿namespace StonebotDaemon {
     using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.DataProtection;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Options;
     using Serilog;
-    using Serilog.Events;
     using StonebotDaemon.Endpoints;
-    using StonebotSharedConstants;
+    using StonebotDaemon.Models;
+    using StonebotDaemon.Services;
     using System;
     using System.IO;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using TwitchLib.Api;
+    using TwitchLib.Client;
 
-    public static class Program {
-        public static void Main(string[] args) {
-            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? Environments.Production;
-            var isDevelopment = environment == Environments.Development;
-            var outputTemplate = "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level:u3}] {Message:lj}{NewLine}{Exception}";
-            var exceptionTemplate = isDevelopment ? "{Exception}" : "{Exception:Message}";
+    internal static class Program {
+        private static async Task Main(string[] args) {
+            var dataDirPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Stonebot");
+            var logDirPath = Path.Combine(dataDirPath, "logs");
+            _ = Directory.CreateDirectory(logDirPath);
+            var builder = WebApplication.CreateBuilder(args);
+            _ = builder.Configuration
+                .SetBasePath(dataDirPath)
+                .AddJsonFile("config.json", optional: true, reloadOnChange: false)
+                .AddEnvironmentVariables();
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Is(isDevelopment ? LogEventLevel.Verbose : LogEventLevel.Information)
-                .MinimumLevel.Override("Microsoft", isDevelopment ? LogEventLevel.Information : LogEventLevel.Warning)
+                .ReadFrom.Configuration(builder.Configuration)
+                .Enrich.FromLogContext()
+                .WriteTo.Console()
                 .WriteTo.File(
-                    path: Path.Join(FilePaths.StonebotDataDirPath, "logs", "stonebot-.log"),
+                    path: Path.Combine(logDirPath, "stonebot-.log"),
                     rollingInterval: RollingInterval.Day,
-                    retainedFileCountLimit: 10,
-                    outputTemplate: outputTemplate.Replace("{Exception}", exceptionTemplate),
-                    shared: true
+                    outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level:u3}] {Message:lj}{NewLine}{Exception}"
                 )
                 .CreateLogger();
-            var envPort = Environment.GetEnvironmentVariable("STONEBOT_PORT");
-            int port;
-            if (string.IsNullOrWhiteSpace(envPort)) {
-                port = Port.Default;
-            } else {
-                try {
-                    port = int.Parse(envPort);
-                } catch {
-                    Console.Error.WriteLine($"Invalid STONEBOT_PORT value '{envPort}'. Must be a valid integer.");
-                    return;
-                }
-            }
-
-            Host.CreateDefaultBuilder(args)
+            _ = builder.Host
                 .UseSerilog()
                 .UseWindowsService()
-                .UseSystemd()
-                .ConfigureServices(services => {
-                    _ = services.AddSingleton<SubscriberRegistry>();
-                    _ = services.AddSingleton<TwitchAuthCache>();
-                    _ = services.AddHostedService<Worker>();
-                    _ = services.AddHttpClient("Subscribers");
+                .UseSystemd();
+            _ = builder.Services.AddDataProtection()
+                .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(dataDirPath, "keys")));
+            _ = builder.Services
+                .Configure<Config>(builder.Configuration.GetSection("Config"))
+                .AddSingleton(serviceProvider => serviceProvider.GetRequiredService<IOptions<Config>>().Value)
+                .AddSingleton<SecretService>()
+                .AddSingleton(serviceProvider => {
+                    var secretService = serviceProvider.GetRequiredService<SecretService>();
+                    return secretService.LoadSecretsAsync(default).GetAwaiter().GetResult();
                 })
-                .ConfigureWebHostDefaults(webBuilder => {
-                    _ = webBuilder.UseUrls($"http://localhost:{port}");
-                    _ = webBuilder.Configure(app => {
-                        _ = app.UseRouting();
-                        _ = app.UseEndpoints(endpoints => {
-                            // status
-                            _ = endpoints.MapGet(EndpointPaths.GetHealth, RequestDelegates.GetHealth);
-                            _ = endpoints.MapPost(EndpointPaths.PostStop, RequestDelegates.PostStop);
-
-                            // subscriber
-                            _ = endpoints.MapPost(EndpointPaths.PostSubscriber, RequestDelegates.PostSubscriber);
-                            _ = endpoints.MapGet(EndpointPaths.GetSubscriber, RequestDelegates.GetSubscriber);
-                            _ = endpoints.MapDelete(EndpointPaths.DeleteSubscriber, RequestDelegates.DeleteSubscriber);
-
-                            // config
-                            _ = endpoints.MapPost(EndpointPaths.PostConfigLoad, RequestDelegates.PostConfigLoad);
-                            _ = endpoints.MapPatch(EndpointPaths.PatchConfigSet, RequestDelegates.PatchConfigSet);
-                            _ = endpoints.MapGet(EndpointPaths.GetConfig, RequestDelegates.GetConfig);
-
-                            // TODO: add endpoint for serving a favicon
-
-                            // twitch
-                            _ = endpoints.MapPost(EndpointPaths.PostTwitchAuthStart, RequestDelegates.PostTwitchAuthStart);
-                            _ = endpoints.MapGet(EndpointPaths.GetTwitchAuth, RequestDelegates.GetTwitchAuth);
-                            _ = endpoints.MapPost(EndpointPaths.PostTwitchAuthRefresh, RequestDelegates.PostTwitchAuthRefresh);
-                            _ = endpoints.MapGet(EndpointPaths.GetTwitchAuthorized, RequestDelegates.GetTwitchAuthorized);
-
-                            _ = endpoints.MapPost(EndpointPaths.PostTwitchConfigureClient, RequestDelegates.PostTwitchConfigureClient);
-                            _ = endpoints.MapGet(EndpointPaths.GetTwitchClientConfigured, RequestDelegates.GetTwitchClientConfigured);
-
-                            _ = endpoints.MapPost(EndpointPaths.PostTwitchConnect, RequestDelegates.PostTwitchConnect);
-                            _ = endpoints.MapPost(EndpointPaths.PostTwitchDisconnect, RequestDelegates.PostTwitchDisconnect);
-                            _ = endpoints.MapGet(EndpointPaths.GetTwitchConnected, RequestDelegates.GetTwitchConnected);
-                        });
-                    });
-                })
-                .Build()
-                .Run();
+                .AddSingleton<TwitchAuthState>()
+                .AddSingleton<TwitchClient>()
+                .AddSingleton<TwitchAPI>()
+                .AddHostedService<Worker>()
+                .AddSignalR();
+            var app = builder.Build();
+            var config = builder.Configuration.GetSection("Config").Get<Config>() ?? new Config();
+            app.Urls.Add($"http://localhost:{config.Port}");
+            _ = app
+                .MapStatusEndpoints()
+                .MapTwitchEndpoints();
+            //_ = app.MapHub<StonebotHub>("/hub"); // TODO
+            try {
+                Log.Information("Stonebot starting on {Url}...", app.Urls.FirstOrDefault());
+                await app.RunAsync().ConfigureAwait(false);
+            } catch (Exception ex) {
+                Log.Fatal(ex, "Stonebot terminated unexpectedly.");
+            } finally {
+                await Log.CloseAndFlushAsync().ConfigureAwait(false);
+            }
         }
     }
 }

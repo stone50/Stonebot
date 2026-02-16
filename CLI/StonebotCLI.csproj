@@ -34,9 +34,5 @@
   <ItemGroup>
     <ProjectReference Include="..\StonebotSharedConstants\StonebotSharedConstants.csproj" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <Folder Include="Scripts\" />
-  </ItemGroup>
 
 </Project>

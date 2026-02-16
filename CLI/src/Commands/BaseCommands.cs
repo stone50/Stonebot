@@ -24,7 +24,7 @@
                     DaemonCommands.GetStartCommand(portOption),
                     DaemonCommands.GetStatusCommand(httpClient, portOption),
                     DaemonCommands.GetStopCommand(httpClient, portOption),
-                    ConfigCommands.GetConfigCommand(httpClient, portOption),
+                    //ConfigCommands.GetConfigCommand(httpClient, portOption),
                     TwitchCommands.GetTwitchCommand(httpClient, portOption),
                 ]
             );
