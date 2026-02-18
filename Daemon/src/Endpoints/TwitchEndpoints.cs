@@ -15,14 +15,81 @@ namespace StonebotDaemon.Endpoints {
     using TwitchLib.Client.Models;
 
     internal static class TwitchEndpoints {
-        private class TwitchEndpointsLogging { }
-        // TODO
+        private sealed class TwitchEndpointsLogging { }
         private const string _redirectHtml = """
-            <!DOCTYPE html>
-            <html>
-                <body>
-                    <h1>Hello, World!</h1>
-                </body>
+            <!doctype html>
+            <html lang="en">
+              <head>
+                <meta charset="UTF-8" />
+                <title>Stonebot Authotization {{STATUS_TITLE}}</title>
+                <link
+                  href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap"
+                  rel="stylesheet"
+                />
+                <style>
+                  :root {
+                      --bg: #0e0e10;
+                      --surface: #18181b;
+                      --text: #efeff1;
+                      --text-dim: #adadb8;
+                      --status-color: {{STATUS_COLOR}};
+                  }
+                  body {
+                      background-color: var(--bg);
+                      color: var(--text);
+                      font-family: 'JetBrains Mono', monospace;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      height: 100vh;
+                      margin: 0;
+                  }
+                  .container {
+                      max-width: 720px;
+                      border: 1px solid #2d2d31;
+                      background: var(--surface);
+                      padding: 0;
+                      border-radius: 2px;
+                  }
+                  .status-bar {
+                      height: 4px;
+                      background: var(--status-color);
+                      width: 100%;
+                  }
+                  .content {
+                      padding: 40px 40px;
+                  }
+                  .bot-icon {
+                      height: 64px;
+                      width: auto;
+                      display: block;
+                      margin-bottom: 24px;
+                  }
+                  h1 {
+                      font-size: 24px;
+                      margin: 0 0 16px 0;
+                      font-weight: 700;
+                      letter-spacing: -0.03em;
+                  }
+                  p {
+                      font-size: 14px;
+                      line-height: 1.6;
+                      color: var(--text-dim);
+                      margin: 5px;
+                  }
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <div class="status-bar"></div>
+                  <div class="content">
+                    <img src="../../favicon.ico" class="bot-icon">
+                    <h1>{{STATUS_TITLE}}</h1>
+                    <p>{{MESSAGE}}</p>
+                    <p>You can close this tab.</p>
+                  </div>
+                </div>
+              </body>
             </html>
             """;
 
@@ -45,7 +112,10 @@ namespace StonebotDaemon.Endpoints {
                 }
 
                 if (string.IsNullOrWhiteSpace(secrets.TwitchAccessToken)) {
-                    return Utils.GetConfigurationRequiredResult(ConfigValueNames.TwitchAccessToken);
+                    return Utils.GetProblemResult(
+                        "Failed to connect. The access token is empty. Authorization is required.",
+                        StatusCodes.Status428PreconditionRequired
+                    );
                 }
 
                 var credentials = new ConnectionCredentials(
@@ -63,7 +133,7 @@ namespace StonebotDaemon.Endpoints {
                 return isConnected
                     ? Utils.GetOkResult("Stonebot is connected.")
                     : Utils.GetProblemResult(
-                        $"Failed to connect to Twitch. The bot username, broacaster channel, or access token may be bad.",
+                        "Failed to connect to Twitch. The bot username, broacaster channel, or access token may be bad.",
                         StatusCodes.Status502BadGateway
                     );
             });
@@ -96,7 +166,10 @@ namespace StonebotDaemon.Endpoints {
 
             _ = authGroup.MapPost("/refresh", async (Secrets secrets, Config config, TwitchAPI twitchAPI, SecretService secretService, ILogger<TwitchEndpointsLogging> logger, CancellationToken cancellationToken) => {
                 if (string.IsNullOrWhiteSpace(secrets.TwitchRefreshToken)) {
-                    return Utils.GetConfigurationRequiredResult(ConfigValueNames.TwitchRefreshToken);
+                    return Utils.GetProblemResult(
+                        "Failed to refresh auth token. The refresh token is empty. Initial authorization is required.",
+                        StatusCodes.Status428PreconditionRequired
+                    );
                 }
 
                 try {
@@ -146,12 +219,56 @@ namespace StonebotDaemon.Endpoints {
                 });
             });
 
-            _ = authGroup.MapGet("/redirect", (HttpRequest request, ILogger<TwitchEndpointsLogging> logger) => {
-                if (logger.IsEnabled(LogLevel.Debug)) {
-                    logger.LogDebug("Redirect request: {Request}", request);
+            _ = authGroup.MapGet("/redirect", async (
+                Config config,
+                Secrets secrets,
+                SecretService secretService,
+                TwitchAPI twitchAPI,
+                TwitchAuthState twitchAuthState,
+                string code,
+                string state,
+                CancellationToken cancellationToken,
+                ILogger<TwitchEndpointsLogging> logger
+            ) => {
+                var storedState = twitchAuthState.State;
+                twitchAuthState.State = string.Empty;
+                if (string.IsNullOrWhiteSpace(config.TwitchClientId)) {
+                    return GetRedirectHtmlResult(false, $"The config value `{ConfigValueNames.TwitchClientId}` is empty.");
                 }
 
-                return Results.Content(_redirectHtml);
+                if (string.IsNullOrWhiteSpace(secrets.TwitchClientSecret)) {
+                    return GetRedirectHtmlResult(false, "The client secret is empty.");
+                }
+
+                if (string.IsNullOrWhiteSpace(code)) {
+                    return GetRedirectHtmlResult(false, "The authorization code is empty.");
+                }
+
+                if (string.IsNullOrWhiteSpace(state)) {
+                    return GetRedirectHtmlResult(false, "The state is empty.");
+                }
+
+                if (state != storedState) {
+                    return GetRedirectHtmlResult(false, "The received state does not match the sent state.");
+                }
+
+                try {
+                    var authCodeResponse = await twitchAPI.Auth.GetAccessTokenFromCodeAsync(code, secrets.TwitchClientSecret, $"http://localhost:{config.Port}/twitch/auth/redirect", config.TwitchClientId).ConfigureAwait(false);
+                    secrets.TwitchAccessToken = authCodeResponse.AccessToken;
+                    secrets.TwitchRefreshToken = authCodeResponse.RefreshToken;
+                } catch (Exception ex) {
+                    logger.LogError(ex, "Failed to get access token. The authorization code, client secret, or client id may be bad.");
+                    return GetRedirectHtmlResult(false, "Failed to get access token. The authorization code, client secret, or client id may be bad.");
+                }
+
+                try {
+                    await secretService.SaveSecretsAsync(secrets, cancellationToken).ConfigureAwait(false);
+                } catch (Exception ex) {
+                    logger.LogError(ex, "Failed to save secrets to disk.");
+                    return GetRedirectHtmlResult(false, "Failed to save secrets to disk.");
+                }
+
+                return GetRedirectHtmlResult(true, "Completed authorization successfully.");
             });
 
             return endpoints;
@@ -166,6 +283,18 @@ namespace StonebotDaemon.Endpoints {
             }
 
             return result.ToString();
+        }
+
+        private static IResult GetRedirectHtmlResult(bool isSuccess, string message) {
+            var statusTitle = isSuccess ? "Success" : "Failure";
+            var statusColor = isSuccess ? "#4ade80" : "#ff4a4a";
+            return Results.Content(
+                _redirectHtml
+                    .Replace("{{STATUS_TITLE}}", statusTitle)
+                    .Replace("{{STATUS_COLOR}}", statusColor)
+                    .Replace("{{MESSAGE}}", message),
+                "text/html"
+            );
         }
     }
 }

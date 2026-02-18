@@ -4,9 +4,10 @@
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.FileProviders;
     using Microsoft.Extensions.Hosting;
-    using Microsoft.Extensions.Options;
     using Serilog;
+    using Serilog.Formatting.Display;
     using StonebotDaemon.Endpoints;
     using StonebotDaemon.Models;
     using StonebotDaemon.Services;
@@ -27,14 +28,16 @@
                 .SetBasePath(dataDirPath)
                 .AddJsonFile("config.json", optional: true, reloadOnChange: false)
                 .AddEnvironmentVariables();
+            var config = builder.Configuration.Get<Config>() ?? new();
+            var logTemplate = "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level:u3}] {Message:lj}{NewLine}{Exception}";
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(builder.Configuration)
                 .Enrich.FromLogContext()
-                .WriteTo.Console()
+                .WriteTo.Console(new RedactingFormatter(new MessageTemplateTextFormatter(logTemplate)))
                 .WriteTo.File(
+                    formatter: new RedactingFormatter(new MessageTemplateTextFormatter(logTemplate)),
                     path: Path.Combine(logDirPath, "stonebot-.log"),
-                    rollingInterval: RollingInterval.Day,
-                    outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level:u3}] {Message:lj}{NewLine}{Exception}"
+                    rollingInterval: RollingInterval.Day
                 )
                 .CreateLogger();
             _ = builder.Host
@@ -44,8 +47,7 @@
             _ = builder.Services.AddDataProtection()
                 .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(dataDirPath, "keys")));
             _ = builder.Services
-                .Configure<Config>(builder.Configuration.GetSection("Config"))
-                .AddSingleton(serviceProvider => serviceProvider.GetRequiredService<IOptions<Config>>().Value)
+                .AddSingleton(config)
                 .AddSingleton<SecretService>()
                 .AddSingleton(serviceProvider => {
                     var secretService = serviceProvider.GetRequiredService<SecretService>();
@@ -57,9 +59,12 @@
                 .AddHostedService<Worker>()
                 .AddSignalR();
             var app = builder.Build();
-            var config = builder.Configuration.GetSection("Config").Get<Config>() ?? new Config();
+            _ = app
+                .UseSerilogRequestLogging()
+                .UseStaticFiles(new StaticFileOptions { FileProvider = new EmbeddedFileProvider(typeof(Program).Assembly, "StonebotDaemon.Resources") });
             app.Urls.Add($"http://localhost:{config.Port}");
             _ = app
+                .MapConfigEndpoints()
                 .MapStatusEndpoints()
                 .MapTwitchEndpoints();
             //_ = app.MapHub<StonebotHub>("/hub"); // TODO

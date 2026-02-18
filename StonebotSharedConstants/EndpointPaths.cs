@@ -3,6 +3,9 @@
         public const string GetStatus = "/status";
         public const string PostStop = "/stop";
 
+        public const string GetConfig = "/config";
+        public const string PatchConfig = "/config";
+
         public const string GetTwitchStatus = "/twitch/status";
         public const string PostTwitchConnect = "/twitch/connect";
         public const string PostTwitchDisconnect = "/twitch/disconnect";

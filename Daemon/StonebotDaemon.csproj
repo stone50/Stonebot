@@ -18,4 +18,8 @@
     <ProjectReference Include="..\StonebotSharedConstants\StonebotSharedConstants.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+	<EmbeddedResource Include="Resources\**\*" />
+  </ItemGroup>
+
 </Project>
