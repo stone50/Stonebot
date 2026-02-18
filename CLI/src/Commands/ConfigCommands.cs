@@ -1,9 +1,9 @@
 ﻿namespace StonebotCLI.Commands {
     using StonebotCLI.Options;
     using StonebotSharedConstants;
+    using System;
     using System.Collections.Generic;
     using System.Net.Http;
-    using System.Text.Json;
 
     internal static class ConfigCommands {
         internal static ParentCommand GetConfigCommand(HttpClient httpClient, OptionalIntOption portOption) => new(
@@ -52,24 +52,25 @@
                     return error;
                 }
 
-                var body = new Dictionary<string, string>();
+                var bodyValues = new List<string>();
+                void addBodyValue(string valueName, string value) => bodyValues.Add($"\"{valueName}\":\"{value}\"");
                 if (!string.IsNullOrWhiteSpace(twitchBotUsername)) {
-                    body.Add(ConfigValueNames.TwitchBotUsername, twitchBotUsername);
+                    addBodyValue(ConfigValueNames.TwitchBotUsername, twitchBotUsername);
                 }
 
                 if (!string.IsNullOrWhiteSpace(twitchBroadcasterChannel)) {
-                    body.Add(ConfigValueNames.TwitchBroadcasterChannel, twitchBroadcasterChannel);
+                    addBodyValue(ConfigValueNames.TwitchBroadcasterChannel, twitchBroadcasterChannel);
                 }
 
                 if (!string.IsNullOrWhiteSpace(twitchClientId)) {
-                    body.Add(ConfigValueNames.TwitchClientId, twitchClientId);
+                    addBodyValue(ConfigValueNames.TwitchClientId, twitchClientId);
                 }
 
                 if (!string.IsNullOrWhiteSpace(twitchClientSecret)) {
-                    body.Add(ConfigValueNames.TwitchClientSecret, twitchClientSecret);
+                    addBodyValue(ConfigValueNames.TwitchClientSecret, twitchClientSecret);
                 }
 
-                var bodyContent = JsonSerializer.Serialize(body);
+                var bodyContent = $"{{{string.Join(',', bodyValues)}}}";
                 return await Utils.SendPatchRequestAsync(httpClient, port, EndpointPaths.GetConfig, bodyContent, cancellationToken);
             });
     }
