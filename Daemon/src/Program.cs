@@ -11,6 +11,7 @@
     using StonebotDaemon.Endpoints;
     using StonebotDaemon.Models;
     using StonebotDaemon.Services;
+    using StonebotDaemon.TwitchMessageHandling;
     using System;
     using System.IO;
     using System.Linq;
@@ -56,6 +57,7 @@
                 .AddSingleton<TwitchAuthState>()
                 .AddSingleton<TwitchClient>()
                 .AddSingleton<TwitchAPI>()
+                .AddSingleton<TwitchMessageHandler>()
                 .AddHostedService<Worker>()
                 .AddSignalR();
             var app = builder.Build();

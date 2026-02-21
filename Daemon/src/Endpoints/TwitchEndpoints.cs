@@ -5,10 +5,12 @@ namespace StonebotDaemon.Endpoints {
     using Microsoft.Extensions.Logging;
     using StonebotDaemon.Models;
     using StonebotDaemon.Services;
+    using StonebotDaemon.TwitchMessageHandling;
     using StonebotSharedConstants;
     using System;
     using System.Text;
     using System.Threading;
+    using System.Threading.Tasks;
     using TwitchLib.Api;
     using TwitchLib.Api.Core.Enums;
     using TwitchLib.Client;
@@ -98,7 +100,7 @@ namespace StonebotDaemon.Endpoints {
 
             _ = group.MapGet("/status", (TwitchClient twitchClient) => Utils.GetOkResult(new { twitchClient.IsConnected }));
 
-            _ = group.MapPost("/connect", async (Config config, Secrets secrets, TwitchClient twitchClient) => {
+            _ = group.MapPost("/connect", async (Config config, Secrets secrets, TwitchClient twitchClient, TwitchMessageHandler twitchMessageHandler, ILogger<TwitchEndpointsLogging> logger) => {
                 if (twitchClient.IsConnected) {
                     return Utils.GetOkResult("Stonebot is already connected.");
                 }
@@ -124,7 +126,7 @@ namespace StonebotDaemon.Endpoints {
                 );
                 if (!twitchClient.IsInitialized) {
                     twitchClient.Initialize(credentials, config.TwitchBroadcasterChannel);
-                    twitchClient.OnChatCommandReceived += async (sender, args) => { }; // TODO
+                    twitchClient.OnChatCommandReceived += twitchMessageHandler.OnChatCommand;
                 } else {
                     twitchClient.SetConnectionCredentials(credentials);
                 }

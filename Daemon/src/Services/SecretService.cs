@@ -1,6 +1,5 @@
 namespace StonebotDaemon.Services {
     using Microsoft.AspNetCore.DataProtection;
-    using Microsoft.Extensions.Logging;
     using StonebotDaemon.Models;
     using System;
     using System.IO;
@@ -8,9 +7,8 @@ namespace StonebotDaemon.Services {
     using System.Threading;
     using System.Threading.Tasks;
 
-    internal sealed class SecretService(IDataProtectionProvider provider, ILogger<SecretService> logger) {
+    internal sealed class SecretService(IDataProtectionProvider provider) {
         private readonly IDataProtector _protector = provider.CreateProtector("StonebotDaemon.Secrets.v1");
-        private readonly ILogger<SecretService> _logger = logger;
         private readonly string _secretsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Stonebot", "secrets.bin");
 
         internal async Task<Secrets> LoadSecretsAsync(CancellationToken cancellationToken) {
