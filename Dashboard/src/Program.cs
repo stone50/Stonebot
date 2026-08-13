@@ -1,7 +1,0 @@
-﻿namespace StonebotDashboard {
-    public static class Program {
-        public static void Main() {
-            // TODO
-        }
-    }
-}
