@@ -13,7 +13,7 @@ async def run(
     message: ChatMessage, matches: list[Any], bot: Bot, db: Connection
 ) -> None:
     chatter: Chatter = message.chatter
-    if not message.chatter.vip or not chatter.moderator or not chatter.broadcaster:
+    if not (message.chatter.vip or chatter.moderator or chatter.broadcaster):
         return
 
     if not matches:
