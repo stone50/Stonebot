@@ -52,8 +52,8 @@ async def run(
 
     question = matches[0]
     if not question:
-        await bot.reply("You have to actually ask something...", message)
+        await message.respond("You have to actually ask something...")
         return
 
     answer: str = answers[randrange(len(answers))]
-    await bot.reply(answer, message)
+    await message.respond(answer)
