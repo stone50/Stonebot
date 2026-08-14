@@ -1,9 +1,10 @@
-from asyncio import CancelledError
-from bot import Bot
 from asqlite import connect, Connection
-from asyncio import create_task, Task
+from asyncio import create_task, CancelledError, Task
+from bot import Bot
+from chat_ws_manager import ChatWSManager
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.responses import FileResponse, HTMLResponse
 from json import load
 from os import makedirs
 from os.path import abspath, dirname, join
@@ -12,7 +13,12 @@ from twitchio import Client, User
 from typing import AsyncGenerator
 from uvicorn import run
 
-with open(join(dirname(abspath(__file__)), "config.json"), "r") as f:
+base_dir: str = dirname(abspath(__file__))
+config_path: str = join(base_dir, "config.json")
+chat_html_path: str = join(base_dir, "chat.html")
+icon_path: str = join(base_dir, "logo.ico")
+
+with open(config_path, "r") as f:
     config = load(f)
 
 
@@ -27,6 +33,7 @@ api_port: int = config["API_PORT"]
 bot: Bot
 db: Connection
 auth_cache: Connection
+chat_ws_manager = ChatWSManager()
 
 
 async def init_data() -> None:
@@ -114,6 +121,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         bot_id=bot_id,
         auth_cache=auth_cache,
         db=db,
+        chat_ws_manager=chat_ws_manager,
     )
 
     if access_token and refresh_token:
@@ -136,9 +144,27 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 app = FastAPI(lifespan=lifespan)
 
 
-@app.get("/chat")
-async def chat() -> None:
-    pass
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon() -> FileResponse:
+    return FileResponse(icon_path)
+
+
+@app.get("/chat", response_class=HTMLResponse)
+async def chat() -> HTMLResponse:
+    with open(chat_html_path, "r", encoding="utf-8") as f:
+        return HTMLResponse(f.read())
+
+
+@app.websocket("/chat/ws")
+async def chat_websocket(websocket: WebSocket) -> None:
+    await chat_ws_manager.connect(websocket)
+    try:
+        while True:
+            await websocket.receive_text()
+    except (WebSocketDisconnect, CancelledError):
+        pass
+    finally:
+        chat_ws_manager.disconnect(websocket)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Stream Chatbox</title>
+    <style>
+        body {
+            background-color: transparent;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 18px;
+            margin: 0;
+            padding: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            height: 95vh;
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .message {
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+
+        .username {
+            font-weight: bold;
+            margin-right: 3px;
+        }
+
+        .image {
+            vertical-align: middle;
+            max-height: 28px;
+            margin: 0 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="chat-container" id="chat-container">
+    </div>
+
+    <script>
+        const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+        const wsUrl = `${wsProtocol}//${window.location.host}/chat/ws`;
+        const ws = new WebSocket(wsUrl);
+
+        const chatContainer = document.getElementById('chat-container');
+        const MAX_MESSAGES = 20;
+
+        ws.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+
+            if (data.event === "new_message") {
+                const msgDiv = document.createElement("div");
+                msgDiv.className = "message";
+                msgDiv.id = `msg-${data.id}`;
+
+                const userSpan = document.createElement("span");
+                userSpan.className = "username";
+                userSpan.textContent = data.chatter_name;
+                userSpan.style.color = data.chatter_color;
+                msgDiv.appendChild(userSpan);
+                msgDiv.appendChild(document.createTextNode(": "));
+
+                data.fragments.forEach(fragment => {
+                    if (fragment.type === "image") {
+                        const img = document.createElement("img");
+                        img.src = fragment.text;
+                        img.className = "image";
+                        msgDiv.appendChild(img);
+                    } else {
+                        const textNode = document.createTextNode(fragment.text);
+                        msgDiv.appendChild(textNode);
+                    }
+                });
+
+                chatContainer.appendChild(msgDiv);
+                window.scrollTo(0, document.body.scrollHeight);
+
+                if (chatContainer.children.length > MAX_MESSAGES) {
+                    chatContainer.removeChild(chatContainer.firstChild);
+                }
+
+            } else if (data.event === "delete_message") {
+                const msgToRemove = document.getElementById(`msg-${data.id}`);
+                if (msgToRemove) {
+                    msgToRemove.remove();
+                }
+            }
+        };
+
+        ws.onclose = function () {
+            console.log("Disconnected from chat server.");
+        };
+    </script>
+</body>
+
+</html>

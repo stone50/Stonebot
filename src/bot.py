@@ -1,4 +1,5 @@
 from asqlite import Connection
+from chat_ws_manager import ChatWSManager
 from collections.abc import Awaitable, Callable
 from re import compile, findall, Pattern
 from twitchio.types_ import TokenMappingData
@@ -31,6 +32,7 @@ class Bot(Client):
         bot_id: str,
         db: Connection,
         auth_cache: Connection,
+        chat_ws_manager: ChatWSManager,
     ) -> None:
         super().__init__(
             client_id=client_id, client_secret=client_secret, bot_id=bot_id
@@ -39,6 +41,7 @@ class Bot(Client):
         self._owner_id: str = owner_id
         self._db: Connection = db
         self._auth_cache: Connection = auth_cache
+        self._chat_ws_manager: ChatWSManager = chat_ws_manager
         self._triggers: list[
             tuple[
                 Pattern[str],
@@ -71,7 +74,7 @@ class Bot(Client):
             await self._subscribe()
 
     async def event_message(self, payload: ChatMessage) -> None:
-        print(f"{payload.chatter}: {payload.text}")
+        await self._chat_ws_manager.broadcast_new_message(payload)
 
         if payload.chatter.id != self.bot_id:
             for pattern, run in self._triggers:
@@ -80,7 +83,7 @@ class Bot(Client):
                     await run(payload, matches, self, self._db)
 
     async def event_message_delete(self, payload: ChatMessageDelete) -> None:
-        print(f"Message {payload.message_id} deleted")
+        await self._chat_ws_manager.broadcast_delete_message(payload.message_id)
 
     async def save_tokens(self, path: str | None = None) -> None:
         token_data: TokenMappingData = next(iter(self.tokens.values()))
