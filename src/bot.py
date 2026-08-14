@@ -10,6 +10,7 @@ from typing import Any
 from triggers import (
     add_quote,
     ask,
+    commands,
     delete_quote,
     discord,
     edit_quote,
@@ -46,13 +47,14 @@ class Bot(Client):
         ] = [
             (compile(r"^!addquote (.+)"), add_quote.run),
             (compile(r"^!ask\b(.*)"), ask.run),
+            (compile(r"^!commands?\b"), commands.run),
             (compile(r"^!deletequote ([0-9]+)"), delete_quote.run),
             (compile(r"^!(discord|dc)\b"), discord.run),
             (compile(r"^!editquote ([0-9]+) (.+)"), edit_quote.run),
             (compile(r"^!feedrecord\b"), feed_record.run),
             (compile(r"^!feed\b"), feed.run),
             (compile(r"^!lurk\b"), lurk.run),
-            (compile(r"^!quote ([0-9]+)"), quote.run),
+            (compile(r"^(?:!quote ([0-9]+)|!quote\b)"), quote.run),
             (compile(r"^!(youtube|yt)\b"), youtube.run),
         ]
 

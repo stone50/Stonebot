@@ -1,5 +1,6 @@
 from __future__ import annotations
 from asqlite import Connection
+from random import randrange
 from sqlite3 import Row
 from twitchio import ChatMessage
 from typing import TYPE_CHECKING, Any
@@ -14,10 +15,17 @@ async def run(
     if not matches:
         return
 
+    quote_id = 0
     try:
         quote_id = int(matches[0])
     except ValueError:
-        return
+        rows: list[Row] = await db.fetchall("SELECT id FROM quotes")
+        if not rows:
+            return
+
+        index: int = randrange(len(rows))
+        row = rows[index]
+        quote_id = row["id"]
 
     row: Row | None = await db.fetchone(
         "SELECT text, speaker FROM quotes WHERE id = ?", (quote_id,)
