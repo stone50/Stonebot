@@ -25,6 +25,6 @@ async def run(
     )
     await db.commit()
 
-    quote_id = row["id"]
+    quote_id: int = row["id"]
 
     await message.respond(f"Quote {quote_id} added")

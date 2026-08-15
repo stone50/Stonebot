@@ -25,7 +25,7 @@ async def run(
 
         index: int = randrange(len(rows))
         row = rows[index]
-        quote_id = row["id"]
+        quote_id: int = row["id"]
 
     row: Row | None = await db.fetchone(
         "SELECT text, speaker FROM quotes WHERE id = ?", (quote_id,)
@@ -33,7 +33,7 @@ async def run(
     if not row:
         return
 
-    quote_text = row["text"]
-    quote_speaker = row["speaker"]
+    quote_text: str = row["text"]
+    quote_speaker: str = row["speaker"]
 
     await message.respond(f'[{quote_id}] "{quote_text}" -{quote_speaker}')

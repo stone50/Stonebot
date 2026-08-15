@@ -43,7 +43,16 @@ async def init_data() -> None:
     db = await connect(join(data_dir, "data.db"))
     async with db.cursor() as cursor:
         await db.execute(
-            "CREATE TABLE IF NOT EXISTS feed_stats (id INTEGER PRIMARY KEY, last_feed_time INTEGER, current_count INTEGER, record_count INTEGER, record_holder TEXT)"
+            """
+            CREATE TABLE IF NOT EXISTS feed_stats (
+                id INTEGER PRIMARY KEY,
+                last_feed_time INTEGER,
+                current_count INTEGER,
+                record_set_time INTEGER,
+                record_count INTEGER,
+                record_holder TEXT
+            )
+            """
         )
         await db.execute(
             "CREATE TABLE IF NOT EXISTS quotes (id INTEGER PRIMARY KEY, text TEXT, speaker TEXT, time INTEGER, quoter TEXT)"
