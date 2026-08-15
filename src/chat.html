@@ -32,7 +32,7 @@
 
         .username {
             font-weight: bold;
-            margin-right: 3px;
+            margin-right: 1px;
         }
 
         .text {
@@ -76,7 +76,11 @@
                 userSpan.textContent = data.chatter_name;
                 userSpan.style.color = data.chatter_color;
                 msgDiv.appendChild(userSpan);
-                msgDiv.appendChild(document.createTextNode(": "));
+
+                const colonSpan = document.createElement("span");
+                colonSpan.className = "text";
+                colonSpan.textContent = ": ";
+                msgDiv.appendChild(colonSpan);
 
                 data.fragments.forEach(fragment => {
                     if (fragment.type === "image") {
