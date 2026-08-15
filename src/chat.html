@@ -35,6 +35,14 @@
             margin-right: 3px;
         }
 
+        .text {
+            text-shadow:
+                -1px -1px 0 black,
+                1px -1px 0 black,
+                -1px 1px 0 black,
+                1px 1px 0 black;
+        }
+
         .image {
             vertical-align: middle;
             max-height: 28px;
@@ -64,7 +72,7 @@
                 msgDiv.id = `msg-${data.id}`;
 
                 const userSpan = document.createElement("span");
-                userSpan.className = "username";
+                userSpan.className = "username text";
                 userSpan.textContent = data.chatter_name;
                 userSpan.style.color = data.chatter_color;
                 msgDiv.appendChild(userSpan);
@@ -77,8 +85,10 @@
                         img.className = "image";
                         msgDiv.appendChild(img);
                     } else {
-                        const textNode = document.createTextNode(fragment.text);
-                        msgDiv.appendChild(textNode);
+                        const textSpan = document.createElement("span");
+                        textSpan.className = "text";
+                        textSpan.textContent = fragment.text;
+                        msgDiv.appendChild(textSpan);
                     }
                 });
 
