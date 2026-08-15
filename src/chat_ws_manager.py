@@ -27,7 +27,7 @@ class ChatWSManager(WebSocketManager):
             {
                 "event": "new_message",
                 "id": message.id,
-                "chatter_name": str(message.chatter),
+                "chatter_name": message.chatter.display_name,
                 "chatter_color": (
                     message.chatter.colour.html if message.chatter.colour else "#FF6900"
                 ),
