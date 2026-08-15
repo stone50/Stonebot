@@ -54,4 +54,4 @@ async def run(
     record_holder: str = row["record_holder"]
 
     ago_text: str = get_ago_text(record_set_time)
-    await message.respond(f"The record is {record_count}, last fed {ago_text} by {record_holder}")
+    await message.respond(f"The record is {record_count}, fed {ago_text} by {record_holder}")
