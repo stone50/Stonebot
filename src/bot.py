@@ -61,6 +61,7 @@ class Bot(Client):
             (compile(r"^!(youtube|yt)\b"), youtube.run),
         ]
 
+    @property
     def owner_id(self) -> str:
         return self._owner_id
 

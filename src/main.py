@@ -9,9 +9,10 @@ from json import load
 from os import makedirs
 from os.path import abspath, dirname, join
 from sqlite3 import Row
-from twitchio import Client, User
+from twitchio import ChannelInfo, Client, User
 from typing import AsyncGenerator
 from uvicorn import run
+from web_socket_manager import JsonElement
 
 base_dir: str = dirname(abspath(__file__))
 config_path: str = join(base_dir, "config.json")
@@ -174,6 +175,32 @@ async def chat_websocket(websocket: WebSocket) -> None:
         pass
     finally:
         chat_ws_manager.disconnect(websocket)
+
+
+@app.get("/stream", response_model=JsonElement)
+async def stream() -> JsonElement:
+    channel_info: ChannelInfo | None = await bot.fetch_channel(bot.owner_id)
+    if not channel_info:
+        return None
+
+    return {
+        "classification_labels": [
+            label for label in channel_info.classification_labels
+        ],
+        "delay": channel_info.delay,
+        "game_id": channel_info.game_id,
+        "game_name": channel_info.game_name,
+        "is_branded_content": channel_info.is_branded_content,
+        "language": channel_info.language,
+        "tags": [tag for tag in channel_info.tags],
+        "title": channel_info.title,
+        "user": {
+            "display_name": channel_info.user.display_name,
+            "id": channel_info.user.id,
+            "mention": channel_info.user.mention,
+            "name": channel_info.user.name,
+        },
+    }
 
 
 if __name__ == "__main__":
