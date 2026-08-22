@@ -9,6 +9,7 @@ from json import load
 from os import makedirs
 from os.path import abspath, dirname, join
 from sqlite3 import Row
+from sys import stderr
 from twitchio import ChannelInfo, Client, User
 from typing import AsyncGenerator
 from uvicorn import run
@@ -142,6 +143,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         yield
     except CancelledError:
         pass
+    except Exception as e:
+        print(e, file=stderr)
     finally:
         print()
         print("Shutting down")
