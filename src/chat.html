@@ -111,9 +111,7 @@
             }
         };
 
-        ws.onclose = function () {
-            console.log("Disconnected from chat server.");
-        };
+        ws.onclose = () => setTimeout(() => location.reload(), 1000);
     </script>
 </body>
 
