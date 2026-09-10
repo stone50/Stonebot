@@ -18,6 +18,7 @@ from triggers import (
     feed_record,
     feed,
     lurk,
+    overlay,
     quote,
     youtube,
 )
@@ -57,6 +58,7 @@ class Bot(Client):
             (compile(r"^!feedrecord\b"), feed_record.run),
             (compile(r"^!feed\b"), feed.run),
             (compile(r"^!lurk\b"), lurk.run),
+            (compile(r"^!overlays?\b"), overlay.run),
             (compile(r"^(?:!quote ([0-9]+)|!quote\b)"), quote.run),
             (compile(r"^!(youtube|yt)\b"), youtube.run),
         ]

@@ -11,5 +11,6 @@
 |`!feedrecord`|`!feedrecord`|Chatter|Responds with the current feed record|
 |`!feed`|`!feed`|Chatter|Feeds the cat|
 |`!lurk`|`!lurk`|Chatter|Responds with a thank you|
+|`!overlay`, `!overlays`|`!overlay`|Chatter|Responds with links to the projects used for the on-screen overlays|
 |`!quote`|`!quote 1`, `!quote`|Chatter|Responds with the quote via its ID, or a random quote if one is not given|
 |`!youtube`, `!yt`|`!yt`|Chatter|Responds with a link to Stone's YouTube channel|
