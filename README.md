@@ -56,3 +56,7 @@ The broadcaster will need to have the following emotes added to their channel:
 ![crayonTime](https://cdn.betterttv.net/emote/5c6ab708adab351034b4050f/1x.webp) [crayonTime](https://betterttv.com/emotes/5c6ab708adab351034b4050f) by [NymN](https://betterttv.com/users/559ad81fa287f9ec6c0a6ff3)
 
 ![popCat](https://cdn.betterttv.net/emote/5fa8f232eca18f6455c2b2e1/1x.webp) [popCat](https://betterttv.com/emotes/5fa8f232eca18f6455c2b2e1) by [EthynWithAY](https://betterttv.com/users/5b458a6b9733463289f1408e)
+
+### Chat Overlay
+
+To add a chat overlay, create a browser source in OBS with the URL set to `http://127.0.0.1:<api port>`. While the bot is running, it may be required to refresh or deactivate+reactivate the browser source depending on your setup.
