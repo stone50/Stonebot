@@ -44,7 +44,7 @@ async def run(
         INSERT INTO feed_stats
             (id, last_feed_time, current_count, record_set_time, record_count, record_holder)
         VALUES
-            (?, ?, ?, ?, ?)
+            (?, ?, ?, ?, ?, ?)
         ON CONFLICT(id) DO UPDATE SET
             last_feed_time = excluded.last_feed_time,
             current_count = excluded.current_count,
