@@ -11,6 +11,7 @@ from typing import Any
 from triggers import (
     add_quote,
     ask,
+    blind,
     commands,
     delete_quote,
     discord,
@@ -51,6 +52,7 @@ class Bot(Client):
         ] = [
             (compile(r"^!addquote (.+)"), add_quote.run),
             (compile(r"^!ask\b(.*)"), ask.run),
+            (compile(r"^!blind\b"), blind.run),
             (compile(r"^!commands?\b"), commands.run),
             (compile(r"^!deletequote ([0-9]+)"), delete_quote.run),
             (compile(r"^!(discord|dc)\b"), discord.run),

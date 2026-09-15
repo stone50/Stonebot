@@ -4,6 +4,7 @@
 |-|-|-|-|
 |`!addquote`|`!addquote Hello, World!`|VIP, Mod, Broadcaster|Creates a new quote with the given text and responds with the quote's ID|
 |`!ask`|`!ask Is the sky blue?`|Chatter|Responds with an answer to the given 'yes or no' question|
+|`!blind`|`!blind`|Chatter|Responds with information about the Will You Snail? blindfolded challenge|
 |`!command`, `!commands`|`!command`|Chatter|Responds with a link to this page|
 |`!deletequote`|`!deletequote 1`|Mod, Broadcaster|Deletes the quote via its ID and responds with a confirmation|
 |`!discord`, `!dc`|`!dc`|Chatter|Responds with a link to Stone's Discord server|
